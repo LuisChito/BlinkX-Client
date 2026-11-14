@@ -1,5 +1,5 @@
 // Textos de la historia de la portada. Edita aquí sin tocar los componentes.
-// `illustration` se rellena cuando existan las imágenes (ver docs/ilustraciones.md).
+// Las ilustraciones se registran aparte, en data/illustrations.ts (ver docs/ilustraciones.md).
 
 export interface StoryChapter {
   id: string;
@@ -8,7 +8,6 @@ export interface StoryChapter {
   kicker: string;
   title: string;
   body: string[];
-  illustration?: { src: string; alt: string };
 }
 
 export const STORY: StoryChapter[] = [
@@ -68,7 +67,7 @@ export const STORY: StoryChapter[] = [
   {
     id: 'reto', nav: 'Prueba', kicker: '07 · Tu turno',
     title: 'Encuentra el que se mueve',
-    body: ['Dos imágenes del mismo cielo, con un año de diferencia. Una estrella cambió de lugar. Haz clic sobre ella.'],
+    body: ['Dos imágenes del mismo cielo, con año y medio de diferencia. Una estrella cambió de lugar. Haz clic sobre ella.'],
   },
   {
     id: 'objetivos', nav: 'Empezar', kicker: '08 · Empieza aquí',

@@ -130,7 +130,9 @@ export function mountStage(openPanel: (id: 'datos') => void): void {
     const note = c && speed >= 0.05
       ? `<p class="note mono">${esc(T.head.propagated)} ${c.current.epoch.toFixed(2)} · ${esc(T.head.catalog)} ${c.epoch.toFixed(1)}</p>`
       : '';
-    head.innerHTML = `<p class="eyebrow">${esc(eyebrow)}</p><h1 class="display">${esc(t.label)}</h1>
+    // Una región dada por coordenadas no tiene nombre: el título lo dice y las coordenadas van debajo.
+    const title = c ? t.label : T.head.region;
+    head.innerHTML = `${c ? `<p class="eyebrow">${esc(eyebrow)}</p>` : ''}<h1 class="display">${esc(title)}</h1>
       <p class="coords mono"><span>RA ${esc(formatRA(t.ra))}</span><span>Dec ${esc(formatDec(t.dec))}</span></p>${note}`;
   }
 
