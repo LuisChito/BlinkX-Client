@@ -17,7 +17,7 @@ export const STORY: StoryChapter[] = [
     body: ['Mil millones de objetos. Nadie puede revisarlos solo. Dos imágenes del mismo cielo bastan para encontrar al que cambió de lugar.'],
   },
   {
-    id: 'pluton', nav: 'Plutón', kicker: '01 · El truco',
+    id: 'pluton', nav: 'Plutón', kicker: '· El truco',
     title: 'Así se encontró Plutón',
     body: [
       'En 1930, Clyde Tombaugh comparó dos placas fotográficas del mismo pedazo de cielo, tomadas con días de diferencia. Un aparato las alternaba ante sus ojos.',
@@ -25,7 +25,7 @@ export const STORY: StoryChapter[] = [
     ],
   },
   {
-    id: 'movimiento', nav: 'Movimiento', kicker: '02 · Por qué se mueven',
+    id: 'movimiento', nav: 'Movimiento', kicker: '· Por qué se mueven',
     title: 'Lo que está cerca, se mueve',
     body: [
       'Los asteroides y cometas giran alrededor del Sol. Las estrellas vecinas cruzan el cielo mientras orbitan la galaxia. La Tierra también se mueve, y eso desplaza lo que tenemos cerca.',
@@ -33,7 +33,7 @@ export const STORY: StoryChapter[] = [
     ],
   },
   {
-    id: 'telescopio', nav: 'SPHEREx', kicker: '03 · El telescopio',
+    id: 'telescopio', nav: 'SPHEREx', kicker: '· El telescopio',
     title: 'El cielo en 102 colores',
     body: [
       'Desde mayo de 2025, el telescopio espacial SPHEREx de la NASA fotografía el cielo completo cada seis meses.',
@@ -41,7 +41,7 @@ export const STORY: StoryChapter[] = [
     ],
   },
   {
-    id: 'problema', nav: 'El problema', kicker: '04 · El problema',
+    id: 'problema', nav: 'El problema', kicker: '· El problema',
     title: 'Demasiado cielo para una sola persona',
     body: [
       'Estrellas, galaxias, cometas, asteroides, enanas marrones: imágenes de más de mil millones de objetos, que a menudo se enciman o cambian de brillo.',
@@ -49,7 +49,7 @@ export const STORY: StoryChapter[] = [
     ],
   },
   {
-    id: 'infrarrojo', nav: 'Lo invisible', kicker: '05 · Lo invisible',
+    id: 'infrarrojo', nav: 'Lo invisible', kicker: '· Lo invisible',
     title: 'Mundos que solo brillan en infrarrojo',
     body: [
       'WISE 0855 es una enana marrón: demasiado pequeña para ser estrella y tan fría como el Polo Norte.',
@@ -57,7 +57,7 @@ export const STORY: StoryChapter[] = [
     ],
   },
   {
-    id: 'planeta-x', nav: 'Planeta X', kicker: '06 · La pregunta',
+    id: 'planeta-x', nav: 'Planeta X', kicker: '· La pregunta',
     title: '¿Y si hay algo más allá afuera?',
     body: [
       'Un planeta lejano, más allá de Neptuno, sería frío y oscuro. Se movería muy poco entre dos imágenes.',
@@ -65,22 +65,22 @@ export const STORY: StoryChapter[] = [
     ],
   },
   {
-    id: 'reto', nav: 'Prueba', kicker: '07 · Tu turno',
+    id: 'reto', nav: 'Prueba', kicker: '· Tu turno',
     title: 'Encuentra el que se mueve',
     body: ['Dos imágenes del mismo cielo, con año y medio de diferencia. Una estrella cambió de lugar. Haz clic sobre ella.'],
   },
   {
-    id: 'objetivos', nav: 'Empezar', kicker: '08 · Empieza aquí',
+    id: 'objetivos', nav: 'Empezar', kicker: '· Empieza aquí',
     title: 'Cinco lugares para empezar',
     body: ['Los objetos de prueba del reto. Cada uno enseña algo distinto: unos se mueven, otros cambian de brillo.'],
   },
   {
-    id: 'colores', nav: 'Colores', kicker: '09 · Guía',
+    id: 'colores', nav: 'Colores', kicker: '· Guía',
     title: 'Qué significa cada color',
     body: ['SPHEREx reparte sus 102 bandas en seis detectores. Cada tramo del infrarrojo revela algo distinto. Elige uno.'],
   },
   {
-    id: 'creditos', nav: 'Datos', kicker: '10 · Créditos',
+    id: 'creditos', nav: 'Datos', kicker: '· Créditos',
     title: 'De dónde vienen los datos',
     body: [],
   },
