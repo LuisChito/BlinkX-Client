@@ -1,0 +1,13 @@
+---
+interface Props { current?: 'historia' | 'visor' }
+const { current } = Astro.props;
+---
+<header class="nav" data-nav>
+  <a class="brand" href="/" aria-label="Blink X, inicio">
+    <span>Blink X</span><span class="blink-dot" aria-hidden="true"></span>
+  </a>
+  <nav class="nav-links" aria-label="Principal">
+    <a href="/" aria-current={current === 'historia' ? 'page' : undefined}>Historia</a>
+    <a href="/ver" aria-current={current === 'visor' ? 'page' : undefined}>Visor</a>
+  </nav>
+</header>

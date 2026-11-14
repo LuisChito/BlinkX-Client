@@ -1,0 +1,11 @@
+---
+const mocks = String(import.meta.env.PUBLIC_USE_MOCKS ?? 'true') !== 'false';
+---
+<footer class="foot">
+  <p>Blink X · NASA Space Apps 2026 · Reto "Planet X and SPHEREx"</p>
+  <p>
+    {mocks
+      ? 'Esta versión usa cielo y catálogos simulados mientras se termina la API.'
+      : 'Datos de SPHEREx (IRSA), SIMBAD, NED, Gaia y WISE.'}
+  </p>
+</footer>
