@@ -1,0 +1,22 @@
+---
+// Lienzo de cielo simulado. scripts/story/sky.ts lo pinta con el mismo modelo que usa el visor.
+interface Props {
+  target: string;
+  fov?: number;
+  det?: number;
+  /** Fecha (y segunda fecha, para parpadear) en formato AAAA-MM-DD. */
+  t: string;
+  t2?: string;
+  size?: number;
+  dx?: number;
+  dy?: number;
+  alt: string;
+  class?: string;
+}
+const { target, fov = 300, det = 3, t, t2, size = 256, dx = 0, dy = 0, alt, class: cls } = Astro.props;
+---
+<canvas
+  class:list={['sky', cls]} data-sky data-target={target} data-fov={fov} data-det={det}
+  data-t={`${t}T00:00:00Z`} data-t2={t2 ? `${t2}T00:00:00Z` : undefined}
+  data-size={size} data-dx={dx} data-dy={dy} width={size} height={size} role="img" aria-label={alt}
+></canvas>

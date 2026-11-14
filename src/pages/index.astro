@@ -2,12 +2,219 @@
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import Chapter from '../components/story/Chapter.astro';
+import SkyCanvas from '../components/story/SkyCanvas.astro';
+import { STORY, UI } from '../data/story';
+import { TARGET_CARDS } from '../data/targets';
+import { BANDS, rangeLabel } from '../data/bands';
+import { hash, rng } from '../lib/api/mock/rng';
+import '../styles/story.css';
+
+const mocks = String(import.meta.env.PUBLIC_USE_MOCKS ?? 'true') !== 'false';
+const T1 = '2025-05-15';
+const T2 = '2026-11-01';
+
+// Mosaico del capítulo "problema": recortes diminutos generados al construir el sitio (siempre los mismos).
+const tiles = Array.from({ length: 96 }, (_, i) => {
+  const r = rng(hash('tile', i));
+  const dots = Array.from({ length: 3 + Math.floor(r() * 4) }, () => {
+    const s = 0.6 + r() * 1.6;
+    return `radial-gradient(circle at ${Math.round(r() * 100)}% ${Math.round(r() * 100)}%, rgb(255 255 255 / ${(0.35 + r() * 0.65).toFixed(2)}) 0 ${s.toFixed(1)}px, transparent ${(s + 0.8).toFixed(1)}px)`;
+  });
+  return dots.join(',');
+});
 ---
-<Base title="Blink X · Encuentra lo que se mueve en el cielo infrarrojo">
+<Base title="Blink X · Encuentra lo que se mueve en el cielo infrarrojo" bodyClass="story-body">
   <Nav current="historia" />
-  <main id="main" style="min-height:100svh;display:grid;place-content:center;gap:1.5rem;padding:var(--gutter)">
-    <h1 class="display" style="font-size:clamp(3rem,11vw,9rem)">Algo se movió</h1>
-    <p><a class="btn btn-primary" href="/ver">Abrir el visor</a></p>
+
+  <nav class="rail" aria-label="Capítulos" data-rail>
+    <ol>
+      {STORY.map((c) => (
+        <li><a href={`#${c.id}`} data-rail-link={c.id}><span class="rail-dot" aria-hidden="true"></span><span class="rail-label">{c.nav}</span></a></li>
+      ))}
+    </ol>
+  </nav>
+
+  <main id="main" class="story">
+    {/* 00 · Portada */}
+    <Chapter id="portada" layout="center" tone="ember" level={1}>
+      <Fragment slot="copy">
+        <div class="hero-cta" data-reveal>
+          <a class="btn btn-primary" href="#pluton">{UI.start}</a>
+          <a class="btn" href="/ver">{UI.viewer}</a>
+        </div>
+      </Fragment>
+      <div class="hero-sky" data-blink="900">
+        <SkyCanvas target="barnard" fov={240} det={3} t={T1} t2={T2} size={384} dx={-14} dy={10}
+          alt="Dos imágenes simuladas del mismo campo de estrellas que se alternan; una estrella salta de lugar." />
+        {mocks && <span class="chip sky-tag">{UI.simulated}</span>}
+      </div>
+    </Chapter>
+
+    {/* 01 · Plutón */}
+    <Chapter id="pluton" tone="deep">
+      <figure class="plates" data-blink="800">
+        <div class="plate">
+          <SkyCanvas target="barnard" fov={200} det={2} t={T1} t2={T2} size={320} dx={20} dy={-12}
+            alt="Recreación del comparador de placas: dos fechas del mismo campo." />
+          <span class="chip plate-label mono" data-blink-label aria-live="off">{UI.plates.a}</span>
+        </div>
+        <div class="plates-controls">
+          <button class="btn btn-primary" type="button" data-blink-toggle><Icon name="compare" size={18} />{UI.plates.toggle}</button>
+          <label class="plates-auto"><input type="checkbox" data-blink-auto /> {UI.plates.auto}</label>
+        </div>
+        <figcaption class="muted">{UI.plates.caption}</figcaption>
+      </figure>
+    </Chapter>
+
+    {/* 02 · Movimiento */}
+    <Chapter id="movimiento" tone="violet">
+      <ul class="tracks" aria-label="Cuánto se mueve cada tipo de objeto">
+        {UI.motion.map((m) => (
+          <li class="track">
+            <div class="track-lane" aria-hidden="true"><i class={`track-dot is-${m.speed}`}></i></div>
+            <p><b>{m.label}</b><span class="muted mono">{m.value}</span></p>
+          </li>
+        ))}
+      </ul>
+    </Chapter>
+
+    {/* 03 · Telescopio */}
+    <Chapter id="telescopio" layout="stack" tone="ember">
+      <div class="spectrum" aria-hidden="true" data-spectrum>
+        {Array.from({ length: 102 }, (_, i) => <i style={`--i:${i}`}></i>)}
+      </div>
+      <div class="spectrum-scale mono muted" aria-hidden="true"><span>0.75 µm</span><span>5 µm</span></div>
+      <dl class="stats">
+        {UI.stats.map((s) => (
+          <div><dt class="muted">{s.label}</dt><dd class="display">{s.value}</dd></div>
+        ))}
+      </dl>
+    </Chapter>
+
+    {/* 04 · El problema */}
+    <Chapter id="problema" layout="center" tone="deep">
+      <Fragment slot="copy">
+        <p class="counter" data-reveal>
+          <span class="muted">{UI.counter.prefix}</span>
+          <b class="display mono" data-counter={UI.counter.target}>{UI.counter.target.toLocaleString('es')}</b>
+          <span class="muted">{UI.counter.suffix}</span>
+        </p>
+      </Fragment>
+      <div class="mosaic" aria-hidden="true" data-mosaic>
+        {tiles.map((bg) => <i style={`background-image:${bg}`}></i>)}
+      </div>
+    </Chapter>
+
+    {/* 05 · Lo invisible */}
+    <Chapter id="infrarrojo" layout="stack" tone="ember">
+      <ol class="detectors">
+        {BANDS.map((b) => (
+          <li>
+            <SkyCanvas target="wise0855" fov={150} det={b.det} t="2026-01-10" size={160}
+              alt={`WISE 0855 en el detector ${b.det} (${rangeLabel(b)}): ${b.det >= 4 ? 'se ve un punto en el centro' : 'no se ve nada en el centro'}.`} />
+            <p class="mono"><b style={`color:${b.color}`}>{UI.detectors} {b.det}</b><span class="muted">{rangeLabel(b)}</span></p>
+          </li>
+        ))}
+      </ol>
+      {mocks && <p><span class="chip">{UI.simulated}</span></p>}
+    </Chapter>
+
+    {/* 06 · Planeta X */}
+    <Chapter id="planeta-x" layout="center" tone="violet">
+      <div class="lonely" aria-hidden="true"><i></i></div>
+    </Chapter>
+
+    {/* 07 · Mini reto */}
+    <Chapter id="reto" tone="deep">
+      <div class="game" data-game data-blink="750">
+        <div class="game-board">
+          <SkyCanvas target="barnard" fov={260} det={3} t={T1} t2={T2} size={416} dx={38} dy={-30}
+            alt="Campo de estrellas que parpadea entre dos fechas. Una estrella cambia de lugar." />
+          <div class="game-layer" data-game-layer></div>
+        </div>
+        <p class="game-status" data-game-status role="status" aria-live="polite">{UI.game.hint}</p>
+        <div class="game-win glass" data-game-win hidden>
+          <p>{UI.game.win}</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href={TARGET_CARDS[0].href}>{UI.game.cta}</a>
+            <button class="btn" type="button" data-game-again>{UI.game.again}</button>
+          </div>
+        </div>
+        <div class="plates-controls">
+          <button class="btn" type="button" data-blink-toggle><Icon name="compare" size={18} />{UI.plates.toggle}</button>
+          <label class="plates-auto"><input type="checkbox" data-blink-auto /> {UI.plates.auto}</label>
+        </div>
+      </div>
+    </Chapter>
+
+    {/* 08 · Objetivos */}
+    <Chapter id="objetivos" layout="stack" tone="plain">
+      <ul class="targets">
+        {TARGET_CARDS.map((t) => (
+          <li>
+            <a class="target" href={t.href}>
+              <SkyCanvas target={t.id} fov={t.fov} det={t.det} t="2026-01-10" size={224} alt="" />
+              <span class="target-body">
+                <span class="eyebrow">{t.kind}</span>
+                <b class="display">{t.label}</b>
+                <span class="muted">{t.blurb}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <form class="home-search" action="/ver" method="get" role="search">
+        <label for="home-q">{UI.search.label}</label>
+        <div class="home-search-box">
+          <input id="home-q" class="field" type="search" name="name" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder={UI.search.placeholder} />
+          <button class="btn btn-primary" type="submit"><Icon name="search" size={18} />{UI.search.submit}</button>
+        </div>
+      </form>
+    </Chapter>
+
+    {/* 09 · Colores */}
+    <Chapter id="colores" layout="stack" tone="ember">
+      <div class="bands" data-bands>
+        <div class="bands-strip" role="tablist" aria-label="Detectores de SPHEREx">
+          {BANDS.map((b, i) => (
+            <button type="button" role="tab" id={`band-tab-${b.det}`} aria-controls={`band-panel-${b.det}`} aria-selected={i === 3 ? 'true' : 'false'}
+              tabindex={i === 3 ? 0 : -1} style={`--c:${b.color};flex:${(b.to - b.from).toFixed(2)}`} data-band={b.det}>
+              <span class="mono">{b.det}</span>
+            </button>
+          ))}
+        </div>
+        <div class="spectrum-scale mono muted" aria-hidden="true"><span>0.75 µm</span><span>5 µm</span></div>
+        {BANDS.map((b, i) => (
+          <div class="band-panel" role="tabpanel" id={`band-panel-${b.det}`} aria-labelledby={`band-tab-${b.det}`} hidden={i !== 3}>
+            <p class="eyebrow" style={`color:${b.color}`}>{UI.detectors} {b.det} · {rangeLabel(b)}</p>
+            <h3 class="display">{b.title}</h3>
+            <p>{b.reveals}</p>
+          </div>
+        ))}
+      </div>
+    </Chapter>
+
+    {/* 10 · Créditos */}
+    <Chapter id="creditos" layout="stack" tone="plain">
+      <ul class="sources">
+        {UI.credits.sources.map((s) => (
+          <li><b>{s.name}</b><span>{s.role}</span><span class="muted mono">{s.where}</span></li>
+        ))}
+      </ul>
+      <div class="notes muted">
+        {mocks && <p>{UI.credits.simulated}</p>}
+        <p>{UI.credits.illustrations}</p>
+        <p><a href={UI.credits.challengeUrl} rel="noopener">{UI.credits.challenge}</a></p>
+      </div>
+      <p><a class="btn btn-primary" href="/ver">{UI.viewer}</a></p>
+    </Chapter>
   </main>
+
   <Footer />
+
+  <script>
+    import '../scripts/story/main';
+  </script>
 </Base>

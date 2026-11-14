@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import { chapter, UI } from '../../data/story';
+import { illustrations } from '../../data/illustrations';
+
+interface Props {
+  id: string;
+  /** 'split' pone el texto a la izquierda y el visual a la derecha; 'stack' los apila. */
+  layout?: 'split' | 'stack' | 'center';
+  tone?: 'ember' | 'violet' | 'deep' | 'plain';
+  level?: 1 | 2;
+}
+const { id, layout = 'split', tone = 'plain', level = 2 } = Astro.props;
+const c = chapter(id);
+const art = illustrations[id];
+const H = level === 1 ? 'h1' : 'h2';
+---
+<section id={c.id} class={`chapter chapter--${layout} tone-${tone}`} aria-labelledby={`h-${c.id}`} data-chapter>
+  {art && (
+    <figure class="chapter-art" data-parallax>
+      <Image src={art.src} alt={art.alt} widths={[768, 1280, 1920]} sizes="100vw" loading={level === 1 ? 'eager' : 'lazy'} />
+      <figcaption class="chip">{UI.illustration}</figcaption>
+    </figure>
+  )}
+  <div class="chapter-inner">
+    <div class="chapter-copy">
+      <p class="eyebrow" data-reveal>{c.kicker}</p>
+      <H id={`h-${c.id}`} class="display chapter-title" data-split>{c.title}</H>
+      {c.body.map((p) => <p class="chapter-text" data-reveal>{p}</p>)}
+      <slot name="copy" />
+    </div>
+    {Astro.slots.has('default') && (
+      <div class="chapter-visual" data-reveal>
+        <slot />
+      </div>
+    )}
+  </div>
+</section>
