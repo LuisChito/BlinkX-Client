@@ -108,7 +108,11 @@ function raw(center: SkyPoint, fov: number, size: number, v: Visit): Float32Arra
 }
 
 let pngCount = 0;
-/** En el navegador entrega una URL blob: con el PNG; sin canvas (pruebas), una URL simbólica. */
+/**
+ * En el navegador entrega el PNG como URL data: (codificación síncrona: toBlob y convertToBlob
+ * dependen de tareas en segundo plano que el navegador frena cuando la pestaña no está al frente).
+ * Sin canvas (pruebas), una URL simbólica.
+ */
 async function makePng(rgba: Uint8ClampedArray, size: number): Promise<string> {
   pngCount += 1;
   if (typeof document === 'undefined') return `blob:mock/${pngCount}`;
@@ -116,8 +120,7 @@ async function makePng(rgba: Uint8ClampedArray, size: number): Promise<string> {
   c.width = size;
   c.height = size;
   c.getContext('2d')!.putImageData(new ImageData(rgba as Uint8ClampedArray<ArrayBuffer>, size, size), 0, 0);
-  const blob = await new Promise<Blob | null>((res) => c.toBlob(res, 'image/png'));
-  return blob ? URL.createObjectURL(blob) : c.toDataURL('image/png');
+  return c.toDataURL('image/png');
 }
 
 // ---------------- trabajos ----------------
@@ -143,7 +146,7 @@ function slow<T>(kind: Job['kind'], params: unknown, work: (report: Report) => P
   if (!job || job.status === 'failed') {
     const fresh: Job = {
       id, kind, status: 'queued', progress: 0, eta_s: null, stage: 'En cola', queue_position: 1,
-      poll_after_ms: 300, created_at: iso(Date.now()), result: null, error: null,
+      poll_after_ms: 200, created_at: iso(Date.now()), result: null, error: null,
     };
     job = fresh;
     jobs.set(id, fresh);
@@ -264,7 +267,8 @@ export const mockApi: Api = {
       for (let i = 0; i < n; i++) {
         report(i, n * 2, `Descargando frames ${i + 1}/${n}`);
         raws.push(raw(center, p.fov, size, page[i]));
-        await wait(stepMs());
+        // Pocos temporizadores: el navegador los frena a 1 s cuando la pestaña no está al frente.
+        if (i % 4 === 3 || i === n - 1) await wait(stepMs() * 5.4);
       }
       const shared = scale === 'sequence' && n ? limits(raws) : null;
       const frames: Frame[] = [];
@@ -273,7 +277,7 @@ export const mockApi: Api = {
         const l = shared ?? limits([raws[i]]);
         const png_url = await makePng(toRGBA(raws[i], stretch, cmap, l.vmin, l.vmax), size);
         frames.push({ ...frameMeta(center, p.fov, page[i]), png_url });
-        await wait(stepMs() / 3);
+        if (i % 8 === 7) await wait(stepMs());
       }
       return {
         center, fov_arcsec: p.fov, size_px: size, scale, vmin: shared?.vmin ?? null, vmax: shared?.vmax ?? null,

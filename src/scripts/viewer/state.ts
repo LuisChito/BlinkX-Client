@@ -51,7 +51,7 @@ const initial = (view: ViewState = { ...DEFAULT_STATE }): ViewerState => ({
   view, target: null, phase: 'idle', error: null, job: null,
   frames: [], total: 0, seq: null, loadingMore: false,
   idx: 0, ab: [0, 0], blinkOn: false, playing: false, speed: 2,
-  panel: null, layers: { objects: true, gaia: false, wise: false, prediction: true, reticle: true },
+  panel: null, layers: { objects: false, gaia: false, wise: false, prediction: true, reticle: true },
   picked: null, objects: null, prediction: null, coverage: null, gaia: null, wise: null,
   still: idle(), spectrum: idle(), status: null,
 });
