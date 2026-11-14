@@ -1,10 +1,120 @@
 ---
 import Base from '../layouts/Base.astro';
-import Nav from '../components/Nav.astro';
+import Icon from '../components/Icon.astro';
+import type { IconName } from '../components/Icon.astro';
+import { T } from '../data/viewer';
+import '../styles/viewer.css';
+
+const mocks = String(import.meta.env.PUBLIC_USE_MOCKS ?? 'true') !== 'false';
+const panels: { id: keyof typeof T.panels; icon: IconName }[] = [
+  { id: 'tiempo', icon: 'clock' },
+  { id: 'comparar', icon: 'compare' },
+  { id: 'imagen', icon: 'image' },
+  { id: 'capas', icon: 'layers' },
+  { id: 'datos', icon: 'info' },
+];
+const modes = Object.entries(T.modes) as [keyof typeof T.modes, string][];
 ---
-<Base title="Visor · Blink X">
-  <Nav current="visor" />
-  <main id="main" style="min-height:100svh;display:grid;place-content:center;padding:var(--gutter)">
-    <h1 class="display" style="font-size:clamp(2rem,6vw,4rem)">Visor</h1>
-  </main>
+<Base title="Visor · Blink X" description="Reproduce las imágenes infrarrojas de SPHEREx de una región del cielo y encuentra lo que se mueve." bodyClass="viewer-body">
+  <div class="vw" data-viewer>
+    <header class="vw-top">
+      <a class="brand" href="/" aria-label="Blink X, inicio">
+        <span>Blink X</span><span class="blink-dot" aria-hidden="true"></span>
+      </a>
+      <form class="vw-search" role="search" data-search novalidate>
+        <label class="sr-only" for="q">{T.search.label}</label>
+        <div class="vw-search-box">
+          <input id="q" name="q" class="field" type="search" autocomplete="off" autocapitalize="off" spellcheck="false"
+            placeholder={T.search.placeholder} aria-describedby="q-err" />
+          <button class="btn btn-primary" type="submit"><Icon name="search" size={18} /><span>{T.search.submit}</span></button>
+        </div>
+        <p id="q-err" class="field-error" data-search-error role="alert" hidden></p>
+      </form>
+      <div class="vw-actions">
+        {mocks && <span class="chip chip-accent" title={T.simulatedHelp}>{T.simulated}</span>}
+        <button class="btn btn-icon btn-ghost" type="button" data-share aria-label={T.share.link} title={T.share.link}><Icon name="share" /></button>
+        <button class="btn btn-icon btn-ghost" type="button" data-embed aria-label={T.share.embed} title={T.share.embed}><Icon name="code" /></button>
+      </div>
+    </header>
+
+    <main id="main" class="vw-main">
+      <p class="vw-banner" data-banner role="status" hidden></p>
+
+      <div class="vw-stage" data-stage>
+        <div class="stage-frame" data-frame hidden>
+          <img data-img alt="" draggable="false" decoding="async" />
+          <svg class="stage-svg" data-overlay xmlns="http://www.w3.org/2000/svg"></svg>
+          <p class="stage-label chip" data-stage-label hidden></p>
+        </div>
+        <div class="stage-msg" data-msg></div>
+      </div>
+
+      <section class="vw-head" data-head aria-live="polite"></section>
+
+      <nav class="vw-rail glass" aria-label={T.rail}>
+        {panels.map((p) => (
+          <button class="btn btn-icon btn-ghost" type="button" data-panel-btn={p.id} aria-expanded="false" aria-controls="drawer"
+            aria-label={T.panels[p.id]} title={T.panels[p.id]}>
+            <Icon name={p.icon} />
+          </button>
+        ))}
+      </nav>
+
+      <figure class="vw-globe glass" data-globe-wrap hidden>
+        <canvas data-globe width="240" height="240" role="img" aria-label={T.globe}></canvas>
+      </figure>
+
+      <aside id="drawer" class="vw-drawer glass" data-drawer role="region" aria-labelledby="drawer-title" hidden>
+        <header class="drawer-head">
+          <h2 id="drawer-title" class="display" data-drawer-title></h2>
+          <button class="btn btn-icon btn-ghost" type="button" data-drawer-close aria-label={T.closePanel}><Icon name="close" /></button>
+        </header>
+        <div class="drawer-body" data-drawer-body></div>
+      </aside>
+
+      <div class="vw-dock glass" data-dock>
+        <div class="dock-row">
+          <button class="btn btn-icon btn-primary" type="button" data-play aria-label={T.player.play} disabled>
+            <span data-ico-play><Icon name="play" /></span>
+            <span data-ico-pause hidden><Icon name="pause" /></span>
+          </button>
+          <button class="btn btn-icon btn-ghost dock-step" type="button" data-prev aria-label={T.player.prev} disabled><Icon name="prev" /></button>
+          <button class="btn btn-icon btn-ghost dock-step" type="button" data-next aria-label={T.player.next} disabled><Icon name="next" /></button>
+          <button class="btn mono dock-speed" type="button" data-speed aria-label={T.player.speed}>2×</button>
+          <div class="dock-time">
+            <input type="range" data-range min="0" max="0" value="0" step="1" aria-label={T.player.timeline} disabled />
+            <div class="dock-passes" data-passes aria-hidden="true"></div>
+          </div>
+          <output class="dock-count mono" data-count>— / —</output>
+        </div>
+        <div class="dock-row dock-row-2">
+          <div class="seg" role="group" aria-label={T.player.mode}>
+            {modes.map(([id, label]) => (
+              <button class="btn" type="button" data-mode={id} aria-pressed="false" title={T.modeHelp[id]}>{label}</button>
+            ))}
+          </div>
+          <span class="dock-date mono" data-date></span>
+          <button class="btn" type="button" data-more hidden>{T.player.more}</button>
+          <div class="dock-quick">
+            <button class="btn mono" type="button" data-quick="imagen" data-quick-det></button>
+            <button class="btn mono" type="button" data-quick="imagen" data-quick-fov></button>
+            <div class="dock-panels">
+              {panels.map((p) => (
+                <button class="btn btn-icon btn-ghost" type="button" data-panel-btn={p.id} aria-expanded="false" aria-controls="drawer"
+                  aria-label={T.panels[p.id]}>
+                  <Icon name={p.icon} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <p class="toast glass" data-toast role="status" aria-live="polite" hidden></p>
+  </div>
+
+  <script>
+    import '../scripts/viewer/main';
+  </script>
 </Base>
