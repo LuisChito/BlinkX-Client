@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ApiError,
+  type CompositionContextType,
+  type CompositionResult,
   type Coord,
   type Frame,
   type Job,
@@ -208,6 +210,12 @@ export interface SkyContractState {
   spectrum: SpectrumResponse | null;
   probeCoord: Coord | null;
   probeSpectrum: SpectrumResponse | null;
+  /** Resultado de /api/composition y el punto al que corresponde. */
+  composition: CompositionResult | null;
+  compositionCoord: Coord | null;
+  compositionJob: Job | null;
+  loadingComposition: boolean;
+  compositionError: string | null;
   predict: PredictResult | null;
   gaiaOverlay: OverlayResponse | null;
   wiseOverlay: OverlayResponse | null;
@@ -231,6 +239,8 @@ export interface SkyContractState {
   resolveByName: (name: string, at?: string) => Promise<ResolveResponse>;
   probeSpectrumAt: (ra: number, dec: number, aperture?: number) => Promise<SpectrumResponse | null>;
   clearProbeSpectrum: () => void;
+  analyzeComposition: (ra: number, dec: number, opts?: { aperture?: number; context?: CompositionContextType }) => Promise<CompositionResult | null>;
+  cancelComposition: () => void;
   loadL2: (opts?: { date_from?: string; date_to?: string; detector?: Detector; frame_id?: string; size?: number }) => Promise<L2Result | null>;
   inspectL2Pixel: (frameId: string, x: number, y: number, size?: number) => Promise<L2PixelResult | null>;
   loadCube: (size?: number) => Promise<CubeResult | null>;
@@ -274,6 +284,10 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   const [spectrum, setSpectrum] = useState<SpectrumResponse | null>(null);
   const [probeCoord, setProbeCoord] = useState<Coord | null>(null);
   const [probeSpectrum, setProbeSpectrum] = useState<SpectrumResponse | null>(null);
+  const [composition, setComposition] = useState<CompositionResult | null>(null);
+  const [compositionCoord, setCompositionCoord] = useState<Coord | null>(null);
+  const [loadingComposition, setLoadingComposition] = useState(false);
+  const [compositionError, setCompositionError] = useState<string | null>(null);
   const [predict, setPredict] = useState<PredictResult | null>(null);
   const [gaiaOverlay, setGaiaOverlay] = useState<OverlayResponse | null>(null);
   const [wiseOverlay, setWiseOverlay] = useState<OverlayResponse | null>(null);
@@ -313,6 +327,7 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   }, [jobsByKind]);
 
   const spectrumJob = jobsByKind.spectrum ?? null;
+  const compositionJob = jobsByKind.composition ?? null;
   const cubeJob = jobsByKind.cube ?? null;
 
   const fovArcsec = Math.max(30, Math.min(3600, Math.round(fovDeg * 3600)));
@@ -328,6 +343,8 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   if (!latestStackRef.current) latestStackRef.current = latest();
   const latestL2Ref = useRef<(() => AbortSignal) | null>(null);
   if (!latestL2Ref.current) latestL2Ref.current = latest();
+  const latestCompRef = useRef<(() => AbortSignal) | null>(null);
+  if (!latestCompRef.current) latestCompRef.current = latest();
   const latestCubeRef = useRef<(() => AbortSignal) | null>(null);
   if (!latestCubeRef.current) latestCubeRef.current = latest();
   const latestAsteroidRef = useRef<(() => AbortSignal) | null>(null);
@@ -439,6 +456,12 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
         setSpectrum(null);
         setProbeCoord(null);
         setProbeSpectrum(null);
+        latestCompRef.current!();
+        setComposition(null);
+        setCompositionCoord(null);
+        setCompositionError(null);
+        setLoadingComposition(false);
+        updateJob('composition', null);
         setPredict(null);
         setL2(null);
         setL2Pixel(null);
@@ -686,6 +709,60 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     [updateJob],
   );
 
+  /** Análisis de composición bajo demanda (botón). Mismas fechas que la sonda: reutiliza su espectro en el backend. */
+  const analyzeComposition = useCallback(
+    async (cRa: number, cDec: number, opts?: { aperture?: number; context?: CompositionContextType }) => {
+      const signal = latestCompRef.current!();
+      setCompositionCoord({ ra: cRa, dec: cDec });
+      setComposition(null);
+      setCompositionError(null);
+      setLoadingComposition(true);
+      try {
+        const res = await api.composition(
+          {
+            ra: cRa,
+            dec: cDec,
+            aperture: opts?.aperture ?? 8,
+            date_from: DEFAULT_DATE_FROM,
+            date_to: DEFAULT_DATE_TO,
+            context: opts?.context && opts.context !== 'auto' ? opts.context : undefined,
+          },
+          (_p, _stage, job) => {
+            if (!signal.aborted) updateJob('composition', job);
+          },
+          signal,
+        );
+        if (!signal.aborted) setComposition(res);
+        return res;
+      } catch (e) {
+        if (isAbort(e) || signal.aborted) return null;
+        if (e instanceof ApiError) {
+          setCompositionError(
+            e.status === 404 && e.code === 'not_found' && /ruta/i.test(e.message)
+              ? 'El backend no tiene /api/composition: actualiza el contenedor a la versión nueva.'
+              : e.message,
+          );
+        } else if (e instanceof Error) setCompositionError(e.message);
+        return null;
+      } finally {
+        if (!signal.aborted) {
+          setLoadingComposition(false);
+          updateJob('composition', null);
+        }
+      }
+    },
+    [updateJob],
+  );
+
+  const cancelComposition = useCallback(() => {
+    latestCompRef.current!();
+    setLoadingComposition(false);
+    setComposition(null);
+    setCompositionCoord(null);
+    setCompositionError(null);
+    updateJob('composition', null);
+  }, [updateJob]);
+
   const clearProbeSpectrum = useCallback(() => {
     setProbeCoord(null);
     setProbeSpectrum(null);
@@ -846,6 +923,11 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     spectrum,
     probeCoord,
     probeSpectrum,
+    composition,
+    compositionCoord,
+    compositionJob,
+    loadingComposition,
+    compositionError,
     predict,
     gaiaOverlay,
     wiseOverlay,
@@ -869,6 +951,8 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     resolveByName,
     probeSpectrumAt,
     clearProbeSpectrum,
+    analyzeComposition,
+    cancelComposition,
     loadL2,
     inspectL2Pixel,
     loadCube,

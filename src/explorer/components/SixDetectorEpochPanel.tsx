@@ -49,6 +49,8 @@ interface SixDetectorEpochPanelProps {
   onChangeDetectorFilter?: (d: Detector | undefined) => void;
   onLoadCube?: () => void;
   onMeasureSpectrum?: () => void;
+  /** Abre el análisis de composición química (/api/composition). */
+  onAnalyzeComposition?: () => void;
   onChangeMode: (mode: ViewMode) => void;
   onCloseSplit: () => void;
 }
@@ -87,6 +89,7 @@ export function SixDetectorEpochPanel({
   onChangeDetectorFilter,
   onLoadCube,
   onMeasureSpectrum,
+  onAnalyzeComposition,
   onChangeMode,
   onCloseSplit,
 }: SixDetectorEpochPanelProps) {
@@ -310,6 +313,16 @@ export function SixDetectorEpochPanel({
                     {detectorFilter === activeSummary.detector
                       ? `Filtrando D${detectorFilter}`
                       : `Filtrar D${activeSummary.detector}`}
+                  </button>
+                )}
+                {onAnalyzeComposition && (
+                  <button
+                    type="button"
+                    onClick={onAnalyzeComposition}
+                    className="px-2 py-0.5 rounded border text-[10px] font-mono transition-colors bg-[#ff8a5c]/15 border-[#ff8a5c]/40 text-[#ff8a5c] hover:bg-[#ff8a5c]/25"
+                    title="Analizar qué compuestos hay en este punto (/api/composition)"
+                  >
+                    Composición química
                   </button>
                 )}
                 <span className="text-[#b9a8a3]">Frames: {activeSummary.framesCount}</span>

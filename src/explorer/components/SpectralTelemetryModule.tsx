@@ -18,7 +18,8 @@ import type {
   TargetCatalogEntry,
   ViewMode,
 } from '../types/spherex';
-import type { Coord, Frame, Job, SpectrumPoint } from '../../lib/skyApi';
+import type { CompositionContextType, CompositionResult, Coord, Frame, Job, SpectrumPoint } from '../../lib/skyApi';
+import { CompositionCard } from './CompositionPanel';
 import { summarizeRealDetectors } from '../utils/backendMetrics';
 import type {
   CubePixelResult,
@@ -47,6 +48,15 @@ interface SpectralTelemetryModuleProps {
   onOpenSixDetectors?: () => void;
   onClearProbe?: () => void;
   onMeasureCenterSpectrum?: () => void;
+  /** Centro actual del visor (punto por defecto para la composición). */
+  centerCoord?: Coord;
+  composition?: CompositionResult | null;
+  compositionCoord?: Coord | null;
+  compositionJob?: Job | null;
+  loadingComposition?: boolean;
+  compositionError?: string | null;
+  onAnalyzeComposition?: (coord: Coord, context: CompositionContextType) => void;
+  onOpenComposition?: () => void;
   onChangeLens: (lens: MolecularLensId) => void;
   onToggleVisibility: (key: keyof FloatingModuleVisibility) => void;
   onExportReport: (format: 'md' | 'json') => void;
@@ -76,6 +86,14 @@ export function SpectralTelemetryModule({
   onOpenSixDetectors,
   onClearProbe,
   onMeasureCenterSpectrum,
+  centerCoord,
+  composition = null,
+  compositionCoord = null,
+  compositionJob = null,
+  loadingComposition = false,
+  compositionError = null,
+  onAnalyzeComposition,
+  onOpenComposition,
   onChangeLens,
 }: SpectralTelemetryModuleProps) {
   const [showDrawerInfo, setShowDrawerInfo] = useState(false);
@@ -489,6 +507,21 @@ export function SpectralTelemetryModule({
               </div>
             </div>
           </div>
+        )}
+
+        {/* 1b. Composición química (/api/composition), bajo demanda */}
+        {visibility.spectra && onAnalyzeComposition && (probeCoord ?? centerCoord) && (
+          <CompositionCard
+            targetCoord={(probeCoord ?? centerCoord)!}
+            isProbe={!!probeCoord}
+            result={composition}
+            resultCoord={compositionCoord}
+            job={compositionJob}
+            loading={loadingComposition}
+            error={compositionError}
+            onAnalyze={(ctx) => onAnalyzeComposition((probeCoord ?? centerCoord)!, ctx)}
+            onOpenDetail={() => onOpenComposition?.()}
+          />
         )}
 
         {/* 2. Metadata / Contamination Flags (Real /api/frames & /api/spectrum) */}

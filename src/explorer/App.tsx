@@ -24,6 +24,7 @@ import { TimeTravelBlinkBar } from './components/TimeTravelBlinkBar';
 import { CommandSearchModal } from './components/CommandSearchModal';
 import { DraggableHUDPanel } from './components/DraggableHUDPanel';
 import { ContractJobBanner } from './components/ContractJobBanner';
+import { CompositionModal } from './components/CompositionPanel';
 import {
   type Cmap,
   type Detector,
@@ -66,6 +67,7 @@ export function SpherexExplorerShell() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isEpochPanelMaximized, setIsEpochPanelMaximized] = useState(false);
   const [cmdKOpen, setCmdKOpen] = useState(false);
+  const [compositionOpen, setCompositionOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [activeTargetName, setActiveTargetName] = useState<string | undefined>(selectedTarget.name);
   const [isResolving, setIsResolving] = useState(false);
@@ -413,6 +415,16 @@ export function SpherexExplorerShell() {
                 void sky.probeSpectrumAt(urlState.ra, urlState.dec);
                 showToast(`Midiendo /api/spectrum en RA ${urlState.ra.toFixed(4)}°, Dec ${urlState.dec.toFixed(4)}°`);
               }}
+              onAnalyzeComposition={() => {
+                const c = sky.probeCoord ?? { ra: urlState.ra, dec: urlState.dec };
+                const fresh =
+                  sky.compositionCoord &&
+                  Math.abs(sky.compositionCoord.ra - c.ra) * 3600 < 1 &&
+                  Math.abs(sky.compositionCoord.dec - c.dec) * 3600 < 1 &&
+                  (sky.composition || sky.loadingComposition);
+                if (!fresh) void sky.analyzeComposition(c.ra, c.dec);
+                setCompositionOpen(true);
+              }}
               onChangeMode={(nextMode: ViewMode) => {
                 setIsPlaying(false);
                 updateUrlState({ mode: nextMode });
@@ -481,6 +493,17 @@ export function SpherexExplorerShell() {
             shareUrl={shareUrl}
             onOpenSixDetectors={() => handleChangeLayoutView('split')}
             onClearProbe={sky.clearProbeSpectrum}
+            centerCoord={{ ra: urlState.ra, dec: urlState.dec }}
+            composition={sky.composition}
+            compositionCoord={sky.compositionCoord}
+            compositionJob={sky.compositionJob}
+            loadingComposition={sky.loadingComposition}
+            compositionError={sky.compositionError}
+            onAnalyzeComposition={(c, context) => {
+              void sky.analyzeComposition(c.ra, c.dec, { context });
+              showToast(`Analizando composición en RA ${c.ra.toFixed(4)}°, Dec ${c.dec.toFixed(4)}°`);
+            }}
+            onOpenComposition={() => setCompositionOpen(true)}
             onMeasureCenterSpectrum={() => {
               void sky.probeSpectrumAt(urlState.ra, urlState.dec);
               showToast(`Midiendo /api/spectrum en RA ${urlState.ra.toFixed(4)}°, Dec ${urlState.dec.toFixed(4)}°`);
@@ -534,6 +557,21 @@ export function SpherexExplorerShell() {
           {toastMsg}
         </div>
       )}
+
+      {/* LAYER 3B: COMPOSICIÓN QUÍMICA (detalle) */}
+      <CompositionModal
+        open={compositionOpen}
+        onClose={() => setCompositionOpen(false)}
+        result={sky.composition}
+        job={sky.compositionJob}
+        loading={sky.loadingComposition}
+        error={sky.compositionError}
+        onRetry={
+          sky.compositionCoord
+            ? () => void sky.analyzeComposition(sky.compositionCoord!.ra, sky.compositionCoord!.dec)
+            : undefined
+        }
+      />
 
       {/* LAYER 3B: COMMAND SEARCH PALETTE (Cmd+K) */}
       <CommandSearchModal

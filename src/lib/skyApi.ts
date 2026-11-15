@@ -177,6 +177,53 @@ export interface SequenceResult {
   total: number; frames: Frame[]; partial: boolean; warnings: string[];
 }
 export interface SpectrumPoint { wavelength: number; flux: number; error: number; date_obs: string; detector: number; frame_id: string; flags: string[] }
+// ----- Composición (/api/composition) ----------------------------------------------------------------------------
+export type CompositionContextType =
+  | "auto" | "brown_dwarf" | "yso" | "cloud" | "hii" | "pn" | "galaxy" | "star" | "solar_system" | "unknown";
+export type FeatureStatus =
+  | "detected" | "tentative" | "not_detected" | "attributed_to_other" | "no_coverage" | "continuum_too_faint";
+export interface CompositionIce {
+  formula: string; name: string; "column_density_cm-2": number; relative_to_h2o_percent: number | null;
+}
+export interface CompositionElementInIces { element: string; "column_density_cm-2": number; fraction_percent: number }
+export interface CompositionElementSupported { element: string; evidence: string[]; quantified: boolean }
+export interface CompositionIndicator {
+  id: string; name: string; kind: "absorption" | "emission" | string; depth_percent: number;
+  significance_sigma: number; carriers: string[];
+}
+export interface CompositionFeature {
+  id: string; name: string; group?: string; center_um?: number; band_um?: [number, number];
+  status: FeatureStatus; kind?: string; significance_sigma?: number | null;
+  depth_percent?: number | null; depth_error_percent?: number | null; upper_limit_depth_percent?: number | null;
+  carriers?: string[]; elements?: string[]; reason?: string; expected_in_context?: boolean;
+  ice?: { formula: string; "column_density_cm-2": number; "column_density_error_cm-2"?: number; [k: string]: unknown };
+  [k: string]: unknown;
+}
+export interface CompositionResult {
+  center: Coord;
+  aperture_arcsec: number;
+  simbad_match: { name: string; otype: string; distance_arcsec: number } | null;
+  n_exposures: number;
+  spectrum_url?: string;
+  context: { type: string; label: string; source: "simbad" | "spectrum" | "user" | "none" | string };
+  summary: string;
+  detected: string[];
+  tentative: string[];
+  attributed_to_other: string[];
+  ices: CompositionIce[];
+  elements_in_ices: CompositionElementInIces[];
+  elements_supported: CompositionElementSupported[];
+  indicators: CompositionIndicator[];
+  features: CompositionFeature[];
+  spectrum_binned: { wavelength_um: number; flux_uJy: number; error_uJy: number; n: number }[];
+  quality: { level: "good" | "fair" | "poor" | string; median_snr_per_channel?: number; channels?: number;
+             features_measurable?: number; saturated_fraction?: number; [k: string]: unknown };
+  method?: string;
+  limitations?: string[];
+  warnings?: string[];
+  partial?: boolean;
+}
+
 export interface Pixel { x: number | null; y_top: number | null; inside_image: boolean; image_width: number; image_height: number }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -216,6 +263,11 @@ export const api = {
   /** Espectro 0.75–5 µm en una apertura (″) (LENTO). Ordenado por date_obs = curva de luz. */
   spectrum: (p: Coord & { aperture?: number; date_from?: string; date_to?: string }, onProgress?: OnProgress, signal?: AbortSignal) =>
     slow<{ points: SpectrumPoint[]; [k: string]: any }>("GET", "/api/spectrum", p, undefined, onProgress, signal),
+
+  /** Compuestos (hielos, moléculas, minerales, H II) en un punto a partir de su espectro (LENTO). */
+  composition: (p: Coord & { aperture?: number; date_from?: string; date_to?: string; context?: CompositionContextType },
+                onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<CompositionResult>("GET", "/api/composition", p, undefined, onProgress, signal),
 
   /** Posición predicha en cada fecha con imágenes (LENTO). Fechas obligatorias. */
   predict: (p: Coord & { name?: string; date_from: string; date_to: string }, onProgress?: OnProgress, signal?: AbortSignal) =>
