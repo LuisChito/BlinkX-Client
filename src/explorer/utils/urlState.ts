@@ -451,7 +451,7 @@ export function filterTargetsByMotion(
 ): TargetCatalogEntry[] {
   return targets.filter(
     (t) =>
-      t.velocityArcsecYr >= minVelocityArcsecYr ||
-      t.brightnessChangeMag >= minBrightnessChangeMag,
+      (t.velocityArcsecYr ?? 0) >= minVelocityArcsecYr ||
+      (t.brightnessChangeMag ?? 0) >= minBrightnessChangeMag,
   );
 }

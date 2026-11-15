@@ -90,17 +90,17 @@ export interface TargetCatalogEntry {
   raDeg: number;
   decDeg: number;
   defaultFov: number;
-  velocityArcsecYr: number;
-  brightnessChangeMag: number;
-  distancePc: number;
-  dominantMolecules: MolecularLensId[];
-  aiConfidencePct: number;
-  aiSummary: string;
-  fitsId: string;
-  epochs: EpochData[];
-  spectrum102: SpectralChannel[];
-  contamination: ContaminationFlags;
-  skyRenderPreset:
+  velocityArcsecYr?: number;
+  brightnessChangeMag?: number;
+  distancePc?: number;
+  dominantMolecules?: MolecularLensId[];
+  aiConfidencePct?: number;
+  aiSummary?: string;
+  fitsId?: string;
+  epochs?: EpochData[];
+  spectrum102?: SpectralChannel[];
+  contamination?: ContaminationFlags;
+  skyRenderPreset?:
     | 'spiral_field'
     | 'red_dwarf'
     | 'cold_brown_dwarf'

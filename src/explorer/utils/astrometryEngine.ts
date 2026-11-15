@@ -101,22 +101,22 @@ const EPOCH_UTC_DATES: Record<number, { utc: string; band: string; det: string }
 export function buildInitialDetectionsForTarget(target: TargetCatalogEntry): WcsDetectionRow[] {
   const cosDec = Math.max(0.1, Math.cos((target.decDeg * Math.PI) / 180));
 
-  return target.epochs.map((ep, idx) => {
+  return (target.epochs ?? []).map((ep, idx) => {
     const meta = EPOCH_UTC_DATES[ep.epoch] ?? EPOCH_UTC_DATES[1];
     const raDeg = target.raDeg + ep.raShiftArcsec / (3600 * cosDec);
     const decDeg = target.decDeg + ep.decShiftArcsec / 3600;
 
     const flags: string[] = [];
-    if (target.contamination.artifact === 'Clean' && target.contamination.cosmicRay === 'Clean') {
+    if (target.contamination?.artifact === 'Clean' && target.contamination?.cosmicRay === 'Clean') {
       flags.push('CLEAN');
     }
-    if (target.contamination.zodiacalBg === 'Elevated') {
+    if (target.contamination?.zodiacalBg === 'Elevated') {
       flags.push('ZODIACAL_ELEVATED');
     }
-    if (target.contamination.cosmicRay === 'Corrected' && idx === 1) {
+    if (target.contamination?.cosmicRay === 'Corrected' && idx === 1) {
       flags.push('COSMIC_RAY_CORR');
     }
-    if (target.contamination.saturation !== 'Low' && idx === 3) {
+    if (target.contamination?.saturation && target.contamination.saturation !== 'Low' && idx === 3) {
       flags.push('SATURATION_WARN');
     }
     if (flags.length === 0) {
@@ -129,7 +129,7 @@ export function buildInitialDetectionsForTarget(target: TargetCatalogEntry): Wcs
     return {
       id: `${target.id}-ep${ep.epoch}`,
       epochLabel: ep.label,
-      fitsFileId: target.fitsId.replace('_102B.fits', `_T${ep.epoch}_WCS.fits`),
+      fitsFileId: (target.fitsId ?? `${target.id}.fits`).replace('_102B.fits', `_T${ep.epoch}_WCS.fits`),
       utcIso: meta.utc,
       mjd: ep.mjd,
       raDeg: Number(raDeg.toFixed(6)),
@@ -275,7 +275,7 @@ export function calculateAstrometricLinearFit(
   const eclipticLatitudeDeg = computeEclipticLatitudeDeg(ref.raDeg, ref.decDeg);
 
   // Published comparison
-  const publishedVel = target ? target.velocityArcsecYr : null;
+  const publishedVel = target?.velocityArcsecYr ?? null;
   let publishedAgreementPct: number | null = null;
   if (publishedVel !== null && publishedVel > 0.05) {
     const relErr = Math.abs(velocityArcsecYr - publishedVel) / publishedVel;
@@ -324,7 +324,7 @@ export function calculateAstrometricLinearFit(
       followUpPriority:
         target?.id === 'm51-sector-34a' ? 'Alta (Seguimiento MPC/IR)' : 'Referencia Conocida',
     };
-  } else if (magSpread >= 0.4 || (target && target.brightnessChangeMag >= 0.4)) {
+  } else if (magSpread >= 0.4 || (target?.brightnessChangeMag ?? 0) >= 0.4) {
     classification = {
       regime: 'PHOTOMETRIC_VARIABLE',
       title: 'Fuente Variable Fotométrica (YSO Disk Dipper / AGB Mira)',
@@ -567,7 +567,7 @@ export function getCatalogCrossMatchReport(target: TargetCatalogEntry): CatalogC
             matched: true,
             designation: `Gaia DR3 (${target.designation})`,
             separationArcsec: 0.08,
-            publishedPmArcsecYr: target.velocityArcsecYr,
+            publishedPmArcsecYr: target.velocityArcsecYr ?? null,
             magnitudeSummary: 'G = 10.45 mag (Variable)',
             statusNote: 'Posición astrométrica estable; variabilidad fotométrica confirmada.',
           },
@@ -576,7 +576,7 @@ export function getCatalogCrossMatchReport(target: TargetCatalogEntry): CatalogC
             matched: true,
             designation: `AllWISE (${target.name})`,
             separationArcsec: 0.12,
-            publishedPmArcsecYr: target.velocityArcsecYr,
+            publishedPmArcsecYr: target.velocityArcsecYr ?? null,
             magnitudeSummary: 'Exceso IR en W1/W2/W3',
             statusNote: 'Consistente con envolvente circunestelar / pulsación.',
           },
@@ -585,7 +585,7 @@ export function getCatalogCrossMatchReport(target: TargetCatalogEntry): CatalogC
             matched: true,
             designation: `2MASS (${target.designation})`,
             separationArcsec: 0.14,
-            publishedPmArcsecYr: target.velocityArcsecYr,
+            publishedPmArcsecYr: target.velocityArcsecYr ?? null,
             magnitudeSummary: 'J/H/Ks registrados',
             statusNote: 'Referencia base para cálculo de Δmag en NIR.',
           },
