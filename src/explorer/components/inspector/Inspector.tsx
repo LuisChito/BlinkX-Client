@@ -1,15 +1,16 @@
-/* Inspector acoplado a la derecha: Resumen · Espectro · Composición · Movimiento · Datos. */
+/* Inspector acoplado a la derecha: Resumen · Espectro · Composición · Movimiento · Locales · Datos. */
 import { useRef, type KeyboardEvent, type ReactNode } from 'react';
-import { Activity, Database, FlaskConical, Info, Orbit } from 'lucide-react';
+import { Activity, Database, FlaskConical, HardDrive, Info, Orbit } from 'lucide-react';
 import { cx } from '../ui/primitives';
 
-export type InspectorTab = 'summary' | 'spectrum' | 'composition' | 'motion' | 'data';
+export type InspectorTab = 'summary' | 'spectrum' | 'composition' | 'motion' | 'local' | 'data';
 
 const TABS: Array<{ id: InspectorTab; label: string; icon: ReactNode }> = [
   { id: 'summary', label: 'Resumen', icon: <Info className="w-4 h-4" aria-hidden="true" /> },
   { id: 'spectrum', label: 'Espectro', icon: <Activity className="w-4 h-4" aria-hidden="true" /> },
   { id: 'composition', label: 'Composición', icon: <FlaskConical className="w-4 h-4" aria-hidden="true" /> },
   { id: 'motion', label: 'Movimiento', icon: <Orbit className="w-4 h-4" aria-hidden="true" /> },
+  { id: 'local', label: 'Locales', icon: <HardDrive className="w-4 h-4" aria-hidden="true" /> },
   { id: 'data', label: 'Datos', icon: <Database className="w-4 h-4" aria-hidden="true" /> },
 ];
 
@@ -33,7 +34,7 @@ export function Inspector({ tab, onTab, busy = {}, children }: Props) {
 
   return (
     <aside aria-label="Datos del punto" className="h-full flex flex-col bx-panel border-y-0 border-r-0 min-w-0">
-      <div role="tablist" aria-label="Secciones" className="grid grid-cols-5 shrink-0 border-b border-line px-1 pt-1.5">
+      <div role="tablist" aria-label="Secciones" className="grid grid-cols-6 shrink-0 border-b border-line px-1 pt-1.5">
         {TABS.map((t, i) => {
           const on = t.id === tab;
           return (

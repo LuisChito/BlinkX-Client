@@ -1,0 +1,3956 @@
+{
+ "version": 1,
+ "generated_at": "2026-11-15T17:02:07.606745Z",
+ "source": "G:\\SphereX\\SphereX-pipeline\\outputs",
+ "explorer": "/explorador-m101/index.html",
+ "fields": [
+  {
+   "id": "7def14cabc27",
+   "name": "Campo RA 32.35° · Dec +70.00°",
+   "ra": 32.3467,
+   "dec": 70.0004,
+   "status": "complete",
+   "l2": {
+    "file": "level2_2025W32_2D_0221_1D1_spx_l2b-v27-2026-226.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W32_2D/l2b-v27-2026-226/1/level2_2025W32_2D_0221_1D1_spx_l2b-v27-2026-226.fits",
+    "count": 265,
+    "shape": [
+     2040,
+     2040
+    ],
+    "low": 0.1951533406972885,
+    "high": 0.900448369979856,
+    "unit": "MJy / sr",
+    "note": "Pseudocolor cividis; no RGB visible"
+   },
+   "cube": {
+    "tile": "Npix927_cube.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir0/Npix927_cube.fits",
+    "shape": [
+     102,
+     512,
+     512
+    ],
+    "pixel": [
+     55,
+     368
+    ],
+    "unit": "MJy/sr",
+    "channels": [
+     1,
+     20,
+     40,
+     60,
+     80,
+     102
+    ]
+   },
+   "observations": {
+    "count": 265,
+    "detectors": {
+     "D1": 46,
+     "D2": 39,
+     "D3": 48,
+     "D4": 48,
+     "D5": 37,
+     "D6": 47
+    },
+    "first": "2025-08-08T05:46:54.537600Z",
+    "last": "2026-02-11T17:58:01.113600Z",
+    "days": [
+     "2025-08-08",
+     "2025-08-09",
+     "2025-08-11",
+     "2025-08-12",
+     "2025-08-13",
+     "2025-08-14",
+     "2025-08-17",
+     "2025-08-18",
+     "2025-08-22",
+     "2025-08-23",
+     "2025-08-24",
+     "2025-09-11",
+     "2025-09-15",
+     "2026-01-16",
+     "2026-01-18",
+     "2026-01-20",
+     "2026-01-21",
+     "2026-01-23",
+     "2026-01-24",
+     "2026-01-25",
+     "2026-01-26",
+     "2026-01-27",
+     "2026-01-28",
+     "2026-01-30",
+     "2026-01-31",
+     "2026-02-01",
+     "2026-02-02",
+     "2026-02-04",
+     "2026-02-05",
+     "2026-02-07",
+     "2026-02-09",
+     "2026-02-11"
+    ]
+   },
+   "images": {
+    "l2_gray": {
+     "src": "/local-data/7def14cabc27/l2_gray.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "l2_rgb": {
+     "src": "/local-data/7def14cabc27/l2_rgb.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "cube3d": {
+     "src": "/local-data/7def14cabc27/cube3d.webp",
+     "size": [
+      1200,
+      900
+     ]
+    },
+    "samples": {
+     "src": "/local-data/7def14cabc27/samples.webp",
+     "size": [
+      1500,
+      900
+     ]
+    }
+   },
+   "spectrum": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 0.31701005,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 2,
+     "wavelength_um": 0.7710000276565552,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 0.21721481,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 3,
+     "wavelength_um": 0.7900000214576721,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 0.29526913,
+     "flags": 2097152,
+     "nhits": 16
+    },
+    {
+     "channel": 4,
+     "wavelength_um": 0.8090000152587891,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 0.3021297,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 5,
+     "wavelength_um": 0.828000009059906,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 0.31659985,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 6,
+     "wavelength_um": 0.8479999899864197,
+     "bandwidth_um": 0.020999999716877937,
+     "brightness": 0.3044496,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 7,
+     "wavelength_um": 0.8679999709129333,
+     "bandwidth_um": 0.02199999988079071,
+     "brightness": 0.30018032,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 8,
+     "wavelength_um": 0.8889999985694885,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 0.24623649,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 9,
+     "wavelength_um": 0.9100000262260437,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 0.34653014,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 10,
+     "wavelength_um": 0.9319999814033508,
+     "bandwidth_um": 0.024000000208616257,
+     "brightness": 0.5416686,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 11,
+     "wavelength_um": 0.9549999833106995,
+     "bandwidth_um": 0.02500000037252903,
+     "brightness": 0.3504482,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 12,
+     "wavelength_um": 0.9779999852180481,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.41647762,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 13,
+     "wavelength_um": 1.0010000467300415,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.38709202,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 14,
+     "wavelength_um": 1.024999976158142,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 0.3899764,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 15,
+     "wavelength_um": 1.0499999523162842,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.3366545,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 16,
+     "wavelength_um": 1.0750000476837158,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 1.1053251,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 17,
+     "wavelength_um": 1.1019999980926514,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.3226668,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 18,
+     "wavelength_um": 1.1130000352859497,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.27694598,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 19,
+     "wavelength_um": 1.1390000581741333,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 0.34491658,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.45950198,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 21,
+     "wavelength_um": 1.1950000524520874,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 0.59717345,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 22,
+     "wavelength_um": 1.2239999771118164,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.39361838,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 23,
+     "wavelength_um": 1.253999948501587,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.52930886,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 24,
+     "wavelength_um": 1.284000039100647,
+     "bandwidth_um": 0.03099999949336052,
+     "brightness": 0.16158488,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 25,
+     "wavelength_um": 1.315000057220459,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 0.65343547,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 26,
+     "wavelength_um": 1.3459999561309814,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 0.39598665,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 27,
+     "wavelength_um": 1.378000020980835,
+     "bandwidth_um": 0.032999999821186066,
+     "brightness": 0.26771054,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 28,
+     "wavelength_um": 1.4119999408721924,
+     "bandwidth_um": 0.03400000184774399,
+     "brightness": 0.5954185,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 29,
+     "wavelength_um": 1.4459999799728394,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.6027524,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 30,
+     "wavelength_um": 1.4809999465942383,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.48789972,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 31,
+     "wavelength_um": 1.5169999599456787,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.55882657,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 32,
+     "wavelength_um": 1.5540000200271606,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.54101574,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 33,
+     "wavelength_um": 1.5920000076293945,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.5472111,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 34,
+     "wavelength_um": 1.63100004196167,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.3796349,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 35,
+     "wavelength_um": 1.656000018119812,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.44602197,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 36,
+     "wavelength_um": 1.6950000524520874,
+     "bandwidth_um": 0.04100000113248825,
+     "brightness": 0.4698041,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 37,
+     "wavelength_um": 1.7350000143051147,
+     "bandwidth_um": 0.041999999433755875,
+     "brightness": 0.48882517,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 38,
+     "wavelength_um": 1.774999976158142,
+     "bandwidth_um": 0.0430000014603138,
+     "brightness": 0.40068337,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 39,
+     "wavelength_um": 1.8179999589920044,
+     "bandwidth_um": 0.04500000178813934,
+     "brightness": 0.5040859,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 0.4764774,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 41,
+     "wavelength_um": 1.9049999713897705,
+     "bandwidth_um": 0.04699999839067459,
+     "brightness": 0.52261955,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 42,
+     "wavelength_um": 1.9490000009536743,
+     "bandwidth_um": 0.04800000041723251,
+     "brightness": 0.54991645,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 43,
+     "wavelength_um": 1.9950000047683716,
+     "bandwidth_um": 0.04899999871850014,
+     "brightness": 0.27194357,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 44,
+     "wavelength_um": 2.0409998893737793,
+     "bandwidth_um": 0.050999999046325684,
+     "brightness": 0.36245906,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 45,
+     "wavelength_um": 2.0889999866485596,
+     "bandwidth_um": 0.052000001072883606,
+     "brightness": 0.3792184,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 46,
+     "wavelength_um": 2.1389999389648438,
+     "bandwidth_um": 0.05400000140070915,
+     "brightness": 0.37977535,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 47,
+     "wavelength_um": 2.188999891281128,
+     "bandwidth_um": 0.054999999701976776,
+     "brightness": 0.26674518,
+     "flags": 2097152,
+     "nhits": 23
+    },
+    {
+     "channel": 48,
+     "wavelength_um": 2.240000009536743,
+     "bandwidth_um": 0.0560000017285347,
+     "brightness": 0.3068121,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 49,
+     "wavelength_um": 2.2920000553131104,
+     "bandwidth_um": 0.05700000002980232,
+     "brightness": 0.3513371,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 50,
+     "wavelength_um": 2.3450000286102295,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": 0.29479447,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 51,
+     "wavelength_um": 2.3989999294281006,
+     "bandwidth_um": 0.05900000035762787,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 52,
+     "wavelength_um": 2.444999933242798,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 53,
+     "wavelength_um": 2.50600004196167,
+     "bandwidth_um": 0.0729999989271164,
+     "brightness": 0.2076376,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 54,
+     "wavelength_um": 2.575000047683716,
+     "bandwidth_um": 0.07400000095367432,
+     "brightness": 0.2785475,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 55,
+     "wavelength_um": 2.6459999084472656,
+     "bandwidth_um": 0.07599999755620956,
+     "brightness": 0.19373415,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 56,
+     "wavelength_um": 2.7190001010894775,
+     "bandwidth_um": 0.07800000160932541,
+     "brightness": 0.2957532,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 57,
+     "wavelength_um": 2.7939999103546143,
+     "bandwidth_um": 0.07900000363588333,
+     "brightness": 0.24555244,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 58,
+     "wavelength_um": 2.871000051498413,
+     "bandwidth_um": 0.08399999886751175,
+     "brightness": 0.22290742,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 59,
+     "wavelength_um": 2.9509999752044678,
+     "bandwidth_um": 0.0860000029206276,
+     "brightness": 0.20834114,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 0.20033671,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 61,
+     "wavelength_um": 3.118000030517578,
+     "bandwidth_um": 0.09099999815225601,
+     "brightness": 0.21661814,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 62,
+     "wavelength_um": 3.2039999961853027,
+     "bandwidth_um": 0.09300000220537186,
+     "brightness": 0.30882388,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 63,
+     "wavelength_um": 3.2929999828338623,
+     "bandwidth_um": 0.09399999678134918,
+     "brightness": 0.2903138,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 64,
+     "wavelength_um": 3.382999897003174,
+     "bandwidth_um": 0.09600000083446503,
+     "brightness": 0.23604828,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 65,
+     "wavelength_um": 3.4760000705718994,
+     "bandwidth_um": 0.09799999743700027,
+     "brightness": 0.17015728,
+     "flags": 2097152,
+     "nhits": 4
+    },
+    {
+     "channel": 66,
+     "wavelength_um": 3.569999933242798,
+     "bandwidth_um": 0.0989999994635582,
+     "brightness": 0.1523149,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 67,
+     "wavelength_um": 3.6670000553131104,
+     "bandwidth_um": 0.10199999809265137,
+     "brightness": 0.21681967,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 68,
+     "wavelength_um": 3.7679998874664307,
+     "bandwidth_um": 0.10300000011920929,
+     "brightness": 0.11156784,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 69,
+     "wavelength_um": 3.8329999446868896,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.25323275,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 70,
+     "wavelength_um": 3.867000102996826,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.17097634,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 71,
+     "wavelength_um": 3.9010000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.165461,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 72,
+     "wavelength_um": 3.934999942779541,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.1632867,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 73,
+     "wavelength_um": 3.9700000286102295,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.11352804,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 74,
+     "wavelength_um": 4.005000114440918,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.17303315,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 75,
+     "wavelength_um": 4.039999961853027,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.14140889,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 76,
+     "wavelength_um": 4.076000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.16548698,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 77,
+     "wavelength_um": 4.111999988555908,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.12971185,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 78,
+     "wavelength_um": 4.1479997634887695,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.14881884,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 79,
+     "wavelength_um": 4.184000015258789,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.14709991,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.13186714,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 81,
+     "wavelength_um": 4.256999969482422,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.16376813,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 82,
+     "wavelength_um": 4.294000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.16058694,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 83,
+     "wavelength_um": 4.330999851226807,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.11311726,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 84,
+     "wavelength_um": 4.368000030517578,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.14939378,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 85,
+     "wavelength_um": 4.40500020980835,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.14415321,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 86,
+     "wavelength_um": 4.434999942779541,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.12965798,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 87,
+     "wavelength_um": 4.4670000076293945,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.14463371,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 88,
+     "wavelength_um": 4.5,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.14277114,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 89,
+     "wavelength_um": 4.5329999923706055,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.14431685,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 90,
+     "wavelength_um": 4.565999984741211,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.17467318,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 91,
+     "wavelength_um": 4.599999904632568,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.1481064,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 92,
+     "wavelength_um": 4.635000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.15278237,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 93,
+     "wavelength_um": 4.669000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.17254819,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 94,
+     "wavelength_um": 4.703999996185303,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.1541083,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 95,
+     "wavelength_um": 4.738999843597412,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.14509344,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 96,
+     "wavelength_um": 4.7729997634887695,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.1576786,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 97,
+     "wavelength_um": 4.808000087738037,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.1333393,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 98,
+     "wavelength_um": 4.8429999351501465,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.10374303,
+     "flags": 2097152,
+     "nhits": 23
+    },
+    {
+     "channel": 99,
+     "wavelength_um": 4.879000186920166,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.13243951,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 100,
+     "wavelength_um": 4.914999961853027,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.15121344,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 101,
+     "wavelength_um": 4.951000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.15866014,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.1381685,
+     "flags": 2097152,
+     "nhits": 15
+    }
+   ],
+   "samples": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 0.31701005,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.45950198,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 0.4764774,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 0.20033671,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.13186714,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.1381685,
+     "flags": 2097152,
+     "nhits": 15
+    }
+   ]
+  },
+  {
+   "id": "845ee31be6ee",
+   "name": "M101 · Galaxia del Molinete",
+   "ra": 210.80227,
+   "dec": 54.34895,
+   "status": "complete",
+   "l2": {
+    "file": "level2_2025W19_2B_0101_2D6_spx_l2b-v27-2026-198.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W19_2B/l2b-v27-2026-198/6/level2_2025W19_2B_0101_2D6_spx_l2b-v27-2026-198.fits",
+    "count": 246,
+    "shape": [
+     2040,
+     2040
+    ],
+    "low": 0.1839854095876217,
+    "high": 0.5099224054813385,
+    "unit": "MJy / sr",
+    "note": "Pseudocolor cividis; no RGB visible"
+   },
+   "cube": {
+    "tile": "Npix2858_cube.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir0/Npix2858_cube.fits",
+    "shape": [
+     102,
+     512,
+     512
+    ],
+    "pixel": [
+     403,
+     400
+    ],
+    "unit": "MJy/sr",
+    "channels": [
+     1,
+     20,
+     40,
+     60,
+     80,
+     102
+    ]
+   },
+   "observations": {
+    "count": 246,
+    "detectors": {
+     "D1": 35,
+     "D2": 52,
+     "D3": 37,
+     "D4": 35,
+     "D5": 51,
+     "D6": 36
+    },
+    "first": "2025-05-09T03:33:55.152000Z",
+    "last": "2025-12-18T09:41:44.390400Z",
+    "days": [
+     "2025-05-09",
+     "2025-05-10",
+     "2025-05-11",
+     "2025-05-14",
+     "2025-05-15",
+     "2025-05-16",
+     "2025-05-18",
+     "2025-05-21",
+     "2025-05-22",
+     "2025-05-23",
+     "2025-05-24",
+     "2025-05-26",
+     "2025-05-27",
+     "2025-05-29",
+     "2025-05-30",
+     "2025-06-03",
+     "2025-06-06",
+     "2025-12-01",
+     "2025-12-02",
+     "2025-12-06",
+     "2025-12-07",
+     "2025-12-08",
+     "2025-12-09",
+     "2025-12-10",
+     "2025-12-11",
+     "2025-12-13",
+     "2025-12-15",
+     "2025-12-16",
+     "2025-12-17",
+     "2025-12-18"
+    ]
+   },
+   "images": {
+    "l2_gray": {
+     "src": "/local-data/845ee31be6ee/l2_gray.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "l2_rgb": {
+     "src": "/local-data/845ee31be6ee/l2_rgb.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "cube3d": {
+     "src": "/local-data/845ee31be6ee/cube3d.webp",
+     "size": [
+      1200,
+      900
+     ]
+    },
+    "samples": {
+     "src": "/local-data/845ee31be6ee/samples.webp",
+     "size": [
+      1500,
+      900
+     ]
+    }
+   },
+   "spectrum": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 5.618226,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 2,
+     "wavelength_um": 0.7710000276565552,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 5.4693623,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 3,
+     "wavelength_um": 0.7900000214576721,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 5.5605593,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 4,
+     "wavelength_um": 0.8090000152587891,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 5.4341073,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 5,
+     "wavelength_um": 0.828000009059906,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 6.1853447,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 6,
+     "wavelength_um": 0.8479999899864197,
+     "bandwidth_um": 0.020999999716877937,
+     "brightness": 6.0551505,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 7,
+     "wavelength_um": 0.8679999709129333,
+     "bandwidth_um": 0.02199999988079071,
+     "brightness": 6.468725,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 8,
+     "wavelength_um": 0.8889999985694885,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 7.1577363,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 9,
+     "wavelength_um": 0.9100000262260437,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 6.7247453,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 10,
+     "wavelength_um": 0.9319999814033508,
+     "bandwidth_um": 0.024000000208616257,
+     "brightness": 6.6204247,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 11,
+     "wavelength_um": 0.9549999833106995,
+     "bandwidth_um": 0.02500000037252903,
+     "brightness": 6.8927116,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 12,
+     "wavelength_um": 0.9779999852180481,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 6.7590585,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 13,
+     "wavelength_um": 1.0010000467300415,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 7.94116,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 14,
+     "wavelength_um": 1.024999976158142,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 7.623979,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 15,
+     "wavelength_um": 1.0499999523162842,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 8.130444,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 16,
+     "wavelength_um": 1.0750000476837158,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 8.380152,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 17,
+     "wavelength_um": 1.1019999980926514,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 8.011562,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 18,
+     "wavelength_um": 1.1130000352859497,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 8.191163,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 19,
+     "wavelength_um": 1.1390000581741333,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 8.691442,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 8.501039,
+     "flags": 2097152,
+     "nhits": 23
+    },
+    {
+     "channel": 21,
+     "wavelength_um": 1.1950000524520874,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 9.539115,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 22,
+     "wavelength_um": 1.2239999771118164,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 9.444234,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 23,
+     "wavelength_um": 1.253999948501587,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 9.193243,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 24,
+     "wavelength_um": 1.284000039100647,
+     "bandwidth_um": 0.03099999949336052,
+     "brightness": 9.23648,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 25,
+     "wavelength_um": 1.315000057220459,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 9.888442,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 26,
+     "wavelength_um": 1.3459999561309814,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 10.613621,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 27,
+     "wavelength_um": 1.378000020980835,
+     "bandwidth_um": 0.032999999821186066,
+     "brightness": 9.20861,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 28,
+     "wavelength_um": 1.4119999408721924,
+     "bandwidth_um": 0.03400000184774399,
+     "brightness": 10.071013,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 29,
+     "wavelength_um": 1.4459999799728394,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 9.551031,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 30,
+     "wavelength_um": 1.4809999465942383,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 10.790866,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 31,
+     "wavelength_um": 1.5169999599456787,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 11.054213,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 32,
+     "wavelength_um": 1.5540000200271606,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 11.404866,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 33,
+     "wavelength_um": 1.5920000076293945,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 13.527683,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 34,
+     "wavelength_um": 1.63100004196167,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 12.236926,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 35,
+     "wavelength_um": 1.656000018119812,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 12.513229,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 36,
+     "wavelength_um": 1.6950000524520874,
+     "bandwidth_um": 0.04100000113248825,
+     "brightness": 10.6995945,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 37,
+     "wavelength_um": 1.7350000143051147,
+     "bandwidth_um": 0.041999999433755875,
+     "brightness": 11.764424,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 38,
+     "wavelength_um": 1.774999976158142,
+     "bandwidth_um": 0.0430000014603138,
+     "brightness": 11.927717,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 39,
+     "wavelength_um": 1.8179999589920044,
+     "bandwidth_um": 0.04500000178813934,
+     "brightness": 10.858847,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 11.485024,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 41,
+     "wavelength_um": 1.9049999713897705,
+     "bandwidth_um": 0.04699999839067459,
+     "brightness": 11.925349,
+     "flags": 2097152,
+     "nhits": 3
+    },
+    {
+     "channel": 42,
+     "wavelength_um": 1.9490000009536743,
+     "bandwidth_um": 0.04800000041723251,
+     "brightness": 9.828537,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 43,
+     "wavelength_um": 1.9950000047683716,
+     "bandwidth_um": 0.04899999871850014,
+     "brightness": 10.560793,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 44,
+     "wavelength_um": 2.0409998893737793,
+     "bandwidth_um": 0.050999999046325684,
+     "brightness": 9.158596,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 45,
+     "wavelength_um": 2.0889999866485596,
+     "bandwidth_um": 0.052000001072883606,
+     "brightness": 9.3249235,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 46,
+     "wavelength_um": 2.1389999389648438,
+     "bandwidth_um": 0.05400000140070915,
+     "brightness": 9.365698,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 47,
+     "wavelength_um": 2.188999891281128,
+     "bandwidth_um": 0.054999999701976776,
+     "brightness": 9.283838,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 48,
+     "wavelength_um": 2.240000009536743,
+     "bandwidth_um": 0.0560000017285347,
+     "brightness": 10.0702915,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 49,
+     "wavelength_um": 2.2920000553131104,
+     "bandwidth_um": 0.05700000002980232,
+     "brightness": 9.733941,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 50,
+     "wavelength_um": 2.3450000286102295,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": 6.9694166,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 51,
+     "wavelength_um": 2.3989999294281006,
+     "bandwidth_um": 0.05900000035762787,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 52,
+     "wavelength_um": 2.444999933242798,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 53,
+     "wavelength_um": 2.50600004196167,
+     "bandwidth_um": 0.0729999989271164,
+     "brightness": 6.115498,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 54,
+     "wavelength_um": 2.575000047683716,
+     "bandwidth_um": 0.07400000095367432,
+     "brightness": 6.313723,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 55,
+     "wavelength_um": 2.6459999084472656,
+     "bandwidth_um": 0.07599999755620956,
+     "brightness": 5.7724624,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 56,
+     "wavelength_um": 2.7190001010894775,
+     "bandwidth_um": 0.07800000160932541,
+     "brightness": 5.5660987,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 57,
+     "wavelength_um": 2.7939999103546143,
+     "bandwidth_um": 0.07900000363588333,
+     "brightness": 5.7450714,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 58,
+     "wavelength_um": 2.871000051498413,
+     "bandwidth_um": 0.08399999886751175,
+     "brightness": 5.557716,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 59,
+     "wavelength_um": 2.9509999752044678,
+     "bandwidth_um": 0.0860000029206276,
+     "brightness": 5.601196,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 5.4450445,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 61,
+     "wavelength_um": 3.118000030517578,
+     "bandwidth_um": 0.09099999815225601,
+     "brightness": 5.304951,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 62,
+     "wavelength_um": 3.2039999961853027,
+     "bandwidth_um": 0.09300000220537186,
+     "brightness": 5.3214555,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 63,
+     "wavelength_um": 3.2929999828338623,
+     "bandwidth_um": 0.09399999678134918,
+     "brightness": 5.632687,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 64,
+     "wavelength_um": 3.382999897003174,
+     "bandwidth_um": 0.09600000083446503,
+     "brightness": 4.9824834,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 65,
+     "wavelength_um": 3.4760000705718994,
+     "bandwidth_um": 0.09799999743700027,
+     "brightness": 4.8752356,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 66,
+     "wavelength_um": 3.569999933242798,
+     "bandwidth_um": 0.0989999994635582,
+     "brightness": 4.6619086,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 67,
+     "wavelength_um": 3.6670000553131104,
+     "bandwidth_um": 0.10199999809265137,
+     "brightness": 4.643038,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 68,
+     "wavelength_um": 3.7679998874664307,
+     "bandwidth_um": 0.10300000011920929,
+     "brightness": 4.3423305,
+     "flags": 2097152,
+     "nhits": 3
+    },
+    {
+     "channel": 69,
+     "wavelength_um": 3.8329999446868896,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 4.443574,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 70,
+     "wavelength_um": 3.867000102996826,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 4.6463046,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 71,
+     "wavelength_um": 3.9010000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 4.52982,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 72,
+     "wavelength_um": 3.934999942779541,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 4.489487,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 73,
+     "wavelength_um": 3.9700000286102295,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 4.9352546,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 74,
+     "wavelength_um": 4.005000114440918,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 4.2677913,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 75,
+     "wavelength_um": 4.039999961853027,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 4.1892395,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 76,
+     "wavelength_um": 4.076000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.8303094,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 77,
+     "wavelength_um": 4.111999988555908,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.6674778,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 78,
+     "wavelength_um": 4.1479997634887695,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.9565578,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 79,
+     "wavelength_um": 4.184000015258789,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.8153217,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.8803518,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 81,
+     "wavelength_um": 4.256999969482422,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.4613514,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 82,
+     "wavelength_um": 4.294000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.3159733,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 83,
+     "wavelength_um": 4.330999851226807,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.5061328,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 84,
+     "wavelength_um": 4.368000030517578,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 3.30664,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 85,
+     "wavelength_um": 4.40500020980835,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 3.2972946,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 86,
+     "wavelength_um": 4.434999942779541,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 3.3082063,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 87,
+     "wavelength_um": 4.4670000076293945,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 2.9621167,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 88,
+     "wavelength_um": 4.5,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 2.8901777,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 89,
+     "wavelength_um": 4.5329999923706055,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 3.2808125,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 90,
+     "wavelength_um": 4.565999984741211,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 2.787269,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 91,
+     "wavelength_um": 4.599999904632568,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 2.4854786,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 92,
+     "wavelength_um": 4.635000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 3.1236098,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 93,
+     "wavelength_um": 4.669000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.3140354,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 94,
+     "wavelength_um": 4.703999996185303,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 2.9893563,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 95,
+     "wavelength_um": 4.738999843597412,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 2.768514,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 96,
+     "wavelength_um": 4.7729997634887695,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 2.5728614,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 97,
+     "wavelength_um": 4.808000087738037,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 2.8977854,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 98,
+     "wavelength_um": 4.8429999351501465,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 2.9781744,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 99,
+     "wavelength_um": 4.879000186920166,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 2.990177,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 100,
+     "wavelength_um": 4.914999961853027,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 3.205633,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 101,
+     "wavelength_um": 4.951000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.0155613,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 2.744493,
+     "flags": 2097152,
+     "nhits": 10
+    }
+   ],
+   "samples": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 5.618226,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 8.501039,
+     "flags": 2097152,
+     "nhits": 23
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 11.485024,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 5.4450445,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 3.8803518,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 2.744493,
+     "flags": 2097152,
+     "nhits": 10
+    }
+   ]
+  },
+  {
+   "id": "8d6124a72191",
+   "name": "Campo RA 120.12° · Dec +75.65°",
+   "ra": 120.1238,
+   "dec": 75.6524,
+   "status": "complete",
+   "l2": {
+    "file": "level2_2025W38_2C_0676_2D4_spx_l2b-v27-2026-237.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W38_2C/l2b-v27-2026-237/4/level2_2025W38_2C_0676_2D4_spx_l2b-v27-2026-237.fits",
+    "count": 280,
+    "shape": [
+     2040,
+     2040
+    ],
+    "low": 0.06851509362459182,
+    "high": 0.19252894818782817,
+    "unit": "MJy / sr",
+    "note": "Pseudocolor cividis; no RGB visible"
+   },
+   "cube": {
+    "tile": "Npix2017_cube.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir0/Npix2017_cube.fits",
+    "shape": [
+     102,
+     512,
+     512
+    ],
+    "pixel": [
+     370,
+     262
+    ],
+    "unit": "MJy/sr",
+    "channels": [
+     1,
+     20,
+     40,
+     60,
+     80,
+     102
+    ]
+   },
+   "observations": {
+    "count": 280,
+    "detectors": {
+     "D1": 43,
+     "D2": 45,
+     "D3": 52,
+     "D4": 43,
+     "D5": 45,
+     "D6": 52
+    },
+    "first": "2025-09-21T20:49:11.827200Z",
+    "last": "2026-03-27T12:56:38.544000Z",
+    "days": [
+     "2025-09-21",
+     "2025-09-23",
+     "2025-09-24",
+     "2025-09-26",
+     "2025-09-27",
+     "2025-09-28",
+     "2025-09-29",
+     "2025-10-03",
+     "2025-10-04",
+     "2025-10-06",
+     "2025-10-07",
+     "2025-10-12",
+     "2025-10-13",
+     "2025-11-05",
+     "2026-03-01",
+     "2026-03-04",
+     "2026-03-06",
+     "2026-03-07",
+     "2026-03-09",
+     "2026-03-11",
+     "2026-03-12",
+     "2026-03-14",
+     "2026-03-17",
+     "2026-03-18",
+     "2026-03-19",
+     "2026-03-20",
+     "2026-03-21",
+     "2026-03-22",
+     "2026-03-23",
+     "2026-03-24",
+     "2026-03-25",
+     "2026-03-27"
+    ]
+   },
+   "images": {
+    "l2_gray": {
+     "src": "/local-data/8d6124a72191/l2_gray.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "l2_rgb": {
+     "src": "/local-data/8d6124a72191/l2_rgb.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "cube3d": {
+     "src": "/local-data/8d6124a72191/cube3d.webp",
+     "size": [
+      1200,
+      900
+     ]
+    },
+    "samples": {
+     "src": "/local-data/8d6124a72191/samples.webp",
+     "size": [
+      1500,
+      900
+     ]
+    }
+   },
+   "spectrum": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 0.05255724,
+     "flags": 0,
+     "nhits": 7
+    },
+    {
+     "channel": 2,
+     "wavelength_um": 0.7710000276565552,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 0.04849753,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 3,
+     "wavelength_um": 0.7900000214576721,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 0.022503719,
+     "flags": 0,
+     "nhits": 7
+    },
+    {
+     "channel": 4,
+     "wavelength_um": 0.8090000152587891,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 0.03111842,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 5,
+     "wavelength_um": 0.828000009059906,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 0.031338334,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 6,
+     "wavelength_um": 0.8479999899864197,
+     "bandwidth_um": 0.020999999716877937,
+     "brightness": 0.032705616,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 7,
+     "wavelength_um": 0.8679999709129333,
+     "bandwidth_um": 0.02199999988079071,
+     "brightness": 0.030552829,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 8,
+     "wavelength_um": 0.8889999985694885,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 0.035021808,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 9,
+     "wavelength_um": 0.9100000262260437,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 0.020174388,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 10,
+     "wavelength_um": 0.9319999814033508,
+     "bandwidth_um": 0.024000000208616257,
+     "brightness": 0.037875842,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 11,
+     "wavelength_um": 0.9549999833106995,
+     "bandwidth_um": 0.02500000037252903,
+     "brightness": 0.026227402,
+     "flags": 524288,
+     "nhits": 8
+    },
+    {
+     "channel": 12,
+     "wavelength_um": 0.9779999852180481,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.029902168,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 13,
+     "wavelength_um": 1.0010000467300415,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.029221179,
+     "flags": 0,
+     "nhits": 16
+    },
+    {
+     "channel": 14,
+     "wavelength_um": 1.024999976158142,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 0.035763323,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 15,
+     "wavelength_um": 1.0499999523162842,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.050430484,
+     "flags": 524288,
+     "nhits": 14
+    },
+    {
+     "channel": 16,
+     "wavelength_um": 1.0750000476837158,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 1.0311221,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 17,
+     "wavelength_um": 1.1019999980926514,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.14150326,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 18,
+     "wavelength_um": 1.1130000352859497,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.027051616,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 19,
+     "wavelength_um": 1.1390000581741333,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 0.029607246,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.022245295,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 21,
+     "wavelength_um": 1.1950000524520874,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 0.04054927,
+     "flags": 524288,
+     "nhits": 8
+    },
+    {
+     "channel": 22,
+     "wavelength_um": 1.2239999771118164,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.026243327,
+     "flags": 524288,
+     "nhits": 8
+    },
+    {
+     "channel": 23,
+     "wavelength_um": 1.253999948501587,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.02077498,
+     "flags": 0,
+     "nhits": 18
+    },
+    {
+     "channel": 24,
+     "wavelength_um": 1.284000039100647,
+     "bandwidth_um": 0.03099999949336052,
+     "brightness": 0.025189111,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 25,
+     "wavelength_um": 1.315000057220459,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 0.028853685,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 26,
+     "wavelength_um": 1.3459999561309814,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 0.038701173,
+     "flags": 524288,
+     "nhits": 12
+    },
+    {
+     "channel": 27,
+     "wavelength_um": 1.378000020980835,
+     "bandwidth_um": 0.032999999821186066,
+     "brightness": 0.023875207,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 28,
+     "wavelength_um": 1.4119999408721924,
+     "bandwidth_um": 0.03400000184774399,
+     "brightness": 0.022583848,
+     "flags": 524288,
+     "nhits": 14
+    },
+    {
+     "channel": 29,
+     "wavelength_um": 1.4459999799728394,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.03379666,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 30,
+     "wavelength_um": 1.4809999465942383,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.038896773,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 31,
+     "wavelength_um": 1.5169999599456787,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.029859599,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 32,
+     "wavelength_um": 1.5540000200271606,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.031355705,
+     "flags": 524288,
+     "nhits": 11
+    },
+    {
+     "channel": 33,
+     "wavelength_um": 1.5920000076293945,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.035880364,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 34,
+     "wavelength_um": 1.63100004196167,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.02544292,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 35,
+     "wavelength_um": 1.656000018119812,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.02811958,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 36,
+     "wavelength_um": 1.6950000524520874,
+     "bandwidth_um": 0.04100000113248825,
+     "brightness": 0.021635808,
+     "flags": 524288,
+     "nhits": 19
+    },
+    {
+     "channel": 37,
+     "wavelength_um": 1.7350000143051147,
+     "bandwidth_um": 0.041999999433755875,
+     "brightness": 0.020361692,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 38,
+     "wavelength_um": 1.774999976158142,
+     "bandwidth_um": 0.0430000014603138,
+     "brightness": 0.018467661,
+     "flags": 524288,
+     "nhits": 16
+    },
+    {
+     "channel": 39,
+     "wavelength_um": 1.8179999589920044,
+     "bandwidth_um": 0.04500000178813934,
+     "brightness": 0.019647423,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 0.015712418,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 41,
+     "wavelength_um": 1.9049999713897705,
+     "bandwidth_um": 0.04699999839067459,
+     "brightness": 0.019898431,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 42,
+     "wavelength_um": 1.9490000009536743,
+     "bandwidth_um": 0.04800000041723251,
+     "brightness": 0.015226042,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 43,
+     "wavelength_um": 1.9950000047683716,
+     "bandwidth_um": 0.04899999871850014,
+     "brightness": 0.01788332,
+     "flags": 524288,
+     "nhits": 11
+    },
+    {
+     "channel": 44,
+     "wavelength_um": 2.0409998893737793,
+     "bandwidth_um": 0.050999999046325684,
+     "brightness": 0.018294226,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 45,
+     "wavelength_um": 2.0889999866485596,
+     "bandwidth_um": 0.052000001072883606,
+     "brightness": 0.020476043,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 46,
+     "wavelength_um": 2.1389999389648438,
+     "bandwidth_um": 0.05400000140070915,
+     "brightness": 0.016602712,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 47,
+     "wavelength_um": 2.188999891281128,
+     "bandwidth_um": 0.054999999701976776,
+     "brightness": 0.02155867,
+     "flags": 524288,
+     "nhits": 13
+    },
+    {
+     "channel": 48,
+     "wavelength_um": 2.240000009536743,
+     "bandwidth_um": 0.0560000017285347,
+     "brightness": 0.01488363,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 49,
+     "wavelength_um": 2.2920000553131104,
+     "bandwidth_um": 0.05700000002980232,
+     "brightness": 0.015589702,
+     "flags": 524288,
+     "nhits": 15
+    },
+    {
+     "channel": 50,
+     "wavelength_um": 2.3450000286102295,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": 0.022164622,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 51,
+     "wavelength_um": 2.3989999294281006,
+     "bandwidth_um": 0.05900000035762787,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 52,
+     "wavelength_um": 2.444999933242798,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 53,
+     "wavelength_um": 2.50600004196167,
+     "bandwidth_um": 0.0729999989271164,
+     "brightness": 0.019484319,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 54,
+     "wavelength_um": 2.575000047683716,
+     "bandwidth_um": 0.07400000095367432,
+     "brightness": 0.015211868,
+     "flags": 0,
+     "nhits": 10
+    },
+    {
+     "channel": 55,
+     "wavelength_um": 2.6459999084472656,
+     "bandwidth_um": 0.07599999755620956,
+     "brightness": 0.018733433,
+     "flags": 524288,
+     "nhits": 10
+    },
+    {
+     "channel": 56,
+     "wavelength_um": 2.7190001010894775,
+     "bandwidth_um": 0.07800000160932541,
+     "brightness": 0.015734173,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 57,
+     "wavelength_um": 2.7939999103546143,
+     "bandwidth_um": 0.07900000363588333,
+     "brightness": 0.0065055136,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 58,
+     "wavelength_um": 2.871000051498413,
+     "bandwidth_um": 0.08399999886751175,
+     "brightness": 0.014685758,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 59,
+     "wavelength_um": 2.9509999752044678,
+     "bandwidth_um": 0.0860000029206276,
+     "brightness": 0.011408808,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 0.018897727,
+     "flags": 0,
+     "nhits": 7
+    },
+    {
+     "channel": 61,
+     "wavelength_um": 3.118000030517578,
+     "bandwidth_um": 0.09099999815225601,
+     "brightness": 0.017854072,
+     "flags": 524288,
+     "nhits": 8
+    },
+    {
+     "channel": 62,
+     "wavelength_um": 3.2039999961853027,
+     "bandwidth_um": 0.09300000220537186,
+     "brightness": 0.016602091,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 63,
+     "wavelength_um": 3.2929999828338623,
+     "bandwidth_um": 0.09399999678134918,
+     "brightness": 0.017230831,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 64,
+     "wavelength_um": 3.382999897003174,
+     "bandwidth_um": 0.09600000083446503,
+     "brightness": 0.014740716,
+     "flags": 0,
+     "nhits": 18
+    },
+    {
+     "channel": 65,
+     "wavelength_um": 3.4760000705718994,
+     "bandwidth_um": 0.09799999743700027,
+     "brightness": 0.0124429865,
+     "flags": 0,
+     "nhits": 10
+    },
+    {
+     "channel": 66,
+     "wavelength_um": 3.569999933242798,
+     "bandwidth_um": 0.0989999994635582,
+     "brightness": 0.017975768,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 67,
+     "wavelength_um": 3.6670000553131104,
+     "bandwidth_um": 0.10199999809265137,
+     "brightness": 0.016646251,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 68,
+     "wavelength_um": 3.7679998874664307,
+     "bandwidth_um": 0.10300000011920929,
+     "brightness": 0.021705285,
+     "flags": 0,
+     "nhits": 16
+    },
+    {
+     "channel": 69,
+     "wavelength_um": 3.8329999446868896,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.03766077,
+     "flags": 0,
+     "nhits": 10
+    },
+    {
+     "channel": 70,
+     "wavelength_um": 3.867000102996826,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.010687084,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 71,
+     "wavelength_um": 3.9010000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.026398664,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 72,
+     "wavelength_um": 3.934999942779541,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.013799378,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 73,
+     "wavelength_um": 3.9700000286102295,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.017388195,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 74,
+     "wavelength_um": 4.005000114440918,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.019321455,
+     "flags": 0,
+     "nhits": 19
+    },
+    {
+     "channel": 75,
+     "wavelength_um": 4.039999961853027,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.028638247,
+     "flags": 524288,
+     "nhits": 14
+    },
+    {
+     "channel": 76,
+     "wavelength_um": 4.076000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.019626686,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 77,
+     "wavelength_um": 4.111999988555908,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.02973204,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 78,
+     "wavelength_um": 4.1479997634887695,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.01459778,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 79,
+     "wavelength_um": 4.184000015258789,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.012915959,
+     "flags": 0,
+     "nhits": 15
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.031113312,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 81,
+     "wavelength_um": 4.256999969482422,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.029096961,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 82,
+     "wavelength_um": 4.294000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.032678936,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 83,
+     "wavelength_um": 4.330999851226807,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.008815661,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 84,
+     "wavelength_um": 4.368000030517578,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.019592244,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 85,
+     "wavelength_um": 4.40500020980835,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.016312309,
+     "flags": 0,
+     "nhits": 9
+    },
+    {
+     "channel": 86,
+     "wavelength_um": 4.434999942779541,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.025480436,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 87,
+     "wavelength_um": 4.4670000076293945,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.030425034,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 88,
+     "wavelength_um": 4.5,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.012732104,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 89,
+     "wavelength_um": 4.5329999923706055,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.031814285,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 90,
+     "wavelength_um": 4.565999984741211,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.036120836,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 91,
+     "wavelength_um": 4.599999904632568,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.03319929,
+     "flags": 524288,
+     "nhits": 20
+    },
+    {
+     "channel": 92,
+     "wavelength_um": 4.635000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.01580398,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 93,
+     "wavelength_um": 4.669000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.047971107,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 94,
+     "wavelength_um": 4.703999996185303,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.034294844,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 95,
+     "wavelength_um": 4.738999843597412,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.040154986,
+     "flags": 0,
+     "nhits": 18
+    },
+    {
+     "channel": 96,
+     "wavelength_um": 4.7729997634887695,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.026720913,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 97,
+     "wavelength_um": 4.808000087738037,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.034504402,
+     "flags": 0,
+     "nhits": 11
+    },
+    {
+     "channel": 98,
+     "wavelength_um": 4.8429999351501465,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.011222559,
+     "flags": 524288,
+     "nhits": 17
+    },
+    {
+     "channel": 99,
+     "wavelength_um": 4.879000186920166,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.031901255,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 100,
+     "wavelength_um": 4.914999961853027,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.016823824,
+     "flags": 0,
+     "nhits": 13
+    },
+    {
+     "channel": 101,
+     "wavelength_um": 4.951000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.017575607,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.050255228,
+     "flags": 0,
+     "nhits": 9
+    }
+   ],
+   "samples": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 0.05255724,
+     "flags": 0,
+     "nhits": 7
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.022245295,
+     "flags": 0,
+     "nhits": 8
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 0.015712418,
+     "flags": 0,
+     "nhits": 14
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 0.018897727,
+     "flags": 0,
+     "nhits": 7
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.031113312,
+     "flags": 0,
+     "nhits": 12
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.050255228,
+     "flags": 0,
+     "nhits": 9
+    }
+   ]
+  },
+  {
+   "id": "b442b0f71ccc",
+   "name": "Campo RA 254.80° · Dec +82.35°",
+   "ra": 254.80227,
+   "dec": 82.34895,
+   "status": "complete",
+   "l2": {
+    "file": "level2_2025W36_2B_0121_4D1_spx_l2b-v27-2026-234.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W36_2B/l2b-v27-2026-234/1/level2_2025W36_2B_0121_4D1_spx_l2b-v27-2026-234.fits",
+    "count": 293,
+    "shape": [
+     2040,
+     2040
+    ],
+    "low": 0.11153273180127143,
+    "high": 1.2045337128639222,
+    "unit": "MJy / sr",
+    "note": "Pseudocolor cividis; no RGB visible"
+   },
+   "cube": {
+    "tile": "Npix3039_cube.fits",
+    "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir0/Npix3039_cube.fits",
+    "shape": [
+     102,
+     512,
+     512
+    ],
+    "pixel": [
+     334,
+     452
+    ],
+    "unit": "MJy/sr",
+    "channels": [
+     1,
+     20,
+     40,
+     60,
+     80,
+     102
+    ]
+   },
+   "observations": {
+    "count": 293,
+    "detectors": {
+     "D1": 37,
+     "D2": 73,
+     "D3": 37,
+     "D4": 37,
+     "D5": 74,
+     "D6": 35
+    },
+    "first": "2025-09-05T02:21:14.976000Z",
+    "last": "2026-03-29T05:42:58.579200Z",
+    "days": [
+     "2025-09-05",
+     "2025-09-12",
+     "2025-09-13",
+     "2025-09-14",
+     "2025-09-15",
+     "2025-09-20",
+     "2025-09-22",
+     "2025-09-25",
+     "2025-09-29",
+     "2025-10-02",
+     "2025-10-03",
+     "2025-10-04",
+     "2025-10-06",
+     "2025-10-09",
+     "2025-10-16",
+     "2025-10-18",
+     "2026-02-23",
+     "2026-02-25",
+     "2026-02-27",
+     "2026-03-02",
+     "2026-03-05",
+     "2026-03-08",
+     "2026-03-09",
+     "2026-03-11",
+     "2026-03-13",
+     "2026-03-15",
+     "2026-03-17",
+     "2026-03-18",
+     "2026-03-19",
+     "2026-03-20",
+     "2026-03-23",
+     "2026-03-27",
+     "2026-03-28",
+     "2026-03-29"
+    ]
+   },
+   "images": {
+    "l2_gray": {
+     "src": "/local-data/b442b0f71ccc/l2_gray.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "l2_rgb": {
+     "src": "/local-data/b442b0f71ccc/l2_rgb.webp",
+     "size": [
+      1600,
+      1600
+     ]
+    },
+    "cube3d": {
+     "src": "/local-data/b442b0f71ccc/cube3d.webp",
+     "size": [
+      1200,
+      900
+     ]
+    },
+    "samples": {
+     "src": "/local-data/b442b0f71ccc/samples.webp",
+     "size": [
+      1500,
+      900
+     ]
+    }
+   },
+   "spectrum": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 0.07999987,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 2,
+     "wavelength_um": 0.7710000276565552,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 0.06396438,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 3,
+     "wavelength_um": 0.7900000214576721,
+     "bandwidth_um": 0.01899999938905239,
+     "brightness": 0.07856752,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 4,
+     "wavelength_um": 0.8090000152587891,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 0.19233324,
+     "flags": 2097152,
+     "nhits": 4
+    },
+    {
+     "channel": 5,
+     "wavelength_um": 0.828000009059906,
+     "bandwidth_um": 0.019999999552965164,
+     "brightness": 0.07684075,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 6,
+     "wavelength_um": 0.8479999899864197,
+     "bandwidth_um": 0.020999999716877937,
+     "brightness": 0.085862465,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 7,
+     "wavelength_um": 0.8679999709129333,
+     "bandwidth_um": 0.02199999988079071,
+     "brightness": 0.0955034,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 8,
+     "wavelength_um": 0.8889999985694885,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 0.112576924,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 9,
+     "wavelength_um": 0.9100000262260437,
+     "bandwidth_um": 0.023000000044703484,
+     "brightness": 0.107819594,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 10,
+     "wavelength_um": 0.9319999814033508,
+     "bandwidth_um": 0.024000000208616257,
+     "brightness": 0.12545948,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 11,
+     "wavelength_um": 0.9549999833106995,
+     "bandwidth_um": 0.02500000037252903,
+     "brightness": 0.11697098,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 12,
+     "wavelength_um": 0.9779999852180481,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.099060394,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 13,
+     "wavelength_um": 1.0010000467300415,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.12114038,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 14,
+     "wavelength_um": 1.024999976158142,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 0.10325726,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 15,
+     "wavelength_um": 1.0499999523162842,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.065078355,
+     "flags": 2097152,
+     "nhits": 3
+    },
+    {
+     "channel": 16,
+     "wavelength_um": 1.0750000476837158,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 0.57306,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 17,
+     "wavelength_um": 1.1019999980926514,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.7665987,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 18,
+     "wavelength_um": 1.1130000352859497,
+     "bandwidth_um": 0.026000000536441803,
+     "brightness": 0.11261861,
+     "flags": 2097152,
+     "nhits": 26
+    },
+    {
+     "channel": 19,
+     "wavelength_um": 1.1390000581741333,
+     "bandwidth_um": 0.027000000700354576,
+     "brightness": 0.10881382,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.10016227,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 21,
+     "wavelength_um": 1.1950000524520874,
+     "bandwidth_um": 0.028999999165534973,
+     "brightness": 0.09622336,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 22,
+     "wavelength_um": 1.2239999771118164,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.12595148,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 23,
+     "wavelength_um": 1.253999948501587,
+     "bandwidth_um": 0.029999999329447746,
+     "brightness": 0.11802481,
+     "flags": 2097152,
+     "nhits": 19
+    },
+    {
+     "channel": 24,
+     "wavelength_um": 1.284000039100647,
+     "bandwidth_um": 0.03099999949336052,
+     "brightness": 0.10999247,
+     "flags": 2097152,
+     "nhits": 16
+    },
+    {
+     "channel": 25,
+     "wavelength_um": 1.315000057220459,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 0.11039619,
+     "flags": 2097152,
+     "nhits": 16
+    },
+    {
+     "channel": 26,
+     "wavelength_um": 1.3459999561309814,
+     "bandwidth_um": 0.03200000151991844,
+     "brightness": 0.11895957,
+     "flags": 2097152,
+     "nhits": 19
+    },
+    {
+     "channel": 27,
+     "wavelength_um": 1.378000020980835,
+     "bandwidth_um": 0.032999999821186066,
+     "brightness": 0.11316718,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 28,
+     "wavelength_um": 1.4119999408721924,
+     "bandwidth_um": 0.03400000184774399,
+     "brightness": 0.109401606,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 29,
+     "wavelength_um": 1.4459999799728394,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.107231826,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 30,
+     "wavelength_um": 1.4809999465942383,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.13225037,
+     "flags": 2097152,
+     "nhits": 16
+    },
+    {
+     "channel": 31,
+     "wavelength_um": 1.5169999599456787,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.11372719,
+     "flags": 2097152,
+     "nhits": 20
+    },
+    {
+     "channel": 32,
+     "wavelength_um": 1.5540000200271606,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.13492371,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 33,
+     "wavelength_um": 1.5920000076293945,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.1338327,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 34,
+     "wavelength_um": 1.63100004196167,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.12676047,
+     "flags": 2097152,
+     "nhits": 25
+    },
+    {
+     "channel": 35,
+     "wavelength_um": 1.656000018119812,
+     "bandwidth_um": 0.039000000804662704,
+     "brightness": 0.10798017,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 36,
+     "wavelength_um": 1.6950000524520874,
+     "bandwidth_um": 0.04100000113248825,
+     "brightness": 0.10412779,
+     "flags": 2097152,
+     "nhits": 12
+    },
+    {
+     "channel": 37,
+     "wavelength_um": 1.7350000143051147,
+     "bandwidth_um": 0.041999999433755875,
+     "brightness": 0.08226808,
+     "flags": 2097152,
+     "nhits": 5
+    },
+    {
+     "channel": 38,
+     "wavelength_um": 1.774999976158142,
+     "bandwidth_um": 0.0430000014603138,
+     "brightness": 0.12193889,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 39,
+     "wavelength_um": 1.8179999589920044,
+     "bandwidth_um": 0.04500000178813934,
+     "brightness": 0.12840587,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 0.08995013,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 41,
+     "wavelength_um": 1.9049999713897705,
+     "bandwidth_um": 0.04699999839067459,
+     "brightness": 0.0837911,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 42,
+     "wavelength_um": 1.9490000009536743,
+     "bandwidth_um": 0.04800000041723251,
+     "brightness": 0.08621033,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 43,
+     "wavelength_um": 1.9950000047683716,
+     "bandwidth_um": 0.04899999871850014,
+     "brightness": 0.09943463,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 44,
+     "wavelength_um": 2.0409998893737793,
+     "bandwidth_um": 0.050999999046325684,
+     "brightness": 0.09080787,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 45,
+     "wavelength_um": 2.0889999866485596,
+     "bandwidth_um": 0.052000001072883606,
+     "brightness": 0.13307917,
+     "flags": 2097152,
+     "nhits": 6
+    },
+    {
+     "channel": 46,
+     "wavelength_um": 2.1389999389648438,
+     "bandwidth_um": 0.05400000140070915,
+     "brightness": 0.07172253,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 47,
+     "wavelength_um": 2.188999891281128,
+     "bandwidth_um": 0.054999999701976776,
+     "brightness": 0.081564836,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 48,
+     "wavelength_um": 2.240000009536743,
+     "bandwidth_um": 0.0560000017285347,
+     "brightness": 0.072761185,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 49,
+     "wavelength_um": 2.2920000553131104,
+     "bandwidth_um": 0.05700000002980232,
+     "brightness": 0.09082041,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 50,
+     "wavelength_um": 2.3450000286102295,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": 0.07980706,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 51,
+     "wavelength_um": 2.3989999294281006,
+     "bandwidth_um": 0.05900000035762787,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 52,
+     "wavelength_um": 2.444999933242798,
+     "bandwidth_um": 0.057999998331069946,
+     "brightness": null,
+     "flags": 0,
+     "nhits": 0
+    },
+    {
+     "channel": 53,
+     "wavelength_um": 2.50600004196167,
+     "bandwidth_um": 0.0729999989271164,
+     "brightness": 0.06513903,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 54,
+     "wavelength_um": 2.575000047683716,
+     "bandwidth_um": 0.07400000095367432,
+     "brightness": 0.06154487,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 55,
+     "wavelength_um": 2.6459999084472656,
+     "bandwidth_um": 0.07599999755620956,
+     "brightness": 0.060660478,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 56,
+     "wavelength_um": 2.7190001010894775,
+     "bandwidth_um": 0.07800000160932541,
+     "brightness": 0.04386247,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 57,
+     "wavelength_um": 2.7939999103546143,
+     "bandwidth_um": 0.07900000363588333,
+     "brightness": 0.06252683,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 58,
+     "wavelength_um": 2.871000051498413,
+     "bandwidth_um": 0.08399999886751175,
+     "brightness": 0.054910555,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 59,
+     "wavelength_um": 2.9509999752044678,
+     "bandwidth_um": 0.0860000029206276,
+     "brightness": 0.06101242,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 0.052529693,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 61,
+     "wavelength_um": 3.118000030517578,
+     "bandwidth_um": 0.09099999815225601,
+     "brightness": 0.04691858,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 62,
+     "wavelength_um": 3.2039999961853027,
+     "bandwidth_um": 0.09300000220537186,
+     "brightness": 0.050830994,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 63,
+     "wavelength_um": 3.2929999828338623,
+     "bandwidth_um": 0.09399999678134918,
+     "brightness": 0.052302554,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 64,
+     "wavelength_um": 3.382999897003174,
+     "bandwidth_um": 0.09600000083446503,
+     "brightness": 0.054400362,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 65,
+     "wavelength_um": 3.4760000705718994,
+     "bandwidth_um": 0.09799999743700027,
+     "brightness": 0.05605601,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 66,
+     "wavelength_um": 3.569999933242798,
+     "bandwidth_um": 0.0989999994635582,
+     "brightness": 0.039473273,
+     "flags": 2097152,
+     "nhits": 4
+    },
+    {
+     "channel": 67,
+     "wavelength_um": 3.6670000553131104,
+     "bandwidth_um": 0.10199999809265137,
+     "brightness": 0.051147897,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 68,
+     "wavelength_um": 3.7679998874664307,
+     "bandwidth_um": 0.10300000011920929,
+     "brightness": 0.048411965,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 69,
+     "wavelength_um": 3.8329999446868896,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.052337453,
+     "flags": 2097152,
+     "nhits": 22
+    },
+    {
+     "channel": 70,
+     "wavelength_um": 3.867000102996826,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.045446534,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 71,
+     "wavelength_um": 3.9010000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.03868463,
+     "flags": 2097152,
+     "nhits": 21
+    },
+    {
+     "channel": 72,
+     "wavelength_um": 3.934999942779541,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.023566647,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 73,
+     "wavelength_um": 3.9700000286102295,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.045320746,
+     "flags": 2097152,
+     "nhits": 19
+    },
+    {
+     "channel": 74,
+     "wavelength_um": 4.005000114440918,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.03793929,
+     "flags": 2097152,
+     "nhits": 16
+    },
+    {
+     "channel": 75,
+     "wavelength_um": 4.039999961853027,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.035627108,
+     "flags": 2097152,
+     "nhits": 13
+    },
+    {
+     "channel": 76,
+     "wavelength_um": 4.076000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.040509082,
+     "flags": 2097152,
+     "nhits": 16
+    },
+    {
+     "channel": 77,
+     "wavelength_um": 4.111999988555908,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.039520044,
+     "flags": 2097152,
+     "nhits": 15
+    },
+    {
+     "channel": 78,
+     "wavelength_um": 4.1479997634887695,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.040010277,
+     "flags": 2097152,
+     "nhits": 19
+    },
+    {
+     "channel": 79,
+     "wavelength_um": 4.184000015258789,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.05136568,
+     "flags": 2097152,
+     "nhits": 14
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.046540484,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 81,
+     "wavelength_um": 4.256999969482422,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.05161632,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 82,
+     "wavelength_um": 4.294000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.0340037,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 83,
+     "wavelength_um": 4.330999851226807,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.045434184,
+     "flags": 2097152,
+     "nhits": 20
+    },
+    {
+     "channel": 84,
+     "wavelength_um": 4.368000030517578,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.032923993,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 85,
+     "wavelength_um": 4.40500020980835,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.047725756,
+     "flags": 2097152,
+     "nhits": 27
+    },
+    {
+     "channel": 86,
+     "wavelength_um": 4.434999942779541,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.058197547,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 87,
+     "wavelength_um": 4.4670000076293945,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.05861375,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 88,
+     "wavelength_um": 4.5,
+     "bandwidth_um": 0.03500000014901161,
+     "brightness": 0.054295667,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 89,
+     "wavelength_um": 4.5329999923706055,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.031378806,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 90,
+     "wavelength_um": 4.565999984741211,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.06815255,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 91,
+     "wavelength_um": 4.599999904632568,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.02894588,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 92,
+     "wavelength_um": 4.635000228881836,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.031653326,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 93,
+     "wavelength_um": 4.669000148773193,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.041007765,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 94,
+     "wavelength_um": 4.703999996185303,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.026163768,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 95,
+     "wavelength_um": 4.738999843597412,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.020368394,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 96,
+     "wavelength_um": 4.7729997634887695,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.06747353,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 97,
+     "wavelength_um": 4.808000087738037,
+     "bandwidth_um": 0.035999998450279236,
+     "brightness": 0.038791392,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 98,
+     "wavelength_um": 4.8429999351501465,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.059814334,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 99,
+     "wavelength_um": 4.879000186920166,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.03537764,
+     "flags": 2097152,
+     "nhits": 9
+    },
+    {
+     "channel": 100,
+     "wavelength_um": 4.914999961853027,
+     "bandwidth_um": 0.03799999877810478,
+     "brightness": 0.008161556,
+     "flags": 2097152,
+     "nhits": 11
+    },
+    {
+     "channel": 101,
+     "wavelength_um": 4.951000213623047,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.06685481,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.029429406,
+     "flags": 2097152,
+     "nhits": 8
+    }
+   ],
+   "samples": [
+    {
+     "channel": 1,
+     "wavelength_um": 0.753000020980835,
+     "bandwidth_um": 0.017999999225139618,
+     "brightness": 0.07999987,
+     "flags": 2097152,
+     "nhits": 7
+    },
+    {
+     "channel": 20,
+     "wavelength_um": 1.1670000553131104,
+     "bandwidth_um": 0.02800000086426735,
+     "brightness": 0.10016227,
+     "flags": 2097152,
+     "nhits": 17
+    },
+    {
+     "channel": 40,
+     "wavelength_um": 1.8609999418258667,
+     "bandwidth_um": 0.04600000008940697,
+     "brightness": 0.08995013,
+     "flags": 2097152,
+     "nhits": 10
+    },
+    {
+     "channel": 60,
+     "wavelength_um": 3.0329999923706055,
+     "bandwidth_um": 0.08900000154972076,
+     "brightness": 0.052529693,
+     "flags": 2097152,
+     "nhits": 8
+    },
+    {
+     "channel": 80,
+     "wavelength_um": 4.21999979019165,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.046540484,
+     "flags": 2097152,
+     "nhits": 18
+    },
+    {
+     "channel": 102,
+     "wavelength_um": 4.98799991607666,
+     "bandwidth_um": 0.03700000047683716,
+     "brightness": 0.029429406,
+     "flags": 2097152,
+     "nhits": 8
+    }
+   ]
+  }
+ ]
+}
