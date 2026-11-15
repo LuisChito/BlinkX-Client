@@ -528,7 +528,7 @@ export function SpherexExplorerShell() {
       )}
 
       {/* LAYER 3A: CONTRACT JOB PROGRESS / WARNINGS & SUBTLE HUD TOAST */}
-      <ContractJobBanner job={sky.activeJob} warnings={sky.warnings} error={sky.error} />
+      <ContractJobBanner job={sky.activeJob} warnings={sky.warnings} error={sky.error} onRetry={sky.retry} />
       {toastMsg && (
         <div className="fixed top-[68px] left-1/2 -translate-x-1/2 z-50 hud-card-elevated px-4 py-1.5 rounded-full text-xs font-mono text-[#f6f1ee] shadow-2xl animate-panel-enter pointer-events-none border border-white/15">
           {toastMsg}

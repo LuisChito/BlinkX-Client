@@ -7,6 +7,7 @@ import {
   type SequenceResult,
   type SpectrumPoint,
   api,
+  clearApiCache,
   isAbort,
   latest,
 } from '../../lib/skyApi';
@@ -241,6 +242,7 @@ export interface SkyContractState {
     image_id?: string;
     view?: { ra: number; dec: number; fov: number; size: number };
   }) => Promise<AsteroidPredictResult | null>;
+  retry: () => void;
 }
 
 const DEFAULT_DATE_FROM = '2025-05-01';
@@ -372,6 +374,17 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   const cubeCacheRef = useRef<Map<string, CubeResult>>(new Map());
   const spectrumCacheRef = useRef<Map<string, SpectrumResponse>>(new Map());
   const cubeKey = `${ra.toFixed(1)},${dec.toFixed(1)}`;
+
+  const [retryNonce, setRetryNonce] = useState(0);
+
+  const retry = useCallback(() => {
+    clearApiCache();
+    loadedSeqRef.current = null;
+    loadedMetaRef.current = null;
+    setError(null);
+    setWarnings([]);
+    setRetryNonce((n) => n + 1);
+  }, []);
 
   // 2. Fast metadata (objects, frames, coverage) + slow sequence (limit 12, size 512),
   //    decoupled from zoom (`fovDeg`) and small pans inside the loaded area, debounced 650ms.
@@ -532,7 +545,7 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [ra, dec, detector, stretch, cmap, scale, updateJob]);
+  }, [ra, dec, detector, stretch, cmap, scale, updateJob, retryNonce]);
 
   // 3. Overlays: Gaia DR3 & AllWISE with epoch propagation (matched to sequence FoV, decoupled from zoom)
   useEffect(() => {
@@ -861,5 +874,6 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     loadCube,
     inspectCubePixel,
     predictAsteroidFromCurrent,
+    retry,
   };
 }
