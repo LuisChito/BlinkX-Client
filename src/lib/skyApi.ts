@@ -1,0 +1,476 @@
+/**
+ * Cliente del backend "SpaceX Sky API" para el Frontend (sin dependencias; TypeScript/JavaScript).
+ * Incluye caché local (5 min), deduplicación de peticiones simultáneas, redondeo a 1″,
+ * un solo sondeo compartido por trabajo (>= 1 s) y utilidades latest() / debounce() / isAbort().
+ */
+
+// ---------------------------------------------------------------------------------------------------------------
+// Configuración
+// ---------------------------------------------------------------------------------------------------------------
+const env: Record<string, string | undefined> =
+  (typeof import.meta !== "undefined" && (import.meta as any).env) ||
+  (typeof (globalThis as any).process !== "undefined" ? (globalThis as any).process.env : {}) || {};
+
+export const API_BASE: string = (
+  env.PUBLIC_API_BASE || env.PUBLIC_API_URL || env.VITE_API_URL || env.NEXT_PUBLIC_API_URL || env.REACT_APP_API_URL || "http://localhost:8000"
+).replace(/\/+$/, "");
+
+/** Convierte una ruta relativa que devuelve la API ("/api/frame/...png") en URL absoluta para <img src>.
+ *  Si la imagen está en el respaldo sin conexión (public/backup), se sirve desde ahí (más rápido y no depende de la API). */
+export const abs = (path: string) => {
+  // Solo se sirven imágenes guardadas cuando se está usando la copia sin conexión.
+  const local = usingBackup() ? backupManifest?.images?.[path] : undefined;
+  if (local) return `${BACKUP_BASE}${local}`;
+  return path.startsWith("http") ? path : `${API_BASE}${path}`;
+};
+
+export class ApiError extends Error {
+  constructor(public status: number, public code: string, message: string) {
+    super(message);
+  }
+}
+
+/** Parámetros de query: valores simples o listas (se repiten: ?a=x&a=y). */
+type Params = object;
+
+function qs(params: Params = {}): string {
+  const u = new URLSearchParams();
+  for (const [k, v] of Object.entries(params as Record<string, unknown>)) {
+    if (v === undefined || v === null || v === "") continue;
+    if (Array.isArray(v)) v.forEach((x) => u.append(k, String(x)));
+    else u.append(k, String(v));
+  }
+  const s = u.toString();
+  return s ? `?${s}` : "";
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Respaldo sin conexión: public/backup/manifest.json (lo genera scripts/backup-demo.mjs).
+// Si una consulta falla (red, 5xx, IRSA caído) y está respaldada, se responde con el respaldo.
+// Con "solo respaldo" activado no se toca la red (útil en una presentación).
+// ---------------------------------------------------------------------------------------------------------------
+export interface BackupManifest {
+  version: number;
+  generated_at: string;
+  api: string;
+  targets: string[];
+  /** clave de consulta → archivo JSON (relativo a /backup/) */
+  entries: Record<string, string>;
+  /** URL relativa de imagen de la API → archivo PNG (relativo a /backup/) */
+  images: Record<string, string>;
+}
+
+const BACKUP_BASE = "/backup/";
+const BACKUP_ONLY_KEY = "bx-backup-only";
+let backupManifest: BackupManifest | null = null;
+
+const backupReady: Promise<BackupManifest | null> =
+  typeof window === "undefined"
+    ? Promise.resolve(null)
+    : fetch(`${BACKUP_BASE}manifest.json`, { cache: "no-cache" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((m) => {
+          backupManifest = m && m.entries ? (m as BackupManifest) : null;
+          notifyBackup();
+          return backupManifest;
+        })
+        .catch(() => null);
+
+/** Clave de una consulta en el respaldo (la misma que calcula el script). */
+export const backupKey = (method: string, path: string, params?: Params, body?: unknown) =>
+  `${method} ${path}${qs(roundParams(params))}${body ? ` ${JSON.stringify(body)}` : ""}`;
+
+/** «Copia de seguridad» (menú de objetivos): con el interruptor activado todo se responde con public/backup
+ *  y no se toca la API; desactivado, todo va al backend en vivo. */
+export const usingBackup = () => isBackupOnly();
+
+export function isBackupOnly(): boolean {
+  try { return typeof localStorage !== "undefined" && localStorage.getItem(BACKUP_ONLY_KEY) === "1"; } catch { return false; }
+}
+
+export function setBackupOnly(on: boolean) {
+  try { if (on) localStorage.setItem(BACKUP_ONLY_KEY, "1"); else localStorage.removeItem(BACKUP_ONLY_KEY); } catch { /* sin almacenamiento */ }
+  cache.clear();
+  inflight.clear();
+  slowRuns.clear();
+  notifyBackup();
+}
+
+let backupUses = 0;
+export interface BackupInfo {
+  loaded: boolean; available: boolean; generatedAt: string | null; targets: string[]; entries: number; images: number; only: boolean; uses: number;
+  /** Centros con secuencia de imágenes guardada (lo mínimo para ver un objetivo con la copia de seguridad). */
+  sequenceCenters: { ra: number; dec: number }[];
+  /** Centros con imagen L2 / L2 color guardada. */
+  l2Centers: { ra: number; dec: number }[];
+}
+export function getBackupInfo(): BackupInfo {
+  return {
+    loaded: backupManifest !== null,
+    available: !!backupManifest && Object.keys(backupManifest.entries).length > 0,
+    generatedAt: backupManifest?.generated_at ?? null,
+    targets: backupManifest?.targets ?? [],
+    entries: backupManifest ? Object.keys(backupManifest.entries).length : 0,
+    images: backupManifest ? Object.keys(backupManifest.images).length : 0,
+    only: isBackupOnly(),
+    uses: backupUses,
+    sequenceCenters: backupCenters("GET /api/sequence?"),
+    l2Centers: backupCenters("GET /api/l2?"),
+  };
+}
+function backupCenters(prefix: string): { ra: number; dec: number }[] {
+  return Object.keys(backupManifest?.entries ?? {})
+    .filter((k) => k.startsWith(prefix))
+    .map((k) => { const sp = new URLSearchParams(k.split("?")[1].split(" ")[0]); return { ra: Number(sp.get("ra")), dec: Number(sp.get("dec")) }; });
+}
+/** La interfaz escucha este evento para refrescar el estado del respaldo. */
+function notifyBackup() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("bx-backup"));
+}
+
+async function fromBackup<T>(key: string): Promise<T | null> {
+  const m = await backupReady;
+  const file = m?.entries[key];
+  if (!file) return null;
+  try {
+    const r = await fetch(`${BACKUP_BASE}${file}`);
+    if (!r.ok) return null;
+    const data = (await r.json()) as T;
+    backupUses++;
+    notifyBackup();
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+const backupMiss = () =>
+  new ApiError(404, "backup_miss", "Esto no está en la copia de seguridad. Elige uno de los objetivos guardados o desactiva «Copia de seguridad» en el menú de objetivos.");
+
+/** Con «Copia de seguridad» activada la consulta sale de public/backup y nunca de la red.
+ *  Desactivada, va siempre al backend, sin mezclar datos guardados.
+ *  `wrap` adapta el JSON guardado a la forma que devuelve `net` (p. ej. `{ status, data }`). */
+async function withBackup<T, D = T>(key: string, net: () => Promise<T>, wrap: (data: D) => T = (d) => d as unknown as T): Promise<T> {
+  if (usingBackup()) {
+    const b = await fromBackup<D>(key);
+    if (b !== null) return wrap(b);
+    throw backupMiss();
+  }
+  return net();
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Protección del backend: caché + deduplicación + ritmo de sondeo
+// ---------------------------------------------------------------------------------------------------------------
+/** Respuestas GET rápidas (200) que se reutilizan sin volver a pedirlas. */
+const CACHE_TTL_MS = 5 * 60 * 1000;
+/** Nunca sondear /api/jobs/{id} más rápido que esto, aunque el servidor sugiera menos. */
+const MIN_POLL_MS = 1000;
+const cache = new Map<string, { at: number; value: { status: number; data: unknown } }>();
+const inflight = new Map<string, Promise<{ status: number; data: unknown }>>();
+
+/** Vacía la caché local (p. ej. con un botón "Recargar"). */
+export function clearApiCache() { cache.clear(); }
+
+function sleep(ms: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) return reject(new DOMException("Cancelado", "AbortError"));
+    const t = setTimeout(resolve, ms);
+    signal?.addEventListener("abort", () => { clearTimeout(t); reject(new DOMException("Cancelado", "AbortError")); }, { once: true });
+  });
+}
+
+/** Redondea coordenadas a 1″ (lo mismo que hace el backend): moverse 0.1″ no crea consultas nuevas. */
+function roundParams(params: Params = {}): Params {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(params as Record<string, unknown>)) {
+    out[k] = (k === "ra" || k === "dec") && typeof v === "number" ? Math.round(v * 3600) / 3600 : v;
+  }
+  return out;
+}
+
+async function request<T>(method: "GET" | "POST", path: string, params?: Params, body?: unknown, signal?: AbortSignal): Promise<{ status: number; data: T }> {
+  params = roundParams(params);
+  const key = `${method} ${path}${qs(params)} ${body ? JSON.stringify(body) : ""}`;
+  const cacheable = method === "GET" && !path.startsWith("/api/jobs/") && path !== "/api/status";
+  if (cacheable) {
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value as { status: number; data: T };
+  }
+  const running = inflight.get(key);
+  if (running) return running as Promise<{ status: number; data: T }>;
+  const bkey = backupKey(method, path, params, body);
+  // /api/status es el estado real del servidor: nunca sale del respaldo.
+  const p = (path === "/api/status"
+    ? rawRequest<T>(method, path, params, body, signal)
+    : withBackup(bkey, () => rawRequest<T>(method, path, params, body, signal), (data: T) => ({ status: 200, data }))).then((r) => {
+    if (cacheable && r.status === 200) cache.set(key, { at: Date.now(), value: r });
+    return r;
+  }).finally(() => inflight.delete(key));
+  inflight.set(key, p);
+  return p;
+}
+
+async function rawRequest<T>(method: "GET" | "POST", path: string, params?: Params, body?: unknown, signal?: AbortSignal): Promise<{ status: number; data: T }> {
+  const res = await fetch(`${API_BASE}${path}${qs(params)}`, {
+    method,
+    signal,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 429) {
+    const wait = Number(res.headers.get("Retry-After") || 2);
+    await sleep(wait * 1000, signal);
+    return rawRequest<T>(method, path, params, body, signal);
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok && res.status !== 202) {
+    const e = (data as any)?.error ?? {};
+    throw new ApiError(res.status, e.code ?? "error", e.message ?? `HTTP ${res.status}`);
+  }
+  return { status: res.status, data: data as T };
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Patrón 202 + trabajo (procesos lentos)
+// ---------------------------------------------------------------------------------------------------------------
+export interface Job<R = unknown> {
+  id: string;
+  kind: string;
+  status: "queued" | "running" | "done" | "failed";
+  progress: number;          // 0..1
+  eta_s: number | null;
+  stage: string;             // "Descargando frames 3/6"
+  queue_position: number;
+  poll_after_ms: number;
+  result: R | null;
+  error: { code: string; message: string } | null;
+}
+
+export type OnProgress = (progress: number, stage: string, job: Job) => void;
+
+const slowRuns = new Map<string, Promise<unknown>>();
+
+async function slow<R>(method: "GET" | "POST", path: string, params?: Params, body?: unknown,
+                       onProgress?: OnProgress, signal?: AbortSignal): Promise<R> {
+  params = roundParams(params);
+  const key = `${method} ${path}${qs(params)} ${body ? JSON.stringify(body) : ""}`;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value.data as R;
+  const listeners = new Set<OnProgress>();
+  if (onProgress) listeners.add(onProgress);
+  let run = slowRuns.get(key) as (Promise<R> & { listeners?: Set<OnProgress> }) | undefined;
+  if (run) {
+    if (onProgress) run.listeners?.add(onProgress);
+  } else {
+    const bkey = backupKey(method, path, params, body);
+    run = withBackup<R>(bkey, async () => {
+      const first = await rawRequest<any>(method, path, params, body);
+      if (first.status === 200) return first.data as R;
+      let job = first.data as Job<R>;
+      while (true) {
+        run!.listeners?.forEach((fn) => fn(job.progress, job.stage, job));
+        if (job.status === "done") return job.result as R;
+        if (job.status === "failed") throw new ApiError(422, job.error?.code ?? "failed", job.error?.message ?? "Trabajo fallido");
+        await sleep(Math.max(job.poll_after_ms ?? MIN_POLL_MS, MIN_POLL_MS));
+        job = (await rawRequest<Job<R>>("GET", `/api/jobs/${job.id}`)).data;
+      }
+    }) as Promise<R> & { listeners?: Set<OnProgress> };
+    run.listeners = listeners;
+    slowRuns.set(key, run);
+    run.then((data) => cache.set(key, { at: Date.now(), value: { status: 200, data } }))
+       .catch(() => {})
+       .finally(() => slowRuns.delete(key));
+  }
+  if (!signal) return run;
+  return Promise.race([run, new Promise<never>((_, reject) => {
+    if (signal.aborted) reject(new DOMException("Cancelado", "AbortError"));
+    signal.addEventListener("abort", () => { onProgress && run!.listeners?.delete(onProgress); reject(new DOMException("Cancelado", "AbortError")); }, { once: true });
+  })]);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Tipos principales (los campos más usados; las respuestas traen más)
+// ---------------------------------------------------------------------------------------------------------------
+export interface Coord { ra: number; dec: number }
+export interface Frame {
+  id: string; date_obs: string; detector: number; band_um: number; band_exact: boolean;
+  center: Coord; fov_arcsec: number; exposure_s: number; flags: string[];
+  png_url?: string; flags_png_url?: string; vmin?: number; vmax?: number;
+}
+export interface SequenceResult {
+  center: Coord; fov_arcsec: number; size_px: number; vmin: number; vmax: number; unit: string;
+  total: number; frames: Frame[]; partial: boolean; warnings: string[];
+}
+export interface SpectrumPoint { wavelength: number; flux: number; error: number; date_obs: string; detector: number; frame_id: string; flags: string[] }
+// ----- Composición (/api/composition) ----------------------------------------------------------------------------
+export type CompositionContextType =
+  | "auto" | "brown_dwarf" | "yso" | "cloud" | "hii" | "pn" | "galaxy" | "star" | "solar_system" | "unknown";
+export type FeatureStatus =
+  | "detected" | "tentative" | "not_detected" | "attributed_to_other" | "no_coverage" | "continuum_too_faint";
+export interface CompositionIce {
+  formula: string; name: string; "column_density_cm-2": number; relative_to_h2o_percent: number | null;
+}
+export interface CompositionElementInIces { element: string; "column_density_cm-2": number; fraction_percent: number }
+export interface CompositionElementSupported { element: string; evidence: string[]; quantified: boolean }
+export interface CompositionIndicator {
+  id: string; name: string; kind: "absorption" | "emission" | string; depth_percent: number;
+  significance_sigma: number; carriers: string[];
+}
+export interface CompositionFeature {
+  id: string; name: string; group?: string; center_um?: number; band_um?: [number, number];
+  status: FeatureStatus; kind?: string; significance_sigma?: number | null;
+  depth_percent?: number | null; depth_error_percent?: number | null; upper_limit_depth_percent?: number | null;
+  carriers?: string[]; elements?: string[]; reason?: string; expected_in_context?: boolean;
+  ice?: { formula: string; "column_density_cm-2": number; "column_density_error_cm-2"?: number; [k: string]: unknown };
+  [k: string]: unknown;
+}
+export interface CompositionResult {
+  center: Coord;
+  aperture_arcsec: number;
+  simbad_match: { name: string; otype: string; distance_arcsec: number } | null;
+  n_exposures: number;
+  spectrum_url?: string;
+  context: { type: string; label: string; source: "simbad" | "spectrum" | "user" | "none" | string };
+  summary: string;
+  detected: string[];
+  tentative: string[];
+  attributed_to_other: string[];
+  ices: CompositionIce[];
+  elements_in_ices: CompositionElementInIces[];
+  elements_supported: CompositionElementSupported[];
+  indicators: CompositionIndicator[];
+  features: CompositionFeature[];
+  spectrum_binned: { wavelength_um: number; flux_uJy: number; error_uJy: number; n: number }[];
+  quality: { level: "good" | "fair" | "poor" | string; median_snr_per_channel?: number; channels?: number;
+             features_measurable?: number; saturated_fraction?: number; [k: string]: unknown };
+  method?: string;
+  limitations?: string[];
+  warnings?: string[];
+  partial?: boolean;
+}
+
+export interface Pixel { x: number | null; y_top: number | null; inside_image: boolean; image_width: number; image_height: number }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Catálogos y sistema (rápidos)
+// ---------------------------------------------------------------------------------------------------------------
+export const api = {
+  status: () => request<any>("GET", "/api/status").then((r) => r.data),
+
+  /** Nombre → coordenadas ("Barnard's star", "WISE 0855", "M101"). `at` = fecha para la posición actual. */
+  resolve: (name: string, at?: string) => request<any>("GET", "/api/resolve", { name, at }).then((r) => r.data),
+
+  /** Objetos SIMBAD/NED en un cono (radius en ″). */
+  objects: (p: Coord & { radius?: number; catalogs?: string[]; types?: string[]; limit?: number }) =>
+    request<any>("GET", "/api/objects", p).then((r) => r.data),
+
+  // ----- Imágenes del blink -----------------------------------------------------------------------------------
+  /** Metadatos de las exposiciones (sin imágenes). Fechas YYYY-MM-DD. */
+  frames: (p: Coord & { fov?: number; detector?: number; date_from?: string; date_to?: string; limit?: number; offset?: number }) =>
+    request<any>("GET", "/api/frames", p).then((r) => r.data),
+
+  /** Histograma de exposiciones por semana (selector de fechas). */
+  coverage: (p: Coord & { detector?: number }) => request<any>("GET", "/api/coverage", p).then((r) => r.data),
+
+  /** Secuencia alineada para el blink (LENTO). Usar frames[i].png_url con abs(). */
+  sequence: (p: Coord & { fov?: number; size?: number; detector?: number; date_from?: string; date_to?: string;
+                          stretch?: "linear" | "log" | "sqrt" | "asinh"; cmap?: "gray" | "viridis" | "magma" | "inferno";
+                          scale?: "sequence" | "frame"; limit?: number; offset?: number },
+             onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<SequenceResult>("GET", "/api/sequence", p, undefined, onProgress, signal),
+
+  /** Suma (mean/median/sum de a) o resta (diff = media(a) − media(b)) (LENTO). Usar result.png_url. */
+  stack: (p: Coord & { op: "mean" | "median" | "sum" | "diff"; a: string[]; b?: string[]; fov?: number; size?: number;
+                       stretch?: string; cmap?: string }, onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<any>("GET", "/api/stack", p, undefined, onProgress, signal),
+
+  // ----- Análisis ----------------------------------------------------------------------------------------------
+  /** Espectro 0.75–5 µm en una apertura (″) (LENTO). Ordenado por date_obs = curva de luz. */
+  spectrum: (p: Coord & { aperture?: number; date_from?: string; date_to?: string }, onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<{ points: SpectrumPoint[]; [k: string]: any }>("GET", "/api/spectrum", p, undefined, onProgress, signal),
+
+  /** Compuestos (hielos, moléculas, minerales, H II) en un punto a partir de su espectro (LENTO). */
+  composition: (p: Coord & { aperture?: number; date_from?: string; date_to?: string; context?: CompositionContextType },
+                onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<CompositionResult>("GET", "/api/composition", p, undefined, onProgress, signal),
+
+  /** Posición predicha en cada fecha con imágenes (LENTO). Fechas obligatorias. */
+  predict: (p: Coord & { name?: string; date_from: string; date_to: string }, onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<any>("GET", "/api/predict", p, undefined, onProgress, signal),
+
+  /** Fuentes Gaia o WISE en el campo, propagadas a la fecha `at`. */
+  overlay: (p: Coord & { catalog: "gaia" | "wise"; fov?: number; at?: string }) =>
+    request<any>("GET", "/api/overlay", p).then((r) => r.data),
+
+  // ----- Asteroides (modelo ML, experimental) -----------------------------------------------------------------
+  asteroidFromCurrent: (body: { asteroid_id: number; current_observation: { mjd_utc: number; ra: number; dec: number };
+                                horizon_days: number; image_id?: string; view?: { ra: number; dec: number; fov: number; size: number } },
+                        onProgress?: OnProgress) =>
+    slow<any>("POST", "/api/asteroids/predict-from-current", undefined, body, onProgress),
+
+  asteroidFromObservations: (body: { asteroid_id: number; observations: { mjd_utc: number; ra: number; dec: number }[];
+                                     horizon_days: number; image_id?: string; view?: { ra: number; dec: number; fov: number; size: number } }) =>
+    request<any>("POST", "/api/asteroids/predict-from-observations", undefined, body).then((r) => r.data),
+
+  // ----- L2 completo (pipeline SphereX) -----------------------------------------------------------------------
+  l2: (p: Coord & { date_from?: string; date_to?: string; detector?: number; frame_id?: string; size?: number },
+       onProgress?: OnProgress, signal?: AbortSignal) => slow<any>("GET", "/api/l2", p, undefined, onProgress, signal),
+
+  l2Pixel: (frameId: string, x: number, y: number, size = 1024) =>
+    request<any>("GET", `/api/l2/${frameId}/pixel`, { x: x.toFixed(2), y: y.toFixed(2), size }).then((r) => r.data),
+
+  // ----- Sky cube (102 canales) -------------------------------------------------------------------------------
+  cube: (p: Coord & { size?: number }, onProgress?: OnProgress, signal?: AbortSignal) =>
+    slow<any>("GET", "/api/cube", p, undefined, onProgress, signal),
+
+  cubeChannels: (tileId: string, set: "all" | "six" = "all", cmap = "gray_r", size?: number) =>
+    request<any>("GET", `/api/cube/${tileId}/channels`, { set, cmap, size }).then((r) => r.data),
+
+  cubePixel: (tileId: string, x: number, y: number, size?: number) =>
+    request<any>("GET", `/api/cube/${tileId}/pixel`, { x: x.toFixed(2), y: y.toFixed(2), size }).then((r) => r.data),
+
+  cubePreview3d: (tileId: string, n = 32) => request<any>("GET", `/api/cube/${tileId}/preview3d`, { n }).then((r) => r.data),
+
+  // ----- URLs de imágenes (para <img src>) ---------------------------------------------------------------------
+  url: {
+    l2Raw: (frameId: string, size = 1024, invert = true) => abs(`/api/l2/${frameId}/raw.png${qs({ size, invert })}`),
+    l2Color: (frameId: string, size = 1024) => abs(`/api/l2/${frameId}/color.png${qs({ size })}`),
+    cubeChannel: (tileId: string, ch: number, cmap = "gray_r", size?: number) => abs(`/api/cube/${tileId}/channel/${ch}.png${qs({ cmap, size })}`),
+    cubeSamples: (tileId: string, ra?: number, dec?: number) => abs(`/api/cube/${tileId}/samples.png${qs({ ra, dec })}`),
+    cube3d: (tileId: string) => abs(`/api/cube/${tileId}/cube3d.png`),
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------------------------------------------
+export function clickToPng(ev: MouseEvent, img: HTMLImageElement): { x: number; y: number } {
+  const r = img.getBoundingClientRect();
+  return { x: (ev.clientX - r.left) * (img.naturalWidth / r.width), y: (ev.clientY - r.top) * (img.naturalHeight / r.height) };
+}
+
+export function skyToSequencePixel(ra: number, dec: number, seq: { center: Coord; fov_arcsec: number; size_px: number }) {
+  const scale = seq.size_px / seq.fov_arcsec;
+  let dra = ra - seq.center.ra;
+  if (dra > 180) dra -= 360;
+  if (dra < -180) dra += 360;
+  return {
+    x: seq.size_px / 2 - dra * Math.cos((seq.center.dec * Math.PI) / 180) * 3600 * scale,
+    y: seq.size_px / 2 - (dec - seq.center.dec) * 3600 * scale,
+  };
+}
+
+export const isoToMjd = (iso: string) => Date.parse(iso) / 86400000 + 40587;
+
+export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms = 500) {
+  let t: ReturnType<typeof setTimeout> | undefined;
+  return (...args: A) => { if (t) clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+export function latest() {
+  let ctrl: AbortController | undefined;
+  return () => { ctrl?.abort(); ctrl = new AbortController(); return ctrl.signal; };
+}
+
+export const isAbort = (e: unknown) => (e as any)?.name === "AbortError";

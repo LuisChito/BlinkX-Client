@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
+import { mountSnap } from './snap';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -45,6 +46,7 @@ export function mountMotion(): void {
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
+    const unsnap = mountSnap(lenis);
     const onAnchor = (e: Event) => {
       const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]');
       if (!a) return;
@@ -117,6 +119,7 @@ export function mountMotion(): void {
 
     return () => {
       document.removeEventListener('click', onAnchor);
+      unsnap();
       gsap.ticker.remove(tick);
       lenis.destroy();
       splits.forEach((s) => s.revert());

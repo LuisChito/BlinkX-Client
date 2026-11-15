@@ -11,16 +11,28 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "vitest run"
+    "test": "vitest run",
+    "backup": "node scripts/backup-demo.mjs",
+    "backup:wait": "node scripts/backup-demo.mjs --wait"
   },
   "dependencies": {
+    "@astrojs/react": "^7.1.9",
     "@fontsource-variable/archivo": "^5.2.0",
     "@fontsource-variable/jetbrains-mono": "^5.2.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "astro": "^7.4.5",
     "gsap": "^3.15.1",
-    "lenis": "^1.3.27"
+    "lenis": "^1.3.27",
+    "lucide-react": "^1.73.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "tailwindcss": "^4.3.5",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
