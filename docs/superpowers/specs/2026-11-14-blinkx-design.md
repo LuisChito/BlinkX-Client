@@ -1,3 +1,5 @@
+<!-- AI-assisted development used for code development, debugging and documentation.
+     Tool: ChatGPT, Claude -->
 # Blink X · diseño del frontend
 
 Fecha: 2026-11-14 · Reto: NASA Space Apps 2026, "Planet X and SPHEREx"

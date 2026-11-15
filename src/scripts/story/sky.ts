@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Pinta los lienzos de cielo simulado de la portada con el mismo modelo que usa el visor.
 import type { Detector } from '../../lib/api/types';
 import { fieldSources, findTarget, fluxAt, positionAt } from '../../lib/api/mock/sky';

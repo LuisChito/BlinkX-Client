@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 export interface SkyPoint {
   ra: number;
   dec: number;

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Panel izquierdo de notas: para anotar los cambios que se observan (algo se movió, cambió de brillo…).
    Se guardan en localStorage del navegador; cada nota recuerda la vista para poder volver a ella. */
 import { useEffect, useMemo, useRef, useState } from 'react';

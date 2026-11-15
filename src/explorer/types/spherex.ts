@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 export type MolecularLensId = 'all' | 'h2o' | 'ch4' | 'co2' | 'co' | 'nh3';
 
 export type ViewMode = 'normal' | 'blink' | 'diff' | 'sum';

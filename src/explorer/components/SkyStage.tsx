@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Escenario del cielo: imagen real de SPHEREx (secuencia, resta/suma o L2) + capa vectorial con
    objetos, catálogos, trayectorias y el punto medido. Solo dibuja e interactúa; los controles viven en el dock. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

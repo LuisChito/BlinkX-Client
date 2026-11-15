@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { describe, expect, it } from 'vitest';
 import { gameReducer, hitTest, initialGame } from './game';
 

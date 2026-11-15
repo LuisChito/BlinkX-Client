@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /**
  * Cliente del backend "SpaceX Sky API" para el Frontend (sin dependencias; TypeScript/JavaScript).
  * Incluye caché local (5 min), deduplicación de peticiones simultáneas, redondeo a 1″,

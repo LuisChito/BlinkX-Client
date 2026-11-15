@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Lógica del mini reto "Encuentra el que se mueve" (sin DOM).
 
 export function hitTest(click: { x: number; y: number }, mover: { x: number; y: number }, radiusPx: number): boolean {

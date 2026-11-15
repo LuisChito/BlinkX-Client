@@ -1,3 +1,5 @@
+# AI-assisted development used for code development, debugging and documentation.
+# Tool: ChatGPT, Claude
 """
 FastAPI Microservice para SPHEREx Data Pipeline
 Expone endpoints REST que sirven espectros de 102 canales y cortes FITS 2D para la web.

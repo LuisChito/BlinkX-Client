@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /**
  * Free Public Astronomy API Service (Aladin Lite v3 CDS + CDS HiPS2FITS + CDS Simbad/VizieR)
  * Used to visualize real infrared sky cutouts (2MASS / AllWISE / DSS2), Gaia DR3 & WISE catalog overlays,

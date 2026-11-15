@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Almacén de estado mínimo: un objeto, cambios parciales y suscriptores.
 export interface Store<S extends object> {
   get(): S;

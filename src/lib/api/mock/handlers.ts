@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Mocks de la API v0.3 dentro del navegador. Respetan el contrato: trabajos con 202 y progreso,
 // png_url opacas, posición propagada, escala de brillo compartida, paginación y errores.
 import { separationArcsec, type SkyPoint } from '../../coords';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import type { FrameMeta } from '../../lib/api';
 import type { SpectrumPoint } from '../../lib/skyApi';
 

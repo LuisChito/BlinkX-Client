@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Inspector acoplado a la derecha: Resumen · Espectro · Composición · Movimiento · Locales · Datos. */
 import { useRef, type KeyboardEvent, type ReactNode } from 'react';
 import { Activity, Database, FlaskConical, HardDrive, Info, Orbit } from 'lucide-react';

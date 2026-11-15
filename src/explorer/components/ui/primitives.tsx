@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Piezas visuales compartidas del visor. Todo usa los tokens de index.css (@theme). */
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { AlertTriangle, Loader2, RotateCcw } from 'lucide-react';

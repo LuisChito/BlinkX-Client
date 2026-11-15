@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Estado del respaldo sin conexión (public/backup) para la interfaz: se actualiza con el evento "bx-backup".
 import { useCallback, useEffect, useState } from 'react';
 import { getBackupInfo, setBackupOnly, type BackupInfo } from '../../lib/skyApi';

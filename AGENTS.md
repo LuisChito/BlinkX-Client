@@ -1,3 +1,5 @@
+<!-- AI-assisted development used for code development, debugging and documentation.
+     Tool: ChatGPT, Claude -->
 ## Development
 
 When starting the dev server, use background mode:

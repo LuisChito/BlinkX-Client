@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Geometría de los PNG según el contrato v0.3: proyección tangente, norte arriba, este a la izquierda,
 // centrados en el punto pedido, `size` × `size` píxeles que cubren `fov` segundos de arco por lado.
 import { deltaRa, type SkyPoint } from './coords';

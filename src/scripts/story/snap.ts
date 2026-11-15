@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Desplazamiento por capítulos: cada gesto de rueda (o AvPág / RePág / Espacio) lleva al
    siguiente o al anterior capítulo, alineado arriba. Si un capítulo es más alto que la pantalla,
    primero se recorre por dentro hasta su final y luego se salta al siguiente. */

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Pestaña Espectro: brillo vs longitud de onda (o vs fecha) del punto medido, por detector. */
 import { useMemo, useState } from 'react';
 import {

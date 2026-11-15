@@ -1,3 +1,5 @@
+<!-- AI-assisted development used for code development, debugging and documentation.
+     Tool: ChatGPT, Claude -->
 # Blink X
 
 Herramienta web para ver cómo cambia el cielo en las imágenes infrarrojas de SPHEREx y encontrar lo que se mueve.

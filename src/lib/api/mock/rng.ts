@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /** Hash entero estable de cualquier lista de valores. */
 export function hash(...parts: (string | number)[]): number {
   let h = 2166136261 >>> 0;

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Cliente de la API real (contrato v0.3). Se activa con PUBLIC_USE_MOCKS=false.
 import type { Started } from '../jobs';
 import { ApiError, type Api, type ErrorDetail, type Job } from './types';

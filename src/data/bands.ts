@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Qué revela cada detector de SPHEREx. Se usa en el capítulo "Qué significa cada color" y como leyenda del visor.
 // Borrador: el equipo debe verificar estos textos con la documentación de SPHEREx.
 import type { Detector } from '../lib/api/types';

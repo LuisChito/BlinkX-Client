@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import type { TargetCatalogEntry } from '../types/spherex';
 import { formatDecDms, formatRaHms } from './urlState';
 

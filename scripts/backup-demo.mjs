@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /**
  * Respaldo sin conexión del visor (/ver) para la presentación.
  *

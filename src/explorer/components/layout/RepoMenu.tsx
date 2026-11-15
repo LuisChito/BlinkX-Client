@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Botón de GitHub (barra superior del visor): abre un menú con los dos repositorios del proyecto. */
 import { useEffect, useRef, useState } from 'react';
 import { ExternalLink } from 'lucide-react';

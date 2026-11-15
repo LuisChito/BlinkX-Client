@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { SPHEREX_TARGETS } from '../data/spherexCatalog';
 import type {
   DetectorArraySummary,

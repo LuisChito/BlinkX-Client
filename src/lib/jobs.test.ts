@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError, type Job } from './api/types';
 import { isAbort, runJob, type Started } from './jobs';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter, useSearchParams } from 'react-router-dom';
 import { SPHEREX_TARGETS } from './data/spherexCatalog';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Movimiento de la portada: GSAP + ScrollTrigger + SplitText + Lenis.
    Todo respeta prefers-reduced-motion: si está activo se muestra el estado final sin movimiento. */
 import { gsap } from 'gsap';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ApiError,

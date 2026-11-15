@@ -1,3 +1,5 @@
+# AI-assisted development used for code development, debugging and documentation.
+# Tool: ChatGPT, Claude
 """Importa los resultados del pipeline SPHEREx (G:\\SphereX\\SphereX-pipeline\\outputs) al visor.
 
 Copia a public/local-data/ lo que se puede ver en la web, sin depender de IRSA ni de la API:

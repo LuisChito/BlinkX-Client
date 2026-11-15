@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Pestaña Datos: metadatos de la imagen visible, lecturas de píxel, estado de las fuentes y enlace. */
 import { useState } from 'react';
 import { Check, HardDriveDownload, Link2 } from 'lucide-react';

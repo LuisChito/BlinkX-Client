@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Procesos lentos del contrato: 200 con el resultado (caché) o 202 con un trabajo que se consulta.
 import { ApiError, type Job } from './api/types';
 

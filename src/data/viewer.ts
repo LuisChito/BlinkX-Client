@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Textos del visor. Edita aquí sin tocar componentes ni scripts.
 import type { Cmap, Detector, Scale, Stretch } from '../lib/api/types';
 import type { ViewMode } from '../lib/url';

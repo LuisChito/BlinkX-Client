@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Parpadeo entre dos imágenes del mismo campo: la firma de Blink X.
 import { UI } from '../../data/story';
 import { showFrame } from './sky';

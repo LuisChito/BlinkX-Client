@@ -1,3 +1,5 @@
+# AI-assisted development used for code development, debugging and documentation.
+# Tool: ChatGPT, Claude
 fastapi>=0.110.0
 uvicorn>=0.28.0
 astropy>=6.0.0

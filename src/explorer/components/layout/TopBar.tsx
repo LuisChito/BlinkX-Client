@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Barra superior: marca · objetivo actual · búsqueda · vista · estado del servidor · ayuda. */
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, CircleHelp, HardDriveDownload, Loader2, NotebookPen, PanelRight, Search, Telescope } from 'lucide-react';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Tipos del contrato openapi.yaml v0.3. Los nombres y campos coinciden con los schemas.
 import type { Started } from '../jobs';
 

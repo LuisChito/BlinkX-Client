@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Los cinco objetos de prueba del reto, como tarjetas de la portada.
 import type { Detector } from '../lib/api/types';
 

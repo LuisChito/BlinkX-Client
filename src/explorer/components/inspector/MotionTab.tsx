@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Pestaña Movimiento: predicciones de posición.
    1) /api/predict → dónde está el objeto en cada fecha con imagen (movimiento propio o efemérides).
    2) /api/asteroids/predict-from-current → el usuario marca un asteroide y JPL Horizons dice a dónde va. */

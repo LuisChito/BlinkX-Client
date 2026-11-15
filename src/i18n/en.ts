@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Diccionario español → inglés de la interfaz. La clave es el texto tal como aparece en pantalla
    (espacios normalizados). Las claves largas también se reemplazan dentro de textos más grandes. */
 export const EN: Record<string, string> = {

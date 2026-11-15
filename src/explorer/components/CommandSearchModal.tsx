@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { TargetCatalogEntry } from '../types/spherex';
 import { parseRaDecInput } from '../utils/urlState';

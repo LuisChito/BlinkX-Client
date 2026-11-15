@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Franja de estado bajo la barra superior: IRSA (NASA) caído y/o modo "solo respaldo". */
 import { useState } from 'react';
 import { CloudOff, HardDriveDownload, X } from 'lucide-react';

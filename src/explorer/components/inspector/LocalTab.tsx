@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Pestaña «Locales»: campos procesados con el pipeline SPHEREx (public/local-data, scripts/import-pipeline.py).
    No depende de la API ni de IRSA: imágenes L2, cubo 3D, muestras de canales y espectro de 102 canales. */
 import { useEffect, useMemo, useState } from 'react';

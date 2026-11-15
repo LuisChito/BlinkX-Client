@@ -1,3 +1,5 @@
+# AI-assisted development used for code development, debugging and documentation.
+# Tool: ChatGPT, Claude
 """
 SPHEREx Data Pipeline & FITS Cube Service
 NASA Space Apps Challenge 2026 — Planet X and SPHEREx

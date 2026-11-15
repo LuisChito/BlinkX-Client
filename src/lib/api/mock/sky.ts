@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Modelo del cielo simulado. Lo usan las imágenes, los objetos, la predicción y el espectro,
 // así que todo lo que se ve es coherente entre sí. Los movimientos propios son los reales: no se exageran.
 import { formatDec, formatRA, separationArcsec, type SkyPoint } from '../../coords';

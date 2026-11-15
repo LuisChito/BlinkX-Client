@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Composición química de un punto (/api/composition).
    - CompositionCard: tarjeta compacta para el Telemetry Drawer (botón, progreso, resumen).
    - CompositionModal: análisis completo (resumen, hielos, elementos, indicadores, espectro con bandas, 18 rasgos). */

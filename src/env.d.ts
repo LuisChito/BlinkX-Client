@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /// <reference types="astro/client" />
 interface ImportMetaEnv {
   readonly PUBLIC_USE_MOCKS?: string;

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { describe, expect, it } from 'vitest';
 import { decimalYear, pixelToSky, propagate, skyToPixel } from './projection';
 

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';

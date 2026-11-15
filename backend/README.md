@@ -1,3 +1,5 @@
+<!-- AI-assisted development used for code development, debugging and documentation.
+     Tool: ChatGPT, Claude -->
 # BlinkX Backend & SPHEREx Data Pipeline
 
 Pipeline científico y microservicio backend para consulta, extracción espectral y procesamiento de cubos de datos **SPHEREx DR1 All-Sky** (102 canales, 0.75–5.00 μm).

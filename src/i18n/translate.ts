@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Traducción de la interfaz en el navegador. La fuente está en español; con idioma «en» se reemplazan los textos
    visibles (y title / aria-label / placeholder / alt) usando el diccionario EN. Un MutationObserver traduce también
    lo que React o los scripts pintan después. Cambiar de idioma guarda la preferencia y recarga la página. */

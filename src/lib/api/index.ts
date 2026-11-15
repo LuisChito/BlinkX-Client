@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Punto único de acceso a la API. PUBLIC_USE_MOCKS=false cambia de los datos simulados a la API real.
 import { httpApi } from './client';
 import { mockApi } from './mock/handlers';

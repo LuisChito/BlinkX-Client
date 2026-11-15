@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Dock inferior del cielo: fuente de imagen, capas, ajustes de visualización, zoom y la línea de tiempo. */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {

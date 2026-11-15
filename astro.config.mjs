@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // @ts-check
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';

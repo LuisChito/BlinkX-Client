@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Estado de la actividad del backend sobre el cielo: trabajos en curso, datos parciales y errores. */
 import { useEffect, useState } from 'react';
 import { AlertTriangle, ChevronDown, Loader2, RotateCcw, X, XCircle } from 'lucide-react';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Detectores de SPHEREx para el visor: rangos y textos compartidos con la historia (src/data/bands.ts)
 // y una rampa de color clara (violeta → ámbar) legible sobre fondo negro.
 import { BANDS } from '../../../data/bands';

@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Arranque de la portada.
 import { mountBlinks } from './blink';
 import { mountMiniGame } from './minigame';

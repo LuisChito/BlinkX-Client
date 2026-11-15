@@ -1,4 +1,6 @@
-﻿# Descarga la «Copia de seguridad» de los 5 objetivos del reto (public/backup) con el backend local en Docker.
+﻿# AI-assisted development used for code development, debugging and documentation.
+# Tool: ChatGPT, Claude
+# Descarga la «Copia de seguridad» de los 5 objetivos del reto (public/backup) con el backend local en Docker.
 # Espera a que IRSA (NASA) vuelva a responder y entonces descarga todo: secuencias (parpadeo), resta/suma,
 # espectro, composición, predicción, L2 / L2 color y cubo de 102 canales. Es reanudable: lo ya guardado se salta.
 #

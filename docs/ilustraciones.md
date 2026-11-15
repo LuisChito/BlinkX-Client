@@ -1,3 +1,5 @@
+<!-- AI-assisted development used for code development, debugging and documentation.
+     Tool: ChatGPT, Claude -->
 # Ilustraciones de la historia
 
 Seis imágenes para la portada. Ilustran la historia; **no son datos** y se muestran con la etiqueta «Ilustración».

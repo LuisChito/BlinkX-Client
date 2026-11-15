@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Textos de la historia de la portada. Edita aquí sin tocar los componentes.
 // Las ilustraciones se registran aparte, en data/illustrations.ts (ver docs/ilustraciones.md).
 

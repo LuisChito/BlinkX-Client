@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Mini reto de la portada: encontrar el punto que salta entre dos imágenes.
 import { UI } from '../../data/story';
 import { gameReducer, hitTest, initialGame, type GameState } from './game';

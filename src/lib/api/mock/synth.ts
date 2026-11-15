@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 // Imágenes simuladas: campo de estrellas + objetos que se mueven + variables + ruido
 // + artefactos según las banderas del frame. Los valores hacen de "MJy/sr".
 import { skyToPixel } from '../../projection';

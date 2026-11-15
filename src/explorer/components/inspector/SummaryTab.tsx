@@ -1,3 +1,5 @@
+// AI-assisted development used for code development, debugging and documentation.
+// Tool: ChatGPT, Claude
 /* Pestaña Resumen: qué estamos mirando, el punto medido, cifras clave y objetos cercanos. */
 import { useMemo, useState } from 'react';
 import { Activity, Check, Copy, Crosshair, FlaskConical, MapPin, Orbit } from 'lucide-react';
