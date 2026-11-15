@@ -2,7 +2,7 @@
 // Tool: ChatGPT, Claude
 /* Inspector acoplado a la derecha: Resumen · Espectro · Composición · Movimiento · Locales · Datos. */
 import { useRef, type KeyboardEvent, type ReactNode } from 'react';
-import { Activity, Database, FlaskConical, HardDrive, Info, Orbit } from 'lucide-react';
+import { Activity, Database, FlaskConical, HardDrive, Info, Orbit, X } from 'lucide-react';
 import { cx } from '../ui/primitives';
 
 export type InspectorTab = 'summary' | 'spectrum' | 'composition' | 'motion' | 'local' | 'data';
@@ -22,9 +22,11 @@ interface Props {
   /** Indicadores (punto de actividad) por pestaña. */
   busy?: Partial<Record<InspectorTab, boolean>>;
   children: ReactNode;
+  /** En celular el inspector es una hoja inferior: botón para cerrarla. */
+  onClose?: () => void;
 }
 
-export function Inspector({ tab, onTab, busy = {}, children }: Props) {
+export function Inspector({ tab, onTab, busy = {}, children, onClose }: Props) {
   const refs = useRef<Record<string, HTMLButtonElement | null>>({});
   const onKey = (e: KeyboardEvent, i: number) => {
     const next = e.key === 'ArrowRight' ? (i + 1) % TABS.length : e.key === 'ArrowLeft' ? (i - 1 + TABS.length) % TABS.length : -1;
@@ -36,6 +38,14 @@ export function Inspector({ tab, onTab, busy = {}, children }: Props) {
 
   return (
     <aside aria-label="Datos del punto" className="h-full flex flex-col bx-panel border-y-0 border-r-0 min-w-0">
+      {onClose && (
+        <div className="md:hidden shrink-0 relative flex items-center justify-center h-7">
+          <span className="w-10 h-1 rounded-full bg-white/20" aria-hidden="true" />
+          <button type="button" onClick={onClose} aria-label="Cerrar panel" className="absolute right-1.5 top-0.5 h-8 w-8 inline-flex items-center justify-center rounded-lg text-muted hover:text-fg cursor-pointer">
+            <X className="w-4 h-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
       <div role="tablist" aria-label="Secciones" className="grid grid-cols-6 shrink-0 border-b border-line px-1 pt-1.5">
         {TABS.map((t, i) => {
           const on = t.id === tab;

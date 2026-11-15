@@ -8,6 +8,7 @@ import type { StatusResponse } from '../../hooks/useSkyContract';
 import { LIVE_DATA } from '../../../lib/skyApi';
 import { Kbd, Segmented, cx } from '../ui/primitives';
 import { LangSwitch, RepoMenu } from './RepoMenu';
+import { MobileMenu } from './MobileMenu';
 
 interface TopBarProps {
   targets: TargetCatalogEntry[];
@@ -94,9 +95,9 @@ export function TopBar({
     : [];
 
   return (
-    <header className="h-14 shrink-0 bx-panel border-x-0 border-t-0 flex items-center gap-2 sm:gap-3 px-2 sm:px-3">
-      <a href="/" className="brand text-[15px] text-fg px-2 shrink-0" aria-label="Blink X, volver a la historia">
-        <span>Blink X</span>
+    <header className="h-14 shrink-0 bx-panel border-x-0 border-t-0 flex items-center gap-1 sm:gap-3 px-1.5 sm:px-3">
+      <a href="/" className="brand text-[15px] text-fg px-1.5 sm:px-2 shrink-0" aria-label="Blink X, volver a la historia">
+        <span className="max-[380px]:hidden">Blink X</span>
         <span className="blink-dot" aria-hidden="true" />
       </a>
 
@@ -106,7 +107,7 @@ export function TopBar({
         aria-pressed={notesOpen}
         aria-label={notesOpen ? 'Ocultar notas' : `Mostrar notas (${notesCount})`}
         title={notesOpen ? 'Ocultar notas' : 'Notas de observación'}
-        className={cx('relative h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg cursor-pointer', notesOpen ? 'text-fg bg-white/[0.08]' : 'text-muted hover:text-fg hover:bg-white/[0.06]')}
+        className={cx('relative h-9 w-9 shrink-0 max-md:hidden inline-flex items-center justify-center rounded-lg cursor-pointer', notesOpen ? 'text-fg bg-white/[0.08]' : 'text-muted hover:text-fg hover:bg-white/[0.06]')}
       >
         <NotebookPen className="w-4 h-4" aria-hidden="true" />
         {notesCount > 0 && !notesOpen && (
@@ -114,26 +115,26 @@ export function TopBar({
         )}
       </button>
 
-      <div className="h-6 w-px bg-line hidden sm:block" aria-hidden="true" />
+      <div className="h-6 w-px bg-line hidden md:block" aria-hidden="true" />
 
       {/* Objetivo actual + objetivos sugeridos */}
-      <div ref={menuRef} className="relative min-w-0">
+      <div ref={menuRef} className="relative min-w-0 max-md:flex-1">
         <button
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-white/[0.06] min-w-0 cursor-pointer"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-white/[0.06] min-w-0 max-md:w-full cursor-pointer"
         >
           {isResolving ? <Loader2 className="w-4 h-4 animate-spin text-ember shrink-0" aria-hidden="true" /> : <Telescope className="w-4 h-4 text-ember shrink-0" aria-hidden="true" />}
           <span className="min-w-0 text-left">
-            <span className="block text-[14px] font-semibold text-fg truncate max-w-[42vw] sm:max-w-[260px]">{isResolving ? 'Buscando…' : title}</span>
-            <span className="block text-[11px] text-muted truncate max-w-[42vw] sm:max-w-[260px]">{subtitle}</span>
+            <span className="block text-[14px] font-semibold text-fg truncate max-md:max-w-none sm:max-w-[260px]">{isResolving ? 'Buscando…' : title}</span>
+            <span className="block text-[11px] text-muted truncate max-md:max-w-none sm:max-w-[260px]">{subtitle}</span>
           </span>
           <ChevronDown className={cx('w-4 h-4 text-muted shrink-0 transition-transform', menuOpen && 'rotate-180')} aria-hidden="true" />
         </button>
         {menuOpen && (
-          <div role="menu" className="absolute left-0 top-full mt-2 w-80 bx-float rounded-xl p-1.5 shadow-2xl z-50 animate-panel-enter">
+          <div role="menu" className="absolute left-0 top-full mt-2 w-80 max-md:fixed max-md:left-2 max-md:right-2 max-md:top-[60px] max-md:w-auto max-md:max-h-[calc(100dvh-72px)] max-md:overflow-y-auto bx-float rounded-xl p-1.5 shadow-2xl z-50 animate-panel-enter">
             <div className="bx-eyebrow px-2.5 py-1.5">Objetivos del reto</div>
             {targets.map((t) => (
               <button
@@ -195,7 +196,8 @@ export function TopBar({
       <button
         type="button"
         onClick={onOpenSearch}
-        className="ml-auto sm:ml-2 flex items-center gap-2 h-9 rounded-lg border border-line bg-white/[0.03] px-3 text-[13px] text-muted hover:text-fg hover:border-line-strong cursor-pointer sm:min-w-[220px] lg:min-w-[300px]"
+        aria-label="Buscar objeto o coordenadas"
+        className="shrink-0 sm:ml-2 flex items-center justify-center gap-2 h-10 w-10 sm:h-9 sm:w-auto rounded-lg border border-line bg-white/[0.03] sm:px-3 text-[13px] text-muted hover:text-fg hover:border-line-strong cursor-pointer sm:min-w-[220px] lg:min-w-[300px]"
       >
         <Search className="w-4 h-4 text-ember shrink-0" aria-hidden="true" />
         <span className="hidden sm:inline flex-1 text-left truncate">Buscar objeto o coordenadas…</span>
@@ -229,7 +231,7 @@ export function TopBar({
         aria-pressed={inspectorOpen}
         aria-label={inspectorOpen ? 'Ocultar panel de datos' : 'Mostrar panel de datos'}
         title={inspectorOpen ? 'Ocultar panel de datos' : 'Mostrar panel de datos'}
-        className={cx('h-9 w-9 inline-flex items-center justify-center rounded-lg cursor-pointer', inspectorOpen ? 'text-fg bg-white/[0.08]' : 'text-muted hover:text-fg hover:bg-white/[0.06]')}
+        className={cx('h-10 w-10 sm:h-9 sm:w-9 shrink-0 inline-flex items-center justify-center rounded-lg cursor-pointer', inspectorOpen ? 'text-fg bg-white/[0.08]' : 'text-muted hover:text-fg hover:bg-white/[0.06]')}
       >
         <PanelRight className="w-4 h-4" aria-hidden="true" />
       </button>
@@ -238,12 +240,23 @@ export function TopBar({
         onClick={onOpenHelp}
         aria-label="Ayuda"
         title="Ayuda"
-        className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-white/[0.06] cursor-pointer"
+        className="h-9 w-9 max-md:hidden inline-flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-white/[0.06] cursor-pointer"
       >
         <CircleHelp className="w-4 h-4" aria-hidden="true" />
       </button>
-      <LangSwitch />
-      <RepoMenu />
+      <div className="max-md:hidden flex items-center gap-1">
+        <LangSwitch />
+        <RepoMenu />
+      </div>
+      <MobileMenu
+        notesOpen={notesOpen}
+        notesCount={notesCount}
+        onToggleNotes={onToggleNotes}
+        layoutView={layoutView}
+        onChangeLayoutView={onChangeLayoutView}
+        onOpenHelp={onOpenHelp}
+        status={st}
+      />
     </header>
   );
 }

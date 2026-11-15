@@ -552,8 +552,9 @@ export function SpherexExplorerShell() {
           </div>
         ) : (
           inspectorOpen && (
-            <div className="w-[380px] xl:w-[400px] shrink-0 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:z-30 max-lg:w-[min(400px,100%)] max-lg:shadow-2xl animate-panel-enter">
+            <div className="w-[380px] xl:w-[400px] shrink-0 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:z-30 max-lg:w-[min(400px,100%)] max-lg:shadow-2xl max-md:top-auto max-md:h-[min(72%,640px)] max-md:w-full max-md:rounded-t-2xl max-md:overflow-hidden max-md:border-t max-md:border-line animate-panel-enter">
               <Inspector
+                onClose={() => setInspectorOpen(false)}
                 tab={inspectorTab}
                 onTab={setInspectorTab}
                 busy={{

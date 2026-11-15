@@ -149,6 +149,8 @@ export const EN: Record<string, string> = {
   'Ocultar panel de datos': 'Hide data panel',
   'Mostrar panel de datos': 'Show data panel',
   'Ayuda': 'Help',
+  'Más opciones': 'More options',
+  'Cerrar panel': 'Close panel',
   'Cielo': 'Sky',
   'Detectores': 'Detectors',
 
