@@ -165,8 +165,10 @@ body {
 }
 
 /* ---------- Menú de repositorios (GitHub) ---------- */
-.repo-menu { position: relative; margin-left: 0.25rem; }
-.repo-menu > summary { list-style: none; display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0 0.75rem; border-radius: var(--r-sm); color: var(--muted); cursor: pointer; font-size: 0.9375rem; transition: color var(--dur-fast) ease, background-color var(--dur-fast) ease; }
+.repo-menu { position: fixed; z-index: 101; top: calc((var(--header-h) - 44px) / 2); right: var(--gutter); }
+.nav { padding-right: calc(var(--gutter) + 120px); }
+@media (max-width: 480px) { .nav { padding-right: calc(var(--gutter) + 56px); } }
+.repo-menu > summary { list-style: none; background: rgb(5 3 4 / 0.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0 0.75rem; border-radius: var(--r-sm); color: var(--muted); cursor: pointer; font-size: 0.9375rem; transition: color var(--dur-fast) ease, background-color var(--dur-fast) ease; }
 .repo-menu > summary::-webkit-details-marker { display: none; }
 .repo-menu[open] > summary, .repo-menu > summary:focus-visible { color: var(--fg); background: rgb(255 255 255 / 0.08); }
 @media (hover: hover) and (pointer: fine) { .repo-menu > summary:hover { color: var(--fg); background: rgb(255 255 255 / 0.08); } }
