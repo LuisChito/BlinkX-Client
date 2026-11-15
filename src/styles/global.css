@@ -165,9 +165,14 @@ body {
 }
 
 /* ---------- Menú de repositorios (GitHub) ---------- */
-.repo-menu { position: fixed; z-index: 101; top: calc((var(--header-h) - 44px) / 2); right: var(--gutter); }
-.nav { padding-right: calc(var(--gutter) + 120px); }
-@media (max-width: 480px) { .nav { padding-right: calc(var(--gutter) + 56px); } }
+.corner-tools { position: fixed; z-index: 101; top: calc((var(--header-h) - 44px) / 2); right: var(--gutter); display: flex; align-items: center; gap: 0.375rem; }
+.repo-menu { position: relative; }
+.lang-switch { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--line); border-radius: var(--r-sm); background: rgb(5 3 4 / 0.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.lang-switch button { min-width: 36px; min-height: 36px; padding: 0 0.5rem; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: 600 0.8125rem/1 ui-monospace, monospace; cursor: pointer; }
+.lang-switch button[aria-pressed='true'] { background: rgb(255 255 255 / 0.12); color: var(--fg); }
+@media (hover: hover) and (pointer: fine) { .lang-switch button:hover { color: var(--fg); } }
+.nav { padding-right: calc(var(--gutter) + 210px); }
+@media (max-width: 480px) { .nav { padding-right: calc(var(--gutter) + 140px); } }
 .repo-menu > summary { list-style: none; background: rgb(5 3 4 / 0.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0 0.75rem; border-radius: var(--r-sm); color: var(--muted); cursor: pointer; font-size: 0.9375rem; transition: color var(--dur-fast) ease, background-color var(--dur-fast) ease; }
 .repo-menu > summary::-webkit-details-marker { display: none; }
 .repo-menu[open] > summary, .repo-menu > summary:focus-visible { color: var(--fg); background: rgb(255 255 255 / 0.08); }

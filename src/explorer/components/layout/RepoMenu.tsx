@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { cx } from '../ui/primitives';
+import { getLang, setLang, type Lang } from '../../../i18n/translate';
 
 export const REPOS = [
   { label: 'Frontend · visor web', repo: 'LuisChito/BlinkX-Client', href: 'https://github.com/LuisChito/BlinkX-Client', detail: 'Astro + React: historia, visor SPHEREx, notas y respaldo' },
@@ -65,6 +66,26 @@ export function RepoMenu() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Selector de idioma (EN / ES) junto al botón de GitHub. Cambiar recarga la página. */
+export function LangSwitch() {
+  const cur = getLang();
+  return (
+    <div role="group" aria-label="Idioma" className="inline-flex items-center gap-0.5 rounded-lg border border-line bg-white/[0.03] p-0.5">
+      {(['en', 'es'] as Lang[]).map((l) => (
+        <button
+          key={l}
+          type="button"
+          aria-pressed={l === cur}
+          onClick={() => l !== cur && setLang(l)}
+          className={cx('h-7 min-w-8 px-1.5 rounded-md font-mono text-[11px] font-semibold uppercase cursor-pointer', l === cur ? 'bg-white/[0.12] text-fg' : 'text-muted hover:text-fg')}
+        >
+          {l}
+        </button>
+      ))}
     </div>
   );
 }

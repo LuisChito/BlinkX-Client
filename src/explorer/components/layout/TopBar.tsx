@@ -5,7 +5,7 @@ import type { LayoutViewMode, TargetCatalogEntry } from '../../types/spherex';
 import type { StatusResponse } from '../../hooks/useSkyContract';
 import { LIVE_DATA } from '../../../lib/skyApi';
 import { Kbd, Segmented, cx } from '../ui/primitives';
-import { RepoMenu } from './RepoMenu';
+import { LangSwitch, RepoMenu } from './RepoMenu';
 
 interface TopBarProps {
   targets: TargetCatalogEntry[];
@@ -240,6 +240,7 @@ export function TopBar({
       >
         <CircleHelp className="w-4 h-4" aria-hidden="true" />
       </button>
+      <LangSwitch />
       <RepoMenu />
     </header>
   );

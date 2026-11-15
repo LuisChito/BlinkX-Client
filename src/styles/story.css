@@ -27,6 +27,7 @@
 .chapter-copy { display: grid; gap: 1.125rem; min-width: 0; }
 .chapter-title { font-size: clamp(2.75rem, 8.5vw, 7.5rem); text-wrap: balance; }
 #portada .chapter-title { font-size: clamp(4rem, 15vw, 13rem); }
+html[lang="en"] #portada .chapter-title { font-size: clamp(3.25rem, 10.5vw, 9.5rem); }
 .chapter-text { font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); max-width: 46ch; color: #e6d9d4; }
 .chapter-visual { min-width: 0; display: grid; gap: 1rem; justify-items: center; }
 .chapter--stack .chapter-visual { justify-items: stretch; }

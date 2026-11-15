@@ -23,7 +23,17 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      // Idioma: inglés por defecto. Se oculta la página hasta traducirla para que no parpadee el español.
+      try { if (localStorage.getItem('bx-lang') !== 'es') { document.documentElement.classList.add('i18n-pending'); setTimeout(function () { document.documentElement.classList.remove('i18n-pending'); }, 2000); } } catch (e) {}
+    </script>
+    <style is:inline>.i18n-pending body { visibility: hidden; }</style>
+    <script>
+      import { startI18n } from '../i18n/translate';
+      startI18n();
+    </script>
+
   </head>
   <body class={bodyClass}>
     <a class="skip" href="#main">Saltar al contenido</a>
