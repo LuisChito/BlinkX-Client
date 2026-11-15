@@ -1,3 +1,4 @@
+import { SPHEREX_TARGETS } from '../data/spherexCatalog';
 import type {
   DetectorArraySummary,
   EpochIndex,
@@ -403,6 +404,8 @@ const VALID_LENSES = new Set<MolecularLensId>(['all', 'h2o', 'ch4', 'co2', 'co',
 
 export function parseExplorerUrlParams(searchParams: URLSearchParams): ExplorerUrlState {
   const target = searchParams.get('target') || 'barnards-star';
+  // Sin ra/dec en la URL se usa la posición del objetivo indicado (antes caía siempre en Barnard).
+  const entry = SPHEREX_TARGETS.find((t) => t.id === target);
   const raParam = searchParams.get('ra');
   const decParam = searchParams.get('dec');
   const fovParam = searchParams.get('fov');
@@ -421,9 +424,9 @@ export function parseExplorerUrlParams(searchParams: URLSearchParams): ExplorerU
 
   return {
     target,
-    ra: Number.isFinite(raRaw) ? normalizeRa(raRaw) : 269.4521,
-    dec: Number.isFinite(decRaw) ? clampDec(decRaw) : 4.6934,
-    fov: Number.isFinite(fovRaw) ? Math.max(0.04, Math.min(8, fovRaw)) : 0.15,
+    ra: Number.isFinite(raRaw) ? normalizeRa(raRaw) : entry?.raDeg ?? 269.4521,
+    dec: Number.isFinite(decRaw) ? clampDec(decRaw) : entry?.decDeg ?? 4.6934,
+    fov: Number.isFinite(fovRaw) ? Math.max(0.04, Math.min(8, fovRaw)) : entry?.defaultFov ?? 0.15,
     epoch,
     mode: modeRaw && VALID_MODES.has(modeRaw) ? modeRaw : 'normal',
     view: viewRaw && VALID_VIEWS.has(viewRaw) ? viewRaw : 'hud',

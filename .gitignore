@@ -19,3 +19,8 @@ Thumbs.db
 
 # registros
 npm-debug.log*
+
+# respaldo sin conexión del visor (lo genera scripts/backup-demo.mjs; puede pesar cientos de MB)
+public/backup/
+
+scripts/descargar-copia.log

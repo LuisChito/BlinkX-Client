@@ -11,7 +11,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "vitest run"
+    "test": "vitest run",
+    "backup": "node scripts/backup-demo.mjs",
+    "backup:wait": "node scripts/backup-demo.mjs --wait"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.9",

@@ -458,6 +458,8 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   //    `spectrum` and `predict` are strictly on-demand (click/button), never auto-fired here.
   useEffect(() => {
     const prevSeq = loadedSeqRef.current;
+    /** ¿La secuencia mostrada es de otra zona? Si la nueva falla, no se debe seguir mostrando la anterior. */
+    let seqAreaChanged = true;
     if (prevSeq) {
       let dra = Math.abs(ra - prevSeq.ra);
       if (dra > 180) dra = 360 - dra;
@@ -467,6 +469,7 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
         ddec * 3600,
       );
       const insideLoadedArea = distArcsec <= prevSeq.fovArcsec * 0.35;
+      seqAreaChanged = !insideLoadedArea;
       const sameRenderParams =
         prevSeq.detector === detector &&
         prevSeq.stretch === stretch &&
@@ -546,7 +549,11 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
             setObjects(res as ObjectsResponse);
             if (res?.partial) mergeWarnings(res.warnings);
           })
-          .catch(handleErr);
+          .catch((e) => {
+            // Zona nueva sin datos (p. ej. objetivo sin copia de seguridad): no dejar los de la zona anterior.
+            if (!signal.aborted && !isAbort(e)) setObjects(null);
+            handleErr(e);
+          });
 
         api
           .frames({ ra, dec, fov: seqFov, detector, limit: 48, offset: 0 })
@@ -555,7 +562,10 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
             setFrames(res as FramesResponse);
             if (res?.partial) mergeWarnings(res.warnings);
           })
-          .catch(handleErr);
+          .catch((e) => {
+            if (!signal.aborted && !isAbort(e)) setFrames(null);
+            handleErr(e);
+          });
 
         api
           .coverage({ ra, dec, detector })
@@ -563,7 +573,10 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
             if (signal.aborted) return;
             setCoverage(res as CoverageResponse);
           })
-          .catch(handleErr);
+          .catch((e) => {
+            if (!signal.aborted && !isAbort(e)) setCoverage(null);
+            handleErr(e);
+          });
       }
 
       // Slow Job: Sequence (TAN reprojected PNGs, cached 5min in skyApi.ts)
@@ -609,6 +622,10 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
           if (!signal.aborted) {
             setLoadingSequence(false);
             updateJob('sequence', null);
+            if (seqAreaChanged && !isAbort(e)) {
+              loadedSeqRef.current = null;
+              setSequence(null);
+            }
           }
           handleErr(e);
         });

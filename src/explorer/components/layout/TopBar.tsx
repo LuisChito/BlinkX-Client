@@ -1,6 +1,6 @@
 /* Barra superior: marca · objetivo actual · búsqueda · vista · estado del servidor · ayuda. */
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, CircleHelp, Loader2, PanelRight, Search, Telescope } from 'lucide-react';
+import { ChevronDown, CircleHelp, HardDriveDownload, Loader2, NotebookPen, PanelRight, Search, Telescope } from 'lucide-react';
 import type { LayoutViewMode, TargetCatalogEntry } from '../../types/spherex';
 import type { StatusResponse } from '../../hooks/useSkyContract';
 import { Kbd, Segmented, cx } from '../ui/primitives';
@@ -14,12 +14,29 @@ interface TopBarProps {
   layoutView: LayoutViewMode;
   apiStatus: StatusResponse | null;
   inspectorOpen: boolean;
+  notesOpen: boolean;
+  notesCount: number;
+  onToggleNotes: () => void;
   onSelectTarget: (t: TargetCatalogEntry) => void;
   onOpenSearch: () => void;
   onChangeLayoutView: (v: LayoutViewMode) => void;
   onToggleInspector: () => void;
   onOpenHelp: () => void;
+  /** «Copia de seguridad»: usar las imágenes ya descargadas (public/backup) en vez del backend. */
+  backupOn: boolean;
+  backupAvailable: boolean;
+  /** Centros con imágenes guardadas, para marcar qué objetivos están en la copia. */
+  backupCenters: { ra: number; dec: number }[];
+  /** Centros con L2 / L2 color guardado (objetivos que solo tienen la imagen L2 en la copia). */
+  backupL2Centers: { ra: number; dec: number }[];
+  onToggleBackup: (on: boolean) => void;
 }
+
+const near = (t: TargetCatalogEntry, c: { ra: number; dec: number }) => {
+  let dra = Math.abs(t.raDeg - c.ra);
+  if (dra > 180) dra = 360 - dra;
+  return Math.hypot(dra * Math.cos((t.decDeg * Math.PI) / 180), t.decDeg - c.dec) < 0.3;
+};
 
 const STATUS = {
   ok: { dot: 'bg-ok', label: 'Servidor en línea' },
@@ -36,11 +53,19 @@ export function TopBar({
   layoutView,
   apiStatus,
   inspectorOpen,
+  notesOpen,
+  notesCount,
+  onToggleNotes,
   onSelectTarget,
   onOpenSearch,
   onChangeLayoutView,
   onToggleInspector,
   onOpenHelp,
+  backupOn,
+  backupAvailable,
+  backupCenters,
+  backupL2Centers,
+  onToggleBackup,
 }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -69,6 +94,20 @@ export function TopBar({
         <span>Blink X</span>
         <span className="blink-dot" aria-hidden="true" />
       </a>
+
+      <button
+        type="button"
+        onClick={onToggleNotes}
+        aria-pressed={notesOpen}
+        aria-label={notesOpen ? 'Ocultar notas' : `Mostrar notas (${notesCount})`}
+        title={notesOpen ? 'Ocultar notas' : 'Notas de observación'}
+        className={cx('relative h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg cursor-pointer', notesOpen ? 'text-fg bg-white/[0.08]' : 'text-muted hover:text-fg hover:bg-white/[0.06]')}
+      >
+        <NotebookPen className="w-4 h-4" aria-hidden="true" />
+        {notesCount > 0 && !notesOpen && (
+          <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-ember text-ember-ink text-[10px] font-bold leading-4 text-center">{notesCount}</span>
+        )}
+      </button>
 
       <div className="h-6 w-px bg-line hidden sm:block" aria-hidden="true" />
 
@@ -110,9 +149,39 @@ export function TopBar({
                   <span className="block text-[13px] font-medium text-fg truncate">{t.name}</span>
                   <span className="block text-[11px] text-muted truncate">{t.category}</span>
                 </span>
-                {t.id === selectedTargetId && <span className="w-2 h-2 rounded-full bg-ember shrink-0" aria-hidden="true" />}
+                <span className="flex items-center gap-2 shrink-0">
+                  {backupOn && (backupCenters.some((c) => near(t, c))
+                    ? <span className="text-[10px] font-mono text-data">guardado</span>
+                    : backupL2Centers.some((c) => near(t, c))
+                      ? <span className="text-[10px] font-mono text-data/80" title="En la copia solo está la imagen L2 / L2 color">solo L2</span>
+                      : <span className="text-[10px] font-mono text-muted">sin copia</span>)}
+                  {t.id === selectedTargetId && <span className="w-2 h-2 rounded-full bg-ember" aria-hidden="true" />}
+                </span>
               </button>
             ))}
+            <div className="my-1.5 h-px bg-line" aria-hidden="true" />
+            <button
+              type="button"
+              role="menuitemcheckbox"
+              aria-checked={backupOn}
+              disabled={!backupAvailable && !backupOn}
+              onClick={() => onToggleBackup(!backupOn)}
+              title="Usa las imágenes de SPHEREx ya descargadas, sin conectarse al backend"
+              className="w-full text-left rounded-lg px-2.5 py-2 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="flex items-center gap-2.5 min-w-0">
+                <HardDriveDownload className={cx('w-4 h-4 shrink-0', backupOn ? 'text-data' : 'text-muted')} aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className="block text-[13px] font-medium text-fg">Copia de seguridad</span>
+                  <span className="block text-[11px] text-muted truncate">
+                    {backupOn ? 'Usando imágenes ya descargadas' : backupAvailable ? 'Apagada: datos en vivo del backend' : 'No hay copia descargada'}
+                  </span>
+                </span>
+              </span>
+              <span className={cx('relative w-9 h-5 rounded-full shrink-0 transition-colors', backupOn ? 'bg-data' : 'bg-white/15')} aria-hidden="true">
+                <span className={cx('absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all', backupOn ? 'left-[18px]' : 'left-0.5')} />
+              </span>
+            </button>
           </div>
         )}
       </div>

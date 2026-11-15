@@ -15,6 +15,9 @@ import { TopBar } from './components/layout/TopBar';
 import { ViewerDock } from './components/layout/ViewerDock';
 import { ActivityStatus } from './components/layout/ActivityStatus';
 import { HelpDialog } from './components/layout/HelpDialog';
+import { SystemBanner } from './components/layout/SystemBanner';
+import { NotesPanel, loadNotes, type NoteContext } from './components/notes/NotesPanel';
+import { useBackupInfo } from './hooks/useBackupInfo';
 import { Inspector, type InspectorTab } from './components/inspector/Inspector';
 import { SummaryTab } from './components/inspector/SummaryTab';
 import { SpectrumTab } from './components/inspector/SpectrumTab';
@@ -75,6 +78,16 @@ export function SpherexExplorerShell() {
   const [detectorsMax, setDetectorsMax] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(() => {
+    try { return localStorage.getItem('bx-notes-open') === '1'; } catch { return false; }
+  });
+  const [notesCount, setNotesCount] = useState(() => (typeof window === 'undefined' ? 0 : loadNotes().length));
+  /** Al volver a una nota: fecha de la imagen que hay que mostrar cuando llegue la secuencia. */
+  const [pendingFrameDate, setPendingFrameDate] = useState<string | null>(null);
+  const backupInfo = useBackupInfo();
+  useEffect(() => {
+    try { localStorage.setItem('bx-notes-open', notesOpen ? '1' : '0'); } catch { /* sin almacenamiento */ }
+  }, [notesOpen]);
   const [compositionOpen, setCompositionOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [activeTargetName, setActiveTargetName] = useState<string | undefined>(selectedTarget.name);
@@ -99,8 +112,21 @@ export function SpherexExplorerShell() {
     showWise: overlays.allWise,
   });
 
+  // «Copia de seguridad»: al cambiar entre datos guardados y en vivo se recarga la vista actual.
+  const backup = useMemo(
+    () => ({ ...backupInfo, setOnly: (on: boolean) => { backupInfo.setOnly(on); sky.retry(); } }),
+    [backupInfo, sky.retry],
+  );
+
   const frames = sky.sequence?.frames ?? [];
-  useEffect(() => setFrameIndex(0), [sky.sequence]);
+  useEffect(() => {
+    if (pendingFrameDate && sky.sequence) {
+      const i = sky.sequence.frames.findIndex((f) => f.date_obs === pendingFrameDate);
+      setFrameIndex(Math.max(0, i));
+      setPendingFrameDate(null);
+    } else setFrameIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sky.sequence]);
   useEffect(() => { if (!sky.l2) setL2View('off'); }, [sky.l2]);
 
   useEffect(() => {
@@ -280,6 +306,21 @@ export function SpherexExplorerShell() {
 
   const measurePoint = sky.probeCoord ?? center;
 
+  // Contexto que se adjunta a cada nota (para poder volver a esa vista).
+  const noteContext: NoteContext = useMemo(
+    () => ({
+      title,
+      ra: urlState.ra,
+      dec: urlState.dec,
+      fov: urlState.fov,
+      mode: urlState.mode,
+      frameDate: urlState.mode === 'diff' || urlState.mode === 'sum' ? undefined : shownFrame?.date_obs,
+      detector: shownFrame?.detector,
+      bandUm: shownFrame?.band_um,
+    }),
+    [shownFrame, title, urlState.dec, urlState.fov, urlState.mode, urlState.ra],
+  );
+
   // Rango de fechas para /api/predict: el de las imágenes disponibles en la zona.
   const predictFrom = (sky.coverage?.first_date ?? '2025-05-01').slice(0, 10);
   const predictTo = (sky.coverage?.last_date ?? '2026-06-01').slice(0, 10);
@@ -348,9 +389,39 @@ export function SpherexExplorerShell() {
         onChangeLayoutView={(view: LayoutViewMode) => updateUrlState({ view })}
         onToggleInspector={() => (isSplit ? updateUrlState({ view: 'hud' }) : setInspectorOpen((o) => !o))}
         onOpenHelp={() => setHelpOpen(true)}
+        notesOpen={notesOpen}
+        notesCount={notesCount}
+        onToggleNotes={() => setNotesOpen((o) => !o)}
+        backupOn={backup.only}
+        backupAvailable={backup.available}
+        backupCenters={backup.sequenceCenters}
+        backupL2Centers={backup.l2Centers}
+        onToggleBackup={backup.setOnly}
       />
+      <SystemBanner status={sky.status} backup={backup} />
 
       <div className="relative flex-1 min-h-0 flex">
+        {/* Notas (izquierda) */}
+        {notesOpen && (
+          <div className="w-[300px] xl:w-[320px] shrink-0 max-lg:absolute max-lg:inset-y-0 max-lg:left-0 max-lg:z-30 max-lg:w-[min(320px,100%)] max-lg:shadow-2xl animate-panel-enter">
+            <NotesPanel
+              current={noteContext}
+              onClose={() => setNotesOpen(false)}
+              onCountChange={setNotesCount}
+              onGoTo={(ctx) => {
+                setL2View('off');
+                setIsPlaying(false);
+                if (ctx.frameDate) {
+                  const i = frames.findIndex((f) => f.date_obs === ctx.frameDate);
+                  if (i >= 0 && Math.abs(ctx.ra - urlState.ra) < 1e-4 && Math.abs(ctx.dec - urlState.dec) < 1e-4) setFrameIndex(i);
+                  else setPendingFrameDate(ctx.frameDate);
+                }
+                updateUrlState({ ra: ctx.ra, dec: ctx.dec, fov: ctx.fov, mode: ctx.mode });
+              }}
+            />
+          </div>
+        )}
+
         {/* Cielo */}
         <main className={isSplit && detectorsMax ? 'hidden' : 'relative flex-1 min-w-0'} aria-label="Cielo">
           <SkyStage
@@ -576,6 +647,7 @@ export function SpherexExplorerShell() {
                     status={sky.status}
                     warnings={sky.warnings}
                     shareUrl={shareUrl}
+                    backup={backup}
                   />
                 )}
               </Inspector>

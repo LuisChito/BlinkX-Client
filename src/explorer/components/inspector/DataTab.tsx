@@ -1,6 +1,7 @@
 /* Pestaña Datos: metadatos de la imagen visible, lecturas de píxel, estado de las fuentes y enlace. */
 import { useState } from 'react';
-import { Check, Link2 } from 'lucide-react';
+import { Check, HardDriveDownload, Link2 } from 'lucide-react';
+import type { BackupInfo } from '../../../lib/skyApi';
 import type { Frame, SequenceResult } from '../../../lib/skyApi';
 import type { CubePixelResult, L2PixelResult, StackResult, StatusResponse } from '../../hooks/useSkyContract';
 import { Button, Chip, KV, SectionHeader, fmtDateTime, summarizeWarnings } from '../ui/primitives';
@@ -15,6 +16,7 @@ interface Props {
   status: StatusResponse | null;
   warnings: string[];
   shareUrl: string;
+  backup: BackupInfo & { setOnly: (on: boolean) => void };
 }
 
 const SOURCE_NAMES: Record<string, string> = {
@@ -26,7 +28,7 @@ const SOURCE_NAMES: Record<string, string> = {
   horizons: 'JPL Horizons',
 };
 
-export function DataTab({ frame, modeLabel, sequence, stack, l2Pixel, cubePixel, status, warnings, shareUrl }: Props) {
+export function DataTab({ frame, modeLabel, sequence, stack, l2Pixel, cubePixel, status, warnings, shareUrl, backup }: Props) {
   const [copied, setCopied] = useState(false);
   const sources = (status?.sources ?? {}) as Record<string, { ok: boolean; latency_ms: number | null; last_error: string | null }>;
 
@@ -103,6 +105,35 @@ export function DataTab({ frame, modeLabel, sequence, stack, l2Pixel, cubePixel,
           </ul>
         </section>
       )}
+
+      <section>
+        <SectionHeader
+          title={<span className="flex items-center gap-1.5"><HardDriveDownload className="w-4 h-4 text-data" aria-hidden="true" />Respaldo sin conexión</span>}
+          hint="Copia local de los objetivos del reto para que la presentación no dependa de internet."
+        />
+        {backup.available ? (
+          <div className="bx-card p-3 space-y-2.5">
+            <dl>
+              <KV k="Guardado" v={backup.generatedAt ? new Date(backup.generatedAt).toLocaleString('es') : '—'} />
+              <KV k="Objetivos" v={backup.targets.join(', ') || '—'} />
+              <KV k="Consultas / imágenes" v={`${backup.entries} / ${backup.images}`} />
+              {backup.uses > 0 && <KV k="Respuestas servidas desde el respaldo" v={backup.uses} />}
+            </dl>
+            <label className="flex items-start gap-2 text-xs text-soft cursor-pointer">
+              <input type="checkbox" checked={backup.only} onChange={() => backup.setOnly(!backup.only)} className="mt-0.5 accent-[#ff8a5c]" />
+              <span>
+                <span className="text-fg font-medium">Usar solo el respaldo</span>
+                <span className="block text-[11px] text-muted">No se conecta a la API. Si algo no está guardado, se avisa en lugar de esperar.</span>
+              </span>
+            </label>
+            <p className="text-[11px] text-faint">Aunque no actives esta opción, si la API falla se usa el respaldo automáticamente.</p>
+          </div>
+        ) : (
+          <p className="text-xs text-muted leading-relaxed">
+            No hay respaldo. Genéralo con <code className="font-mono text-soft">node scripts/backup-demo.mjs --wait</code> y recarga la página.
+          </p>
+        )}
+      </section>
 
       <section>
         <SectionHeader title="Compartir esta vista" hint="El enlace guarda coordenadas, zoom y modo." />

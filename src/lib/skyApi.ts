@@ -15,8 +15,14 @@ export const API_BASE: string = (
   env.PUBLIC_API_BASE || env.PUBLIC_API_URL || env.VITE_API_URL || env.NEXT_PUBLIC_API_URL || env.REACT_APP_API_URL || "http://localhost:8000"
 ).replace(/\/+$/, "");
 
-/** Convierte una ruta relativa que devuelve la API ("/api/frame/...png") en URL absoluta para <img src>. */
-export const abs = (path: string) => (path.startsWith("http") ? path : `${API_BASE}${path}`);
+/** Convierte una ruta relativa que devuelve la API ("/api/frame/...png") en URL absoluta para <img src>.
+ *  Si la imagen está en el respaldo sin conexión (public/backup), se sirve desde ahí (más rápido y no depende de la API). */
+export const abs = (path: string) => {
+  // Solo se sirven imágenes guardadas cuando se está usando la copia sin conexión.
+  const local = usingBackup() ? backupManifest?.images?.[path] : undefined;
+  if (local) return `${BACKUP_BASE}${local}`;
+  return path.startsWith("http") ? path : `${API_BASE}${path}`;
+};
 
 export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string) {
@@ -36,6 +42,121 @@ function qs(params: Params = {}): string {
   }
   const s = u.toString();
   return s ? `?${s}` : "";
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Respaldo sin conexión: public/backup/manifest.json (lo genera scripts/backup-demo.mjs).
+// Si una consulta falla (red, 5xx, IRSA caído) y está respaldada, se responde con el respaldo.
+// Con "solo respaldo" activado no se toca la red (útil en una presentación).
+// ---------------------------------------------------------------------------------------------------------------
+export interface BackupManifest {
+  version: number;
+  generated_at: string;
+  api: string;
+  targets: string[];
+  /** clave de consulta → archivo JSON (relativo a /backup/) */
+  entries: Record<string, string>;
+  /** URL relativa de imagen de la API → archivo PNG (relativo a /backup/) */
+  images: Record<string, string>;
+}
+
+const BACKUP_BASE = "/backup/";
+const BACKUP_ONLY_KEY = "bx-backup-only";
+let backupManifest: BackupManifest | null = null;
+
+const backupReady: Promise<BackupManifest | null> =
+  typeof window === "undefined"
+    ? Promise.resolve(null)
+    : fetch(`${BACKUP_BASE}manifest.json`, { cache: "no-cache" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((m) => {
+          backupManifest = m && m.entries ? (m as BackupManifest) : null;
+          notifyBackup();
+          return backupManifest;
+        })
+        .catch(() => null);
+
+/** Clave de una consulta en el respaldo (la misma que calcula el script). */
+export const backupKey = (method: string, path: string, params?: Params, body?: unknown) =>
+  `${method} ${path}${qs(roundParams(params))}${body ? ` ${JSON.stringify(body)}` : ""}`;
+
+/** «Copia de seguridad» (menú de objetivos): con el interruptor activado todo se responde con public/backup
+ *  y no se toca la API; desactivado, todo va al backend en vivo. */
+export const usingBackup = () => isBackupOnly();
+
+export function isBackupOnly(): boolean {
+  try { return typeof localStorage !== "undefined" && localStorage.getItem(BACKUP_ONLY_KEY) === "1"; } catch { return false; }
+}
+
+export function setBackupOnly(on: boolean) {
+  try { if (on) localStorage.setItem(BACKUP_ONLY_KEY, "1"); else localStorage.removeItem(BACKUP_ONLY_KEY); } catch { /* sin almacenamiento */ }
+  cache.clear();
+  inflight.clear();
+  slowRuns.clear();
+  notifyBackup();
+}
+
+let backupUses = 0;
+export interface BackupInfo {
+  loaded: boolean; available: boolean; generatedAt: string | null; targets: string[]; entries: number; images: number; only: boolean; uses: number;
+  /** Centros con secuencia de imágenes guardada (lo mínimo para ver un objetivo con la copia de seguridad). */
+  sequenceCenters: { ra: number; dec: number }[];
+  /** Centros con imagen L2 / L2 color guardada. */
+  l2Centers: { ra: number; dec: number }[];
+}
+export function getBackupInfo(): BackupInfo {
+  return {
+    loaded: backupManifest !== null,
+    available: !!backupManifest && Object.keys(backupManifest.entries).length > 0,
+    generatedAt: backupManifest?.generated_at ?? null,
+    targets: backupManifest?.targets ?? [],
+    entries: backupManifest ? Object.keys(backupManifest.entries).length : 0,
+    images: backupManifest ? Object.keys(backupManifest.images).length : 0,
+    only: isBackupOnly(),
+    uses: backupUses,
+    sequenceCenters: backupCenters("GET /api/sequence?"),
+    l2Centers: backupCenters("GET /api/l2?"),
+  };
+}
+function backupCenters(prefix: string): { ra: number; dec: number }[] {
+  return Object.keys(backupManifest?.entries ?? {})
+    .filter((k) => k.startsWith(prefix))
+    .map((k) => { const sp = new URLSearchParams(k.split("?")[1].split(" ")[0]); return { ra: Number(sp.get("ra")), dec: Number(sp.get("dec")) }; });
+}
+/** La interfaz escucha este evento para refrescar el estado del respaldo. */
+function notifyBackup() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("bx-backup"));
+}
+
+async function fromBackup<T>(key: string): Promise<T | null> {
+  const m = await backupReady;
+  const file = m?.entries[key];
+  if (!file) return null;
+  try {
+    const r = await fetch(`${BACKUP_BASE}${file}`);
+    if (!r.ok) return null;
+    const data = (await r.json()) as T;
+    backupUses++;
+    notifyBackup();
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+const backupMiss = () =>
+  new ApiError(404, "backup_miss", "Esto no está en la copia de seguridad. Elige uno de los objetivos guardados o desactiva «Copia de seguridad» en el menú de objetivos.");
+
+/** Con «Copia de seguridad» activada la consulta sale de public/backup y nunca de la red.
+ *  Desactivada, va siempre al backend, sin mezclar datos guardados.
+ *  `wrap` adapta el JSON guardado a la forma que devuelve `net` (p. ej. `{ status, data }`). */
+async function withBackup<T, D = T>(key: string, net: () => Promise<T>, wrap: (data: D) => T = (d) => d as unknown as T): Promise<T> {
+  if (usingBackup()) {
+    const b = await fromBackup<D>(key);
+    if (b !== null) return wrap(b);
+    throw backupMiss();
+  }
+  return net();
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -78,7 +199,11 @@ async function request<T>(method: "GET" | "POST", path: string, params?: Params,
   }
   const running = inflight.get(key);
   if (running) return running as Promise<{ status: number; data: T }>;
-  const p = rawRequest<T>(method, path, params, body, signal).then((r) => {
+  const bkey = backupKey(method, path, params, body);
+  // /api/status es el estado real del servidor: nunca sale del respaldo.
+  const p = (path === "/api/status"
+    ? rawRequest<T>(method, path, params, body, signal)
+    : withBackup(bkey, () => rawRequest<T>(method, path, params, body, signal), (data: T) => ({ status: 200, data }))).then((r) => {
     if (cacheable && r.status === 200) cache.set(key, { at: Date.now(), value: r });
     return r;
   }).finally(() => inflight.delete(key));
@@ -138,7 +263,8 @@ async function slow<R>(method: "GET" | "POST", path: string, params?: Params, bo
   if (run) {
     if (onProgress) run.listeners?.add(onProgress);
   } else {
-    run = (async () => {
+    const bkey = backupKey(method, path, params, body);
+    run = withBackup<R>(bkey, async () => {
       const first = await rawRequest<any>(method, path, params, body);
       if (first.status === 200) return first.data as R;
       let job = first.data as Job<R>;
@@ -149,7 +275,7 @@ async function slow<R>(method: "GET" | "POST", path: string, params?: Params, bo
         await sleep(Math.max(job.poll_after_ms ?? MIN_POLL_MS, MIN_POLL_MS));
         job = (await rawRequest<Job<R>>("GET", `/api/jobs/${job.id}`)).data;
       }
-    })() as Promise<R> & { listeners?: Set<OnProgress> };
+    }) as Promise<R> & { listeners?: Set<OnProgress> };
     run.listeners = listeners;
     slowRuns.set(key, run);
     run.then((data) => cache.set(key, { at: Date.now(), value: { status: 200, data } }))

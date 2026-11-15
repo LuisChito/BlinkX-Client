@@ -5,7 +5,7 @@ import { ImageOff, Loader2 } from 'lucide-react';
 import type { CatalogOverlayState, ViewMode } from '../types/spherex';
 import { objectTypeLabel } from './ui/primitives';
 import { clampDec, normalizeRa } from '../utils/urlState';
-import { abs, clickToPng, skyToSequencePixel, type Coord, type SequenceResult } from '../../lib/skyApi';
+import { abs, clickToPng, isBackupOnly, skyToSequencePixel, type Coord, type SequenceResult } from '../../lib/skyApi';
 import { pixelToSky, skyToPixel } from '../../lib/projection';
 import type {
   AsteroidPredictResult,
@@ -531,7 +531,11 @@ export function SkyStage({
           ) : !isLoading ? (
             <div className="flex flex-col items-center gap-2 text-muted text-[13px] text-center px-6">
               <ImageOff className="w-6 h-6" aria-hidden="true" />
-              {imgError ? 'No se pudo cargar la imagen.' : 'SPHEREx no tiene exposiciones en esta posición.'}
+              {imgError
+                ? 'No se pudo cargar la imagen.'
+                : isBackupOnly()
+                  ? 'La copia de seguridad no tiene la secuencia de esta zona. Prueba «L2» o «L2 color» abajo, o usa los datos en vivo.'
+                  : 'SPHEREx no tiene exposiciones en esta posición.'}
             </div>
           ) : null}
         </div>
