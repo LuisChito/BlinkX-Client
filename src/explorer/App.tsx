@@ -19,6 +19,7 @@ import { SystemBanner } from './components/layout/SystemBanner';
 import { NotesPanel, loadNotes, type NoteContext } from './components/notes/NotesPanel';
 import { useBackupInfo } from './hooks/useBackupInfo';
 import { Inspector, type InspectorTab } from './components/inspector/Inspector';
+import { LocalTab } from './components/inspector/LocalTab';
 import { SummaryTab } from './components/inspector/SummaryTab';
 import { SpectrumTab } from './components/inspector/SpectrumTab';
 import { DataTab } from './components/inspector/DataTab';
@@ -634,6 +635,15 @@ export function SpherexExplorerShell() {
                     onHorizonDays={setHorizonDays}
                     onTogglePick={() => setPickMode((m) => !m)}
                     onClearAsteroid={sky.clearAsteroid}
+                  />
+                )}
+                {inspectorTab === 'local' && (
+                  <LocalTab
+                    center={{ ra: urlState.ra, dec: urlState.dec }}
+                    onGoTo={(ra, dec) => {
+                      setL2View('off');
+                      updateUrlState({ ra, dec });
+                    }}
                   />
                 )}
                 {inspectorTab === 'data' && (

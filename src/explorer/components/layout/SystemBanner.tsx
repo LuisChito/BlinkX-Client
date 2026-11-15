@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { CloudOff, HardDriveDownload, X } from 'lucide-react';
 import type { StatusResponse } from '../../hooks/useSkyContract';
-import type { BackupInfo } from '../../../lib/skyApi';
+import { LIVE_DATA, type BackupInfo } from '../../../lib/skyApi';
 import { cx } from '../ui/primitives';
 
 interface Props {
@@ -17,6 +17,17 @@ export function SystemBanner({ status, backup }: Props) {
   const [dismissed, setDismissed] = useState(false);
   const spherex = (status?.sources as Record<string, { ok: boolean; last_error: string | null }> | undefined)?.spherex;
   const irsaDown = spherex?.ok === false;
+
+  if (!LIVE_DATA) {
+    return (
+      <div role="status" className="shrink-0 flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-1.5 border-b border-data/30 bg-data/10 text-xs text-fg">
+        <HardDriveDownload className="w-4 h-4 text-data shrink-0" aria-hidden="true" />
+        <span className="min-w-0 flex-1">
+          <b className="font-semibold">Datos locales:</b> API Caida, no consulta la API(<code className="font-mono"></code>).
+        </span>
+      </div>
+    );
+  }
 
   if (backup.only) {
     return (

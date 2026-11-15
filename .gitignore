@@ -24,3 +24,6 @@ npm-debug.log*
 public/backup/
 
 scripts/descargar-copia.log
+
+# explorador espectral M101 copiado por scripts/import-pipeline.py --explorer (118 MB)
+public/explorador-m101/

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, CircleHelp, HardDriveDownload, Loader2, NotebookPen, PanelRight, Search, Telescope } from 'lucide-react';
 import type { LayoutViewMode, TargetCatalogEntry } from '../../types/spherex';
 import type { StatusResponse } from '../../hooks/useSkyContract';
+import { LIVE_DATA } from '../../../lib/skyApi';
 import { Kbd, Segmented, cx } from '../ui/primitives';
 
 interface TopBarProps {
@@ -42,6 +43,7 @@ const STATUS = {
   ok: { dot: 'bg-ok', label: 'Servidor en línea' },
   degraded: { dot: 'bg-warn', label: 'Servidor con fallos parciales' },
   down: { dot: 'bg-err', label: 'Servidor sin conexión' },
+  local: { dot: 'bg-data', label: 'Datos locales' },
 } as const;
 
 export function TopBar({
@@ -164,7 +166,7 @@ export function TopBar({
               type="button"
               role="menuitemcheckbox"
               aria-checked={backupOn}
-              disabled={!backupAvailable && !backupOn}
+              disabled={(!backupAvailable && !backupOn) || !LIVE_DATA}
               onClick={() => onToggleBackup(!backupOn)}
               title="Usa las imágenes de SPHEREx ya descargadas, sin conectarse al backend"
               className="w-full text-left rounded-lg px-2.5 py-2 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"

@@ -84,11 +84,17 @@ export const backupKey = (method: string, path: string, params?: Params, body?: 
  *  y no se toca la API; desactivado, todo va al backend en vivo. */
 export const usingBackup = () => isBackupOnly();
 
+/** DATA en .env (ver astro.config.mjs): true → consulta la API en vivo; false → solo datos locales, cero peticiones. */
+declare const __BX_LIVE_DATA__: boolean | undefined;
+export const LIVE_DATA: boolean = typeof __BX_LIVE_DATA__ === "undefined" ? true : __BX_LIVE_DATA__ !== false;
+
 export function isBackupOnly(): boolean {
+  if (!LIVE_DATA) return true;
   try { return typeof localStorage !== "undefined" && localStorage.getItem(BACKUP_ONLY_KEY) === "1"; } catch { return false; }
 }
 
 export function setBackupOnly(on: boolean) {
+  if (!LIVE_DATA) return; // con DATA=false siempre se usan los datos locales
   try { if (on) localStorage.setItem(BACKUP_ONLY_KEY, "1"); else localStorage.removeItem(BACKUP_ONLY_KEY); } catch { /* sin almacenamiento */ }
   cache.clear();
   inflight.clear();
@@ -201,6 +207,10 @@ async function request<T>(method: "GET" | "POST", path: string, params?: Params,
   if (running) return running as Promise<{ status: number; data: T }>;
   const bkey = backupKey(method, path, params, body);
   // /api/status es el estado real del servidor: nunca sale del respaldo.
+  // DATA=false: no se contacta al servidor ni para el estado.
+  if (path === "/api/status" && !LIVE_DATA) {
+    return { status: 200, data: { status: "local", mode: "local", sources: {} } as unknown as T };
+  }
   const p = (path === "/api/status"
     ? rawRequest<T>(method, path, params, body, signal)
     : withBackup(bkey, () => rawRequest<T>(method, path, params, body, signal), (data: T) => ({ status: 200, data }))).then((r) => {
