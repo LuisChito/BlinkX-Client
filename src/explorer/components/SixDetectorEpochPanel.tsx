@@ -11,7 +11,10 @@ import {
 import {
   Box,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Cpu,
+  Download,
   GripHorizontal,
   Loader2,
   Maximize2,
@@ -94,6 +97,46 @@ export function SixDetectorEpochPanel({
   onCloseSplit,
 }: SixDetectorEpochPanelProps) {
   const [selectedDetector, setSelectedDetector] = useState<Detector>(4);
+  const [selectedChannel, setSelectedChannel] = useState<number>(1);
+  const [maximizedMedia, setMaximizedMedia] = useState<{
+    title: string;
+    url: string;
+    filename: string;
+    details?: string;
+  } | null>(null);
+
+  const handleDownloadPng = async (url: string, filename: string) => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    } catch {
+      window.open(url, '_blank');
+    }
+  };
+
+  const channelSpecs = useMemo(() => {
+    const ch = selectedChannel;
+    const waveUm = 0.75 + ((ch - 1) * (5.00 - 0.75)) / 101;
+    let det: Detector = 1;
+    if (ch > 85) det = 6;
+    else if (ch > 68) det = 5;
+    else if (ch > 51) det = 4;
+    else if (ch > 34) det = 3;
+    else if (ch > 17) det = 2;
+    return {
+      channel: ch,
+      wavelength_um: Number(waveUm.toFixed(3)),
+      detector: det,
+    };
+  }, [selectedChannel]);
 
   const realPoints = contractSpectrum?.points ?? [];
 
@@ -472,50 +515,241 @@ export function SixDetectorEpochPanel({
           )}
 
           {cubeResult ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              {/* Galería de 6 Canales Representativos */}
               {cubeResult.six_channels && cubeResult.six_channels.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                  {cubeResult.six_channels.map((ch) => (
-                    <div
-                      key={ch.channel}
-                      className="rounded-lg bg-[#140f10] border border-white/[0.08] overflow-hidden p-1 text-center"
-                    >
-                      <img
-                        src={
-                          ch.png_url
-                            ? abs(ch.png_url)
-                            : api.url.cubeChannel(cubeResult.tile.id, ch.channel)
-                        }
-                        alt={`Canal ${ch.channel}`}
-                        className="w-full aspect-square object-cover rounded bg-black"
-                      />
-                      <div className="text-[9px] font-mono text-[#C8CDD6] mt-1">
-                        Ch {ch.channel} · {ch.wavelength_um.toFixed(2)}μm
-                      </div>
-                    </div>
-                  ))}
+                <div className="space-y-1.5">
+                  <div className="text-[10px] font-mono text-[#b9a8a3] uppercase tracking-wider">
+                    Galería de 6 Canales Clave (clic para seleccionar):
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {cubeResult.six_channels.map((ch) => {
+                      const isCur = ch.channel === selectedChannel;
+                      const chImgUrl = ch.png_url
+                        ? abs(ch.png_url)
+                        : api.url.cubeChannel(cubeResult.tile.id, ch.channel);
+                      return (
+                        <div
+                          key={ch.channel}
+                          onClick={() => setSelectedChannel(ch.channel)}
+                          className={`rounded-lg p-1.5 text-center cursor-pointer transition-all border ${
+                            isCur
+                              ? 'bg-[#1F2026] border-[#ff8a5c] shadow-[0_0_10px_rgba(255,138,92,0.4)]'
+                              : 'bg-[#140f10] border-white/[0.08] hover:border-white/20'
+                          }`}
+                        >
+                          <img
+                            src={chImgUrl}
+                            alt={`Canal ${ch.channel}`}
+                            className="w-full aspect-square object-cover rounded bg-black"
+                          />
+                          <div className="text-[10px] font-mono text-[#f6f1ee] font-semibold mt-1">
+                            Ch {ch.channel}
+                          </div>
+                          <div className="text-[9px] font-mono text-[#b9a8a3]">
+                            {ch.wavelength_um.toFixed(2)} μm
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
+              {/* Selector Completo de 102 Canales LVF (1..102) */}
+              <div className="rounded-xl bg-[#140f10] border border-white/[0.08] p-3 space-y-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.05] pb-2">
+                  <div>
+                    <span className="text-xs font-mono font-bold text-white">
+                      Canal LVF {selectedChannel} de 102
+                    </span>
+                    <span className="text-xs font-mono text-[#ff8a5c] ml-2">
+                      ({channelSpecs.wavelength_um.toFixed(3)} μm · Detector D{channelSpecs.detector})
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMaximizedMedia({
+                          title: `Cubo SPHEREx · Canal ${selectedChannel} (${channelSpecs.wavelength_um} μm · D${channelSpecs.detector})`,
+                          url: api.url.cubeChannel(cubeResult.tile.id, selectedChannel, 'gray_r', 1024),
+                          filename: `SPHEREx_Cube_Ch${selectedChannel}_${channelSpecs.wavelength_um}um.png`,
+                          details: `Tesela: ${cubeResult.tile.id} · Resolución nativa 512×512 · Escala gray_r`,
+                        })
+                      }
+                      title="Maximizar canal en pantalla completa"
+                      className="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-xs font-mono text-white flex items-center gap-1 transition-colors"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>Maximizar</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDownloadPng(
+                          api.url.cubeChannel(cubeResult.tile.id, selectedChannel, 'gray_r', 1024),
+                          `SPHEREx_Cube_Ch${selectedChannel}_${channelSpecs.wavelength_um}um.png`,
+                        )
+                      }
+                      title="Descargar imagen PNG de este canal"
+                      className="px-2 py-1 rounded-lg bg-[#ff8a5c]/20 hover:bg-[#ff8a5c]/30 text-xs font-mono text-white flex items-center gap-1 transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#ff8a5c]" />
+                      <span>Descargar PNG</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Atajos por Rango de Detector (D1 a D6) */}
+                <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[10px] font-mono">
+                  <span className="text-[#b9a8a3] mr-1 shrink-0">Rangos:</span>
+                  {[
+                    { det: 1, startCh: 1, label: 'D1 (1–17)' },
+                    { det: 2, startCh: 18, label: 'D2 (18–34)' },
+                    { det: 3, startCh: 35, label: 'D3 (35–51)' },
+                    { det: 4, startCh: 52, label: 'D4 (52–68)' },
+                    { det: 5, startCh: 69, label: 'D5 (69–85)' },
+                    { det: 6, startCh: 86, label: 'D6 (86–102)' },
+                  ].map((r) => (
+                    <button
+                      key={r.det}
+                      type="button"
+                      onClick={() => setSelectedChannel(r.startCh)}
+                      className={`px-2 py-0.5 rounded transition-all shrink-0 ${
+                        channelSpecs.detector === r.det
+                          ? 'bg-[#ff8a5c] text-[#0c0a0b] font-bold shadow-[0_0_8px_rgba(255,138,92,0.4)]'
+                          : 'bg-white/[0.04] text-[#C8CDD6] hover:bg-white/10'
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Control Slider de 1 a 102 */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={selectedChannel <= 1}
+                    onClick={() => setSelectedChannel((c) => Math.max(1, c - 1))}
+                    className="p-1 rounded bg-white/[0.06] hover:bg-white/15 disabled:opacity-30 text-white"
+                    title="Canal anterior"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <input
+                    type="range"
+                    min={1}
+                    max={102}
+                    step={1}
+                    value={selectedChannel}
+                    onChange={(e) => setSelectedChannel(Number(e.target.value))}
+                    aria-label="Seleccionar canal LVF de 1 a 102"
+                    className="flex-1 h-1.5 rounded-lg appearance-none cursor-pointer accent-[#ff8a5c] bg-white/15"
+                  />
+                  <button
+                    type="button"
+                    disabled={selectedChannel >= 102}
+                    onClick={() => setSelectedChannel((c) => Math.min(102, c + 1))}
+                    className="p-1 rounded bg-white/[0.06] hover:bg-white/15 disabled:opacity-30 text-white"
+                    title="Siguiente canal"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Vista previa del canal activo */}
+                <div className="relative rounded-lg overflow-hidden bg-black aspect-video sm:aspect-[21/9] flex items-center justify-center border border-white/[0.06]">
+                  <img
+                    src={api.url.cubeChannel(cubeResult.tile.id, selectedChannel, 'gray_r', 512)}
+                    alt={`Canal ${selectedChannel}`}
+                    className="h-full object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Proyecciones Complementarias: Espectro y Cubo 3D */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div className="rounded-xl bg-[#140f10] border border-white/[0.08] p-2">
-                  <div className="text-[10px] font-mono text-[#b9a8a3] mb-1">
-                    Espectro en ({ra.toFixed(3)}°, {dec.toFixed(3)}°)
+                <div className="rounded-xl bg-[#140f10] border border-white/[0.08] p-2.5 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-[#b9a8a3]">
+                    <span className="text-white font-semibold">Espectro Fotométrico del Objetivo</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMaximizedMedia({
+                            title: 'Espectro Fotométrico Extraído del Cubo SPHEREx',
+                            url: api.url.cubeSamples(cubeResult.tile.id, ra, dec),
+                            filename: `SPHEREx_Cube_Spectrum_${target.id}.png`,
+                            details: `Tesela ${cubeResult.tile.id} · 102 canales · Flujo fotométrico en MJy/sr`,
+                          })
+                        }
+                        title="Maximizar espectro"
+                        className="p-1 text-[#b9a8a3] hover:text-white transition-colors"
+                      >
+                        <Maximize2 className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadPng(
+                            api.url.cubeSamples(cubeResult.tile.id, ra, dec),
+                            `SPHEREx_Cube_Spectrum_${target.id}.png`,
+                          )
+                        }
+                        title="Descargar PNG del espectro"
+                        className="p-1 text-[#ff8a5c] hover:text-white transition-colors"
+                      >
+                        <Download className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                   <img
                     src={api.url.cubeSamples(cubeResult.tile.id, ra, dec)}
                     alt="Cube Samples"
-                    className="w-full rounded bg-black object-contain"
+                    className="w-full rounded bg-black object-contain aspect-video"
                   />
                 </div>
-                <div className="rounded-xl bg-[#140f10] border border-white/[0.08] p-2">
-                  <div className="text-[10px] font-mono text-[#b9a8a3] mb-1">
-                    Proyección 3D del Cubo (RA × Dec × λ)
+
+                <div className="rounded-xl bg-[#140f10] border border-white/[0.08] p-2.5 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-[#b9a8a3]">
+                    <span className="text-white font-semibold">Proyección 3D del Cubo (RA × Dec × λ)</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMaximizedMedia({
+                            title: 'Proyección Isométrica 3D del Cubo All-Sky SPHEREx',
+                            url: api.url.cube3d(cubeResult.tile.id),
+                            filename: `SPHEREx_Cube_3D_${cubeResult.tile.id}.png`,
+                            details: `Tesela ${cubeResult.tile.id} · Malla 3D espacial (RA, Dec) × espectral (102 canales λ)`,
+                          })
+                        }
+                        title="Maximizar proyección 3D"
+                        className="p-1 text-[#b9a8a3] hover:text-white transition-colors"
+                      >
+                        <Maximize2 className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadPng(
+                            api.url.cube3d(cubeResult.tile.id),
+                            `SPHEREx_Cube_3D_${cubeResult.tile.id}.png`,
+                          )
+                        }
+                        title="Descargar PNG 3D"
+                        className="p-1 text-[#ff8a5c] hover:text-white transition-colors"
+                      >
+                        <Download className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                   <img
                     src={api.url.cube3d(cubeResult.tile.id)}
                     alt="Cube 3D"
-                    className="w-full rounded bg-black object-contain"
+                    className="w-full rounded bg-black object-contain aspect-video"
                   />
                 </div>
               </div>
@@ -637,6 +871,52 @@ export function SixDetectorEpochPanel({
           </div>
         </div>
       </div>
+
+      {/* MODAL LIGHTBOX DE PANTALLA COMPLETA PARA CANAL / CUBO 3D */}
+      {maximizedMedia && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-8 animate-panel-enter">
+          <div className="w-full max-w-4xl bg-[#140f10] border border-white/20 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="px-4 py-3 bg-[#1F2026] border-b border-white/10 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="text-sm font-mono font-bold text-white truncate">
+                  {maximizedMedia.title}
+                </h3>
+                {maximizedMedia.details && (
+                  <p className="text-[10px] font-mono text-[#b9a8a3] truncate">
+                    {maximizedMedia.details}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleDownloadPng(maximizedMedia.url, maximizedMedia.filename)}
+                  className="px-3 py-1.5 rounded-lg bg-[#ff8a5c] hover:bg-[#ff7640] text-[#0c0a0b] text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-[0_0_12px_rgba(255,138,92,0.4)]"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Descargar PNG</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMaximizedMedia(null)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#b9a8a3] hover:text-white transition-colors"
+                  aria-label="Cerrar vista completa"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="p-4 flex items-center justify-center bg-black/90 min-h-[320px] max-h-[75vh] overflow-hidden">
+              <img
+                src={maximizedMedia.url}
+                alt={maximizedMedia.title}
+                className="max-w-full max-h-[70vh] object-contain rounded"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

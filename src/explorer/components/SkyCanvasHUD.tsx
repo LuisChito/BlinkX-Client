@@ -481,20 +481,51 @@ export function SkyCanvasHUD({
         ctx.restore();
       }
 
-      // 5. Asteroid ML prediction (/api/asteroids/predict-from-current)
+      // 5. Asteroid JPL Horizons prediction (/api/asteroids/predict-from-current)
       if (asteroidResult) {
-        const predRa = asteroidResult.predicted_ra ?? asteroidResult.ra;
-        const predDec = asteroidResult.predicted_dec ?? asteroidResult.dec;
+        // Draw orbital trajectory track
+        if (Array.isArray(asteroidResult.track) && asteroidResult.track.length > 0) {
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          let started = false;
+          for (const trk of asteroidResult.track) {
+            if (typeof trk.ra === 'number' && typeof trk.dec === 'number') {
+              const p = toCanvas({ ra: trk.ra, dec: trk.dec });
+              if (!started) {
+                ctx.moveTo(p.x, p.y);
+                started = true;
+              } else {
+                ctx.lineTo(p.x, p.y);
+              }
+            }
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        const predRa =
+          (asteroidResult as any).predicted_ra_deg ??
+          asteroidResult.predicted_ra ??
+          asteroidResult.ra;
+        const predDec =
+          (asteroidResult as any).predicted_dec_deg ??
+          asteroidResult.predicted_dec ??
+          asteroidResult.dec;
         if (typeof predRa === 'number' && typeof predDec === 'number') {
           const pt = toCanvas({ ra: predRa, dec: predDec });
           ctx.strokeStyle = '#34d399';
-          ctx.lineWidth = 1.6;
+          ctx.lineWidth = 1.8;
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
           ctx.stroke();
           ctx.fillStyle = '#34d399';
-          ctx.font = '10px "JetBrains Mono", monospace';
-          ctx.fillText('ASTEROID PRED', pt.x + 10, pt.y + 3);
+          ctx.font = 'bold 10px "JetBrains Mono", monospace';
+          const label = asteroidResult.target
+            ? `⚑ ${asteroidResult.target}`
+            : '⚑ ASTEROIDE PRED (JPL)';
+          ctx.fillText(label, pt.x + 10, pt.y + 3);
         }
       }
 

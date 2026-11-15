@@ -29,24 +29,17 @@ describe('SPHEREx Explorer Catalog & 102-Band Spectra', () => {
     'R Draconis',
   ];
 
-  it('contains all 5 mandatory NASA Space Apps Challenge targets with valid 102-channel spectra (0.75-5.00 μm) including fluxDiff and fluxSum', () => {
+  it('contains all 5 mandatory NASA Space Apps Challenge targets with clean real coordinates and no hardcoded spectra', () => {
     for (const requiredName of mandatoryTargetNames) {
       const target = SPHEREX_TARGETS.find((t) => t.name === requiredName);
       expect(target).toBeDefined();
       expect(target?.isChallengeTarget).toBe(true);
-      expect(target?.spectrum102).toHaveLength(102);
-
-      const channels = target!.spectrum102;
-      expect(channels[0].wavelengthUm).toBeGreaterThanOrEqual(0.75);
-      expect(channels[channels.length - 1].wavelengthUm).toBeLessThanOrEqual(5.0);
-
-      for (let i = 1; i < channels.length; i += 1) {
-        expect(channels[i].wavelengthUm).toBeGreaterThan(channels[i - 1].wavelengthUm);
-        expect(Number.isFinite(channels[i].fluxT1)).toBe(true);
-        expect(Number.isFinite(channels[i].fluxT2)).toBe(true);
-        expect(channels[i].fluxDiff).toBeCloseTo(channels[i].fluxT2 - channels[i].fluxT1, 2);
-        expect(channels[i].fluxSum).toBeCloseTo(channels[i].fluxT1 + channels[i].fluxT2, 2);
-      }
+      expect(target?.raDeg).toBeGreaterThanOrEqual(0);
+      expect(target?.raDeg).toBeLessThan(360);
+      expect(target?.decDeg).toBeGreaterThanOrEqual(-90);
+      expect(target?.decDeg).toBeLessThanOrEqual(90);
+      expect(target?.spectrum102).toBeUndefined();
+      expect(target?.epochs).toBeUndefined();
     }
   });
 
@@ -64,7 +57,8 @@ describe('SPHEREx Explorer Catalog & 102-Band Spectra', () => {
 
   it('sums separately all 6 SPHEREx LVF detector arrays (LVF-1 to LVF-6, 17 channels each) to improve SNR by sqrt(17) ≈ 4.12x', () => {
     const wise0855 = SPHEREX_TARGETS.find((t) => t.id === 'wise-0855')!;
-    const arrays = summarize6DetectorArrays(wise0855.spectrum102);
+    const otf = generateOnTheFlySourceAtCoordinate(133.79513, -7.24515, wise0855);
+    const arrays = summarize6DetectorArrays(otf.spectrum102);
     expect(arrays).toHaveLength(6);
     expect(arrays.map((a) => a.band)).toEqual([
       'LVF-1',
@@ -145,19 +139,37 @@ describe('Bidirectional URL State Sync & Motion Filters', () => {
   });
 
   it('filters catalog targets by proper motion velocity or brightness change magnitude', () => {
-    const highMotion = filterTargetsByMotion(SPHEREX_TARGETS, 10.0, 4.5);
+    const barnardsBase = SPHEREX_TARGETS.find((t) => t.id === 'barnards-star')!;
+    const rDraconisBase = SPHEREX_TARGETS.find((t) => t.id === 'r-draconis')!;
+    const fixtureTargets = [
+      { ...barnardsBase, velocityArcsecYr: 10.37, brightnessChangeMag: 0.05 },
+      { ...rDraconisBase, velocityArcsecYr: 0.02, brightnessChangeMag: 5.7 },
+    ];
+    const highMotion = filterTargetsByMotion(fixtureTargets, 10.0, 4.5);
     expect(highMotion.some((t) => t.id === 'barnards-star')).toBe(true);
     expect(highMotion.some((t) => t.id === 'r-draconis')).toBe(true);
   });
 });
 
 describe('Candidate Dossier Astrometric Fit, Catalog Cross-Match, Overlays & ADES-PSV Export', () => {
+  const wise0855Base = SPHEREX_TARGETS.find((t) => t.id === 'wise-0855')!;
+  const wise0855Fixture = {
+    ...wise0855Base,
+    velocityArcsecYr: 8.08,
+    fitsId: 'SPHEREx_DR1_WISE0855_FIXTURE',
+    epochs: [
+      { epoch: 1 as const, label: 'T1', dateLabel: '2025-05-14T04:22:10Z', mjd: 60809.18, raShiftArcsec: 0, decShiftArcsec: 0, fluxScale: 1.0 },
+      { epoch: 2 as const, label: 'T2', dateLabel: '2025-08-14T04:22:10Z', mjd: 60901.18, raShiftArcsec: -2.035, decShiftArcsec: 0.17, fluxScale: 1.0 },
+      { epoch: 3 as const, label: 'T3', dateLabel: '2025-11-14T04:22:10Z', mjd: 60993.18, raShiftArcsec: -4.07, decShiftArcsec: 0.34, fluxScale: 1.0 },
+      { epoch: 4 as const, label: 'T4', dateLabel: '2026-02-14T04:22:10Z', mjd: 61085.18, raShiftArcsec: -6.105, decShiftArcsec: 0.51, fluxScale: 1.0 },
+    ],
+  };
+
   it('calculates linear astrometric fit for WISE 0855 matching published ~8.08"/yr and evaluates MPC rule', () => {
-    const wise0855 = SPHEREX_TARGETS.find((t) => t.id === 'wise-0855')!;
-    const detections = buildInitialDetectionsForTarget(wise0855);
+    const detections = buildInitialDetectionsForTarget(wise0855Fixture);
     expect(detections).toHaveLength(4);
 
-    const fit = calculateAstrometricLinearFit(detections, wise0855);
+    const fit = calculateAstrometricLinearFit(detections, wise0855Fixture);
     expect(fit.velocityArcsecYr).toBeGreaterThan(7.8);
     expect(fit.velocityArcsecYr).toBeLessThan(8.3);
     expect(fit.rSquared).toBeGreaterThan(0.99);
@@ -167,13 +179,19 @@ describe('Candidate Dossier Astrometric Fit, Catalog Cross-Match, Overlays & ADE
   });
 
   it('returns accurate catalog cross-match status for WISE 0855 and uncataloged Sector 34A', () => {
-    const wise0855 = SPHEREX_TARGETS.find((t) => t.id === 'wise-0855')!;
-    const wiseReport = getCatalogCrossMatchReport(wise0855);
+    const wiseReport = getCatalogCrossMatchReport(wise0855Fixture);
     expect(wiseReport.overallStatus).toBe('KNOWN_BENCHMARK');
     expect(wiseReport.entries.find((e) => e.catalog === 'AllWISE')?.matched).toBe(true);
 
-    const sec34a = SPHEREX_TARGETS.find((t) => t.id === 'm51-sector-34a')!;
-    const secReport = getCatalogCrossMatchReport(sec34a);
+    const sec34aFixture = {
+      ...wise0855Base,
+      id: 'm51-sector-34a',
+      name: 'M51 Sector 34A',
+      designation: 'UNCATALOGED-TEST',
+      raDeg: 202.4696,
+      decDeg: 47.1952,
+    };
+    const secReport = getCatalogCrossMatchReport(sec34aFixture);
     expect(secReport.overallStatus).toBe('UNCATALOGED_CANDIDATE');
     expect(secReport.entries.every((e) => !e.matched)).toBe(true);
   });
@@ -185,9 +203,8 @@ describe('Candidate Dossier Astrometric Fit, Catalog Cross-Match, Overlays & ADE
   });
 
   it('generates valid IAU ADES-PSV output with observatory metadata and pipe-separated detections', () => {
-    const wise0855 = SPHEREX_TARGETS.find((t) => t.id === 'wise-0855')!;
-    const detections = buildInitialDetectionsForTarget(wise0855);
-    const psv = generateAdesPsvContent(wise0855, detections, 'known_catalog', 'Benchmark Y4 dwarf');
+    const detections = buildInitialDetectionsForTarget(wise0855Fixture);
+    const psv = generateAdesPsvContent(wise0855Fixture, detections, 'known_catalog', 'Benchmark Y4 dwarf');
 
     expect(psv).toContain('# version=2022');
     expect(psv).toContain('! mpcCode C57');
