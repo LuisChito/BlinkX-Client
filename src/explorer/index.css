@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Archivo Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Archivo Variable', 'Arial Narrow', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, Consolas, monospace;
+}
+
+/* El punto que parpadea: firma de Blink X */
+.blink-dot {
+  position: relative;
+  display: inline-block;
+  width: 1.1em;
+  height: 0.7em;
+  vertical-align: baseline;
+}
+.blink-dot::before,
+.blink-dot::after {
+  content: '';
+  position: absolute;
+  width: 0.36em;
+  height: 0.36em;
+  border-radius: 50%;
+  background: #ff8a5c;
+}
+.blink-dot::before {
+  left: 0;
+  bottom: 0;
+  animation: blink-a 1.4s steps(1) infinite;
+}
+.blink-dot::after {
+  right: 0;
+  top: 0;
+  animation: blink-b 1.4s steps(1) infinite;
+}
+@keyframes blink-a {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.2; }
+}
+@keyframes blink-b {
+  0%, 49% { opacity: 0.2; }
+  50%, 100% { opacity: 1; }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    background-color: #050304;
+    color: #f6f1ee;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'zero' 1;
+  }
+}
+
+/* Landing Page Palette Integration (#050304 / #0e0a0b / #171112 / #ff8a5c brasa) */
+.hud-card {
+  background: rgba(14, 10, 11, 0.90);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hud-card-elevated {
+  background: rgba(23, 17, 18, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.hud-subcard {
+  background: rgba(23, 17, 18, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.hud-card-pill {
+  background: rgba(23, 17, 18, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hud-card-pill:hover {
+  background: rgba(36, 27, 29, 0.94);
+  border-color: rgba(255, 138, 92, 0.35);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 138, 92, 0.45);
+}
+
+@keyframes panelSoftEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-panel-enter {
+  animation: panelSoftEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.glass-graphite {
+  background: rgba(14, 10, 11, 0.90);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-graphite-panel {
+  background: rgba(5, 3, 4, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}
+
+/* Accent Glows */
+.soft-glow-accent {
+  box-shadow: 0 0 24px -6px rgba(255, 138, 92, 0.28);
+}
+
+/* Clean custom range input matching landing brasa accent */
+input[type='range'].spherex-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.12);
+  height: 4px;
+  border-radius: 999px;
+  outline: none;
+}
+
+input[type='range'].spherex-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ff8a5c;
+  border: 2px solid #050304;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(255, 138, 92, 0.65);
+}
