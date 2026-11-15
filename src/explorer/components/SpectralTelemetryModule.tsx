@@ -460,13 +460,13 @@ export function SpectralTelemetryModule({
 
               {/* Compact 6 Detector Arrays Real Summary Strip */}
               <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono text-[#b9a8a3]">
-                  <span>Detectores D1–D6 (media μJy):</span>
+                <div className="flex items-center justify-between text-xs font-mono text-[#b9a8a3] gap-2">
+                  <span className="truncate">D1–D6 (media μJy):</span>
                   {onOpenSixDetectors && (
                     <button
                       type="button"
                       onClick={onOpenSixDetectors}
-                      className="text-[#ff8a5c] hover:underline font-semibold"
+                      className="text-[#ff8a5c] hover:underline font-semibold shrink-0 whitespace-nowrap"
                     >
                       Expandir 6 LVF →
                     </button>

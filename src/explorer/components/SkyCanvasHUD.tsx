@@ -820,10 +820,8 @@ export function SkyCanvasHUD({
       <div
         className={`absolute z-20 flex flex-wrap items-center gap-2 pointer-events-auto transition-all duration-300 ${
           isSplitView
-            ? 'bottom-3 left-3 right-[595px] lg:right-[635px] xl:right-[675px]'
-            : isDrawerOpen
-              ? 'bottom-[88px] left-3 right-[355px]'
-              : 'bottom-[88px] left-3 right-3'
+            ? 'bottom-3 left-3 right-3'
+            : 'bottom-[98px] left-3 right-3'
         }`}
       >
         {/* L2 Mode Switcher (TAN vs L2 Raw vs L2 Color) */}
