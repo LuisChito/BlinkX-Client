@@ -104,9 +104,15 @@ export interface SpectrumResponse {
 
 export interface PredictResult {
   target: string;
-  method: string;
+  /** proper_motion (estrellas, enanas marrones) · ephemeris (asteroides/cometas, JPL Horizons) · static */
+  method: 'proper_motion' | 'ephemeris' | 'static' | string;
   pm_mas_yr: { ra: number; dec: number } | null;
+  parallax_mas?: number | null;
+  catalog_epoch?: number | null;
+  catalog_position?: Coord | null;
   positions: Array<{ date: string; ra: number; dec: number; sigma_arcsec: number }>;
+  epoch_range?: [number, number];
+  warnings?: string[];
 }
 
 export interface OverlaySource {
@@ -175,14 +181,50 @@ export interface CubePixelResult {
   [k: string]: unknown;
 }
 
+export interface AsteroidPixel {
+  x: number | null;
+  y_top: number | null;
+  inside_image: boolean;
+  image_width?: number;
+  image_height?: number;
+}
+
 export interface AsteroidPredictResult {
-  asteroid_id?: number;
-  predicted_ra?: number;
-  predicted_dec?: number;
-  ra?: number;
-  dec?: number;
-  pixel?: { x: number | null; y_top: number | null; inside_image: boolean };
-  [k: string]: unknown;
+  asteroid_id: number;
+  target: string;
+  method: string;
+  /** 500@-163182 = visto desde SPHEREx; 500@399 = geocentro */
+  observer: string;
+  current_observation: {
+    mjd_utc: number;
+    time: string;
+    ra: number;
+    dec: number;
+    ephemeris_ra: number;
+    ephemeris_dec: number;
+    offset_arcsec: number;
+    pixel?: AsteroidPixel;
+  };
+  predicted_ra_deg: number;
+  predicted_dec_deg: number;
+  sigma_arcsec: number;
+  forecast_mjd_utc: number;
+  forecast_time: string;
+  horizon_days: number;
+  motion?: { arcsec_per_hour: number; position_angle_deg: number };
+  image_id?: string | null;
+  pixel?: AsteroidPixel;
+  track: Array<{ mjd_utc: number; time: string; ra: number; dec: number; sigma_arcsec: number; pixel?: AsteroidPixel }>;
+  warnings?: string[];
+  status?: string;
+}
+
+export interface AsteroidRequest {
+  asteroid_id: number;
+  current_observation: { mjd_utc: number; ra: number; dec: number };
+  horizon_days: number;
+  image_id?: string;
+  view?: { ra: number; dec: number; fov: number; size: number };
 }
 
 export interface SkyContractParams {
@@ -217,6 +259,10 @@ export interface SkyContractState {
   loadingComposition: boolean;
   compositionError: string | null;
   predict: PredictResult | null;
+  predictJob: Job | null;
+  loadingPredict: boolean;
+  predictError: string | null;
+  asteroidError: string | null;
   gaiaOverlay: OverlayResponse | null;
   wiseOverlay: OverlayResponse | null;
   l2: L2Result | null;
@@ -245,13 +291,11 @@ export interface SkyContractState {
   inspectL2Pixel: (frameId: string, x: number, y: number, size?: number) => Promise<L2PixelResult | null>;
   loadCube: (size?: number) => Promise<CubeResult | null>;
   inspectCubePixel: (tileId: string, x: number, y: number, size?: number) => Promise<CubePixelResult | null>;
-  predictAsteroidFromCurrent: (body: {
-    asteroid_id: number;
-    current_observation: { mjd_utc: number; ra: number; dec: number };
-    horizon_days: number;
-    image_id?: string;
-    view?: { ra: number; dec: number; fov: number; size: number };
-  }) => Promise<AsteroidPredictResult | null>;
+  predictAsteroidFromCurrent: (body: AsteroidRequest) => Promise<AsteroidPredictResult | null>;
+  /** /api/predict: posición del objeto en cada fecha con imagen (movimiento propio o efemérides). */
+  predictMotion: (opts: { ra: number; dec: number; name?: string; date_from: string; date_to: string }) => Promise<PredictResult | null>;
+  clearPredict: () => void;
+  clearAsteroid: () => void;
   retry: () => void;
 }
 
@@ -296,6 +340,9 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   const [cube, setCube] = useState<CubeResult | null>(null);
   const [cubePixel, setCubePixel] = useState<CubePixelResult | null>(null);
   const [asteroid, setAsteroid] = useState<AsteroidPredictResult | null>(null);
+  const [loadingPredict, setLoadingPredict] = useState(false);
+  const [predictError, setPredictError] = useState<string | null>(null);
+  const [asteroidError, setAsteroidError] = useState<string | null>(null);
 
   const [jobsByKind, setJobsByKind] = useState<Record<string, Job>>({});
   const [loadingSequence, setLoadingSequence] = useState(false);
@@ -328,6 +375,7 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
 
   const spectrumJob = jobsByKind.spectrum ?? null;
   const compositionJob = jobsByKind.composition ?? null;
+  const predictJob = jobsByKind.predict ?? null;
   const cubeJob = jobsByKind.cube ?? null;
 
   const fovArcsec = Math.max(30, Math.min(3600, Math.round(fovDeg * 3600)));
@@ -349,6 +397,8 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   if (!latestCubeRef.current) latestCubeRef.current = latest();
   const latestAsteroidRef = useRef<(() => AbortSignal) | null>(null);
   if (!latestAsteroidRef.current) latestAsteroidRef.current = latest();
+  const latestPredictRef = useRef<(() => AbortSignal) | null>(null);
+  if (!latestPredictRef.current) latestPredictRef.current = latest();
 
   // 1. System status on mount + every 60s
   useEffect(() => {
@@ -462,14 +512,13 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
         setCompositionError(null);
         setLoadingComposition(false);
         updateJob('composition', null);
-        setPredict(null);
+        // Las predicciones (/api/predict y asteroides) son del objeto, no del campo: se conservan al moverse.
         setL2(null);
         setL2Pixel(null);
         if (coordChanged) {
           setCube(cubeCacheRef.current.get(cubeKey) ?? null);
           setCubePixel(null);
         }
-        setAsteroid(null);
       }
 
       const mergeWarnings = (next?: string[]) => {
@@ -875,26 +924,44 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
   }, []);
 
   const predictAsteroidFromCurrent = useCallback(
-    async (body: {
-      asteroid_id: number;
-      current_observation: { mjd_utc: number; ra: number; dec: number };
-      horizon_days: number;
-      image_id?: string;
-      view?: { ra: number; dec: number; fov: number; size: number };
-    }) => {
+    async (body: AsteroidRequest) => {
       const signal = latestAsteroidRef.current!();
       setLoadingAsteroid(true);
-      setError(null);
+      setAsteroidError(null);
       try {
-        const res = (await api.asteroidFromCurrent(body, (_p, _stage, job) => {
-          if (!signal.aborted) updateJob('asteroid', job);
-        })) as AsteroidPredictResult;
+        const run = (b: AsteroidRequest) =>
+          api.asteroidFromCurrent(b, (_p, _stage, job) => {
+            if (!signal.aborted) updateJob('asteroid', job);
+          }) as Promise<AsteroidPredictResult>;
+        let res: AsteroidPredictResult;
+        try {
+          res = await run(body);
+        } catch (e) {
+          // `image_id` es opcional (§6): con él el backend consulta IRSA. Si solo falla IRSA, un único reintento
+          // sin él conserva la predicción de Horizons (sin comprobar la huella de la imagen).
+          const upstream = e instanceof ApiError && (e.code === 'upstream_error' || e.code === 'upstream_timeout');
+          if (!upstream || !body.image_id || signal.aborted) throw e;
+          const { image_id: _omit, ...rest } = body;
+          res = await run(rest);
+          res = { ...res, warnings: [...(res.warnings ?? []), 'IRSA no respondió: no se comprobó la huella de la imagen, solo la geometría de la vista.'] };
+        }
         if (!signal.aborted) setAsteroid(res);
         return res;
       } catch (e) {
         if (isAbort(e) || signal.aborted) return null;
-        if (e instanceof ApiError) setError(`[${e.code}] ${e.message}`);
-        else if (e instanceof Error) setError(e.message);
+        setAsteroid(null);
+        // Mensajes recomendados por el contrato (docs/API_FRONTEND.md §6).
+        if (e instanceof ApiError) {
+          setAsteroidError(
+            e.code === 'identity_mismatch'
+              ? 'Ese punto no coincide con el asteroide indicado. Revisa el número o haz clic sobre el punto que se mueve.'
+              : e.code === 'not_found'
+                ? 'No existe un asteroide con ese número.'
+                : e.code === 'upstream_error' || e.code === 'upstream_timeout'
+                  ? 'JPL Horizons no respondió; inténtalo de nuevo.'
+                  : e.message,
+          );
+        } else if (e instanceof Error) setAsteroidError(e.message);
         return null;
       } finally {
         if (!signal.aborted) {
@@ -905,6 +972,54 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     },
     [updateJob],
   );
+
+  const predictMotion = useCallback(
+    async (opts: { ra: number; dec: number; name?: string; date_from: string; date_to: string }) => {
+      const signal = latestPredictRef.current!();
+      setLoadingPredict(true);
+      setPredictError(null);
+      try {
+        const res = (await api.predict(
+          { ra: opts.ra, dec: opts.dec, name: opts.name || undefined, date_from: opts.date_from, date_to: opts.date_to },
+          (_p, _stage, job) => {
+            if (!signal.aborted) updateJob('predict', job);
+          },
+          signal,
+        )) as PredictResult;
+        if (!signal.aborted) setPredict(res);
+        return res;
+      } catch (e) {
+        if (isAbort(e) || signal.aborted) return null;
+        setPredict(null);
+        if (e instanceof ApiError) {
+          setPredictError(e.code === 'not_found' ? 'No se encontró un objeto con movimiento conocido cerca de este punto.' : e.message);
+        } else if (e instanceof Error) setPredictError(e.message);
+        return null;
+      } finally {
+        if (!signal.aborted) {
+          setLoadingPredict(false);
+          updateJob('predict', null);
+        }
+      }
+    },
+    [updateJob],
+  );
+
+  const clearPredict = useCallback(() => {
+    latestPredictRef.current!();
+    setPredict(null);
+    setPredictError(null);
+    setLoadingPredict(false);
+    updateJob('predict', null);
+  }, [updateJob]);
+
+  const clearAsteroid = useCallback(() => {
+    latestAsteroidRef.current!();
+    setAsteroid(null);
+    setAsteroidError(null);
+    setLoadingAsteroid(false);
+    updateJob('asteroid', null);
+  }, [updateJob]);
 
   useEffect(() => {
     if (targetName === undefined) {
@@ -929,6 +1044,10 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     loadingComposition,
     compositionError,
     predict,
+    predictJob,
+    loadingPredict,
+    predictError,
+    asteroidError,
     gaiaOverlay,
     wiseOverlay,
     l2,
@@ -958,6 +1077,9 @@ export function useSkyContract(params: SkyContractParams): SkyContractState {
     loadCube,
     inspectCubePixel,
     predictAsteroidFromCurrent,
+    predictMotion,
+    clearPredict,
+    clearAsteroid,
     retry,
   };
 }

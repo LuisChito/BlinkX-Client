@@ -4,73 +4,86 @@ import { SPHEREX_TARGETS } from './data/spherexCatalog';
 import type {
   CatalogOverlayState,
   ExplorerUrlState,
-  FloatingModuleVisibility,
   LayoutViewMode,
   MolecularLensId,
   TargetCatalogEntry,
   ViewMode,
 } from './types/spherex';
-import {
-  clampDec,
-  normalizeRa,
-  parseExplorerUrlParams,
-  serializeExplorerUrlParams,
-} from './utils/urlState';
-import { SkyCanvasHUD } from './components/SkyCanvasHUD';
-import { SixDetectorEpochPanel } from './components/SixDetectorEpochPanel';
-import { TopTelemetryBar } from './components/TopTelemetryBar';
-import { SpectralTelemetryModule } from './components/SpectralTelemetryModule';
-import { TimeTravelBlinkBar } from './components/TimeTravelBlinkBar';
+import { clampDec, normalizeRa, parseExplorerUrlParams, serializeExplorerUrlParams } from './utils/urlState';
+import { SkyStage, type L2ViewMode } from './components/SkyStage';
+import { TopBar } from './components/layout/TopBar';
+import { ViewerDock } from './components/layout/ViewerDock';
+import { ActivityStatus } from './components/layout/ActivityStatus';
+import { HelpDialog } from './components/layout/HelpDialog';
+import { Inspector, type InspectorTab } from './components/inspector/Inspector';
+import { SummaryTab } from './components/inspector/SummaryTab';
+import { SpectrumTab } from './components/inspector/SpectrumTab';
+import { DataTab } from './components/inspector/DataTab';
+import { MotionTab } from './components/inspector/MotionTab';
+import { DetectorsPanel } from './components/DetectorsPanel';
 import { CommandSearchModal } from './components/CommandSearchModal';
-import { DraggableHUDPanel } from './components/DraggableHUDPanel';
-import { ContractJobBanner } from './components/ContractJobBanner';
-import { CompositionModal } from './components/CompositionPanel';
-import {
-  type Cmap,
-  type Detector,
-  type Scale,
-  type Stretch,
-  useSkyContract,
-} from './hooks/useSkyContract';
-import { ApiError } from '../lib/skyApi';
+import { CompositionCard, CompositionModal } from './components/CompositionPanel';
+import { type Cmap, type Detector, type Scale, type Stretch, useSkyContract } from './hooks/useSkyContract';
+import { ApiError, isoToMjd, type Coord } from '../lib/skyApi';
+import { objectTypeLabel } from './components/ui/primitives';
+
+const MODE_LABEL: Record<ViewMode, string> = {
+  normal: 'Una fecha a la vez',
+  blink: 'Parpadeo entre la primera y la última fecha',
+  diff: 'Resta: última − primera fecha',
+  sum: 'Suma de varias fechas',
+};
+
+/** Distancia angular aproximada en grados (suficiente para campos pequeños). */
+function sep(a: Coord, b: Coord) {
+  let dra = Math.abs(a.ra - b.ra);
+  if (dra > 180) dra = 360 - dra;
+  return Math.hypot(dra * Math.cos((a.dec * Math.PI) / 180), a.dec - b.dec);
+}
+
+const isWide = () => typeof window === 'undefined' || window.matchMedia('(min-width: 1024px)').matches;
 
 export function SpherexExplorerShell() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlState = useMemo(() => parseExplorerUrlParams(searchParams), [searchParams]);
-
+  const center = useMemo(() => ({ ra: urlState.ra, dec: urlState.dec }), [urlState.ra, urlState.dec]);
   const selectedTarget = useMemo(
     () => SPHEREX_TARGETS.find((t) => t.id === urlState.target) ?? SPHEREX_TARGETS[0],
     [urlState.target],
   );
+  const isSplit = urlState.view === 'split';
 
-  const [visibility, setVisibility] = useState<FloatingModuleVisibility>({
-    spectra: true,
-    aiInsights: true,
-    metadata: true,
-    motionFilters: false,
-    selectionTool: false,
-    shareUrl: false,
-  });
-
+  // Visualización
   const [detectorFilter, setDetectorFilter] = useState<Detector | undefined>(undefined);
   const [stretch, setStretch] = useState<Stretch>('asinh');
   const [cmap, setCmap] = useState<Cmap>('gray');
   const [scale, setScale] = useState<Scale>('sequence');
-  const [catalogOverlays, setCatalogOverlays] = useState<CatalogOverlayState>({
-    gaiaDr3: false,
-    allWise: false,
-  });
+  const [overlays, setOverlays] = useState<CatalogOverlayState>({ gaiaDr3: false, allWise: false });
+  const [showLabels, setShowLabels] = useState(true);
+  const [l2View, setL2View] = useState<L2ViewMode>('off');
+  const [cursor, setCursor] = useState<Coord | null>(null);
 
+  // Tiempo
   const [frameIndex, setFrameIndex] = useState(0);
   const [blinkFrame, setBlinkFrame] = useState<1 | 2>(1);
-  const [blinkSpeedMs, setBlinkSpeedMs] = useState<number>(420);
+  const [speedMs, setSpeedMs] = useState(420);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isEpochPanelMaximized, setIsEpochPanelMaximized] = useState(false);
-  const [cmdKOpen, setCmdKOpen] = useState(false);
+
+  // Paneles
+  const [inspectorOpen, setInspectorOpen] = useState(isWide);
+  const [inspectorTab, setInspectorTab] = useState<InspectorTab>('summary');
+  const [detectorsMax, setDetectorsMax] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [compositionOpen, setCompositionOpen] = useState(false);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const [activeTargetName, setActiveTargetName] = useState<string | undefined>(selectedTarget.name);
   const [isResolving, setIsResolving] = useState(false);
+
+  // Predicciones (pestaña Movimiento)
+  const [pickMode, setPickMode] = useState(false);
+  const [asteroidId, setAsteroidId] = useState('');
+  const [horizonDays, setHorizonDays] = useState(0.5);
 
   const sky = useSkyContract({
     ra: urlState.ra,
@@ -82,32 +95,23 @@ export function SpherexExplorerShell() {
     stretch,
     cmap,
     scale,
-    showGaia: catalogOverlays.gaiaDr3,
-    showWise: catalogOverlays.allWise,
+    showGaia: overlays.gaiaDr3,
+    showWise: overlays.allWise,
   });
 
-  const totalSeqFrames = sky.sequence?.frames.length ?? 0;
+  const frames = sky.sequence?.frames ?? [];
+  useEffect(() => setFrameIndex(0), [sky.sequence]);
+  useEffect(() => { if (!sky.l2) setL2View('off'); }, [sky.l2]);
 
   useEffect(() => {
-    setFrameIndex(0);
-  }, [sky.sequence]);
-
-  const showToast = useCallback((msg: string) => {
-    setToastMsg(msg);
-  }, []);
-
-  useEffect(() => {
-    if (!toastMsg) return;
-    const t = window.setTimeout(() => setToastMsg(null), 2800);
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(null), 2600);
     return () => window.clearTimeout(t);
-  }, [toastMsg]);
+  }, [toast]);
 
   const updateUrlState = useCallback(
     (patch: Partial<ExplorerUrlState>) => {
-      const next: ExplorerUrlState = {
-        ...urlState,
-        ...patch,
-      };
+      const next: ExplorerUrlState = { ...urlState, ...patch };
       next.ra = normalizeRa(next.ra);
       next.dec = clampDec(next.dec);
       next.fov = Math.max(0.04, Math.min(8, next.fov));
@@ -123,232 +127,242 @@ export function SpherexExplorerShell() {
   }, [searchParams, setSearchParams, urlState]);
 
   const shareUrl = useMemo(() => {
-    const queryStr = serializeExplorerUrlParams(urlState).toString();
-    const origin =
-      typeof window !== 'undefined' ? window.location.origin : 'https://hextech-spherex.app';
-    return `${origin}/?${queryStr}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    return `${origin}/ver?${serializeExplorerUrlParams(urlState).toString()}`;
   }, [urlState]);
 
-  const handleToggleModule = useCallback((key: keyof FloatingModuleVisibility) => {
-    setVisibility((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, []);
-
-  // Cmd+K Search Shortcut
+  // Atajos globales: Ctrl/⌘+K busca; Espacio hace parpadeo.
+  const setMode = useCallback(
+    (mode: ViewMode) => {
+      setIsPlaying(false);
+      setL2View('off');
+      updateUrlState({ mode });
+    },
+    [updateUrlState],
+  );
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        if (!cmdKOpen) {
-          e.preventDefault();
-          setCmdKOpen(true);
-        }
+        e.preventDefault();
+        setSearchOpen(true);
+        return;
       }
+      if (e.key === 'Escape') setPickMode(false);
+      if (e.code !== 'Space') return;
+      const el = e.target as HTMLElement;
+      if (el.closest('input, textarea, select, button, [role="dialog"], [role="tab"]')) return;
+      e.preventDefault();
+      if (urlState.mode !== 'blink') setMode('blink');
+      setBlinkFrame((f) => (f === 1 ? 2 : 1));
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [cmdKOpen]);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setMode, urlState.mode]);
 
-  // Blink mode automatic frame alternation (adjustable speed)
+  // Parpadeo y reproducción
   useEffect(() => {
     if (urlState.mode !== 'blink') return;
-    const timer = window.setInterval(() => {
-      setBlinkFrame((prev) => (prev === 1 ? 2 : 1));
-    }, blinkSpeedMs);
-    return () => window.clearInterval(timer);
-  }, [blinkSpeedMs, urlState.mode]);
-
-  // Timelapse playback loop across real sequenceResult.frames
+    const t = window.setInterval(() => setBlinkFrame((f) => (f === 1 ? 2 : 1)), speedMs);
+    return () => window.clearInterval(t);
+  }, [speedMs, urlState.mode]);
   useEffect(() => {
-    if (!isPlaying || totalSeqFrames <= 1) return;
-    const timer = window.setInterval(() => {
-      setFrameIndex((prev) => (prev + 1) % totalSeqFrames);
-    }, Math.round(blinkSpeedMs * 1.4));
-    return () => window.clearInterval(timer);
-  }, [blinkSpeedMs, isPlaying, totalSeqFrames]);
+    if (!isPlaying || frames.length <= 1) return;
+    const t = window.setInterval(() => setFrameIndex((i) => (i + 1) % frames.length), Math.round(speedMs * 1.4));
+    return () => window.clearInterval(t);
+  }, [speedMs, isPlaying, frames.length]);
 
-  // Auto-load 6-channel + 3D Sky Cube by default when opening "6 Detectores / Épocas"
+  // El cubo se pide al abrir "Detectores" (no antes: es una descarga pesada).
   useEffect(() => {
-    if (urlState.view === 'split' && !sky.cube && !sky.loadingCube && !sky.error) {
-      void sky.loadCube();
-    }
-  }, [urlState.view, sky.cube, sky.loadingCube, sky.error, sky.loadCube]);
+    if (isSplit && !sky.cube && !sky.loadingCube && !sky.error) void sky.loadCube();
+  }, [isSplit, sky.cube, sky.loadingCube, sky.error, sky.loadCube]);
+
+  // Navegación -------------------------------------------------------------------------------------------------
+  const resetTime = () => {
+    setIsPlaying(false);
+    setFrameIndex(0);
+  };
 
   const handleSelectTarget = useCallback(
     async (target: TargetCatalogEntry) => {
-      setIsPlaying(false);
-      setFrameIndex(0);
+      resetTime();
       setActiveTargetName(target.name);
       setIsResolving(true);
-      showToast(`Buscando "${target.name}" en SIMBAD/NED...`);
       try {
         const res = await sky.resolveByName(target.name, '2025-07-01');
         setActiveTargetName(res.matched_name);
-        updateUrlState({
-          target: target.id,
-          ra: res.current.ra,
-          dec: res.current.dec,
-          fov: target.defaultFov,
-        });
-        showToast(`${res.matched_name} (${res.source.toUpperCase()})`);
+        updateUrlState({ target: target.id, ra: res.current.ra, dec: res.current.dec, fov: target.defaultFov });
       } catch {
-        updateUrlState({
-          target: target.id,
-          ra: target.raDeg,
-          dec: target.decDeg,
-          fov: target.defaultFov,
-        });
-        showToast(`Objetivo: ${target.name}`);
+        updateUrlState({ target: target.id, ra: target.raDeg, dec: target.decDeg, fov: target.defaultFov });
       } finally {
         setIsResolving(false);
       }
     },
-    [showToast, sky, updateUrlState],
+    [sky, updateUrlState],
   );
 
-  const handleJumpCoordinates = useCallback(
+  const handleJump = useCallback(
     (ra: number, dec: number) => {
-      setIsPlaying(false);
-      setFrameIndex(0);
+      resetTime();
       setActiveTargetName(undefined);
       updateUrlState({ ra, dec });
-      showToast(`RA ${ra.toFixed(5)}°, Dec ${dec.toFixed(5)}°`);
     },
-    [showToast, updateUrlState],
+    [updateUrlState],
   );
 
   const handleResolveName = useCallback(
     async (name: string) => {
       setIsResolving(true);
-      showToast(`Buscando "${name}" en /api/resolve...`);
       try {
         const res = await sky.resolveByName(name, '2025-07-01');
-        setIsPlaying(false);
-        setFrameIndex(0);
+        resetTime();
         setActiveTargetName(res.matched_name);
         updateUrlState({ ra: res.current.ra, dec: res.current.dec });
-        showToast(
-          `${res.matched_name} (${res.source.toUpperCase()}) • época ${res.current.epoch.toFixed(1)}`,
-        );
+        setToast(`${res.matched_name} encontrado en ${res.source.toUpperCase()}`);
       } catch (e) {
-        const msg = e instanceof ApiError ? e.message : 'No se pudo resolver el objeto.';
-        showToast(msg);
+        setToast(e instanceof ApiError ? e.message : 'No se encontró ese objeto.');
       } finally {
         setIsResolving(false);
       }
     },
-    [showToast, sky, updateUrlState],
+    [sky, updateUrlState],
   );
 
-  const handleViewportChange = useCallback(
-    (next: { ra?: number; dec?: number; fov?: number }) => {
-      updateUrlState({
-        ra: next.ra ?? urlState.ra,
-        dec: next.dec ?? urlState.dec,
-        fov: next.fov ?? urlState.fov,
-      });
-    },
+  const handleViewport = useCallback(
+    (next: { ra?: number; dec?: number; fov?: number }) =>
+      updateUrlState({ ra: next.ra ?? urlState.ra, dec: next.dec ?? urlState.dec, fov: next.fov ?? urlState.fov }),
     [updateUrlState, urlState.dec, urlState.fov, urlState.ra],
   );
 
-  const handleChangeLayoutView = useCallback(
-    (view: LayoutViewMode) => {
-      updateUrlState({ view });
+
+  const handleL2 = useCallback(
+    async (v: L2ViewMode) => {
+      setL2View(v);
+      if (v !== 'off') {
+        setIsPlaying(false);
+        if (!sky.l2) await sky.loadL2();
+      }
     },
-    [updateUrlState],
+    [sky],
   );
 
-  const handleStepBlink = useCallback(() => {
-    if (urlState.mode !== 'blink') {
-      updateUrlState({ mode: 'blink' });
-    }
-    setBlinkFrame((prev) => (prev === 1 ? 2 : 1));
-  }, [updateUrlState, urlState.mode]);
-
-  const handleToggleBlink = useCallback(() => {
-    setIsPlaying(false);
-    updateUrlState({ mode: urlState.mode === 'blink' ? 'normal' : 'blink' });
-  }, [updateUrlState, urlState.mode]);
-
-  const handleToggleDiff = useCallback(() => {
-    setIsPlaying(false);
-    updateUrlState({ mode: urlState.mode === 'diff' ? 'normal' : 'diff' });
-  }, [updateUrlState, urlState.mode]);
-
-  const handleToggleSum = useCallback(() => {
-    setIsPlaying(false);
-    updateUrlState({ mode: urlState.mode === 'sum' ? 'normal' : 'sum' });
-  }, [updateUrlState, urlState.mode]);
-
-  const handleToggleCatalogOverlay = useCallback(
-    (key: keyof CatalogOverlayState) => {
-      setCatalogOverlays((prev) => {
-        const nextVal = !prev[key];
-        const label = key === 'gaiaDr3' ? 'Gaia DR3' : 'AllWISE';
-        showToast(`Capa ${label} ${nextVal ? 'activada' : 'ocultada'}`);
-        return { ...prev, [key]: nextVal };
-      });
-    },
-    [showToast],
-  );
-
-  const handleExecuteCmdAction = useCallback(
+  const handleCmdAction = useCallback(
     (action: 'blink' | 'diff' | 'sum' | 'split' | 'motion' | 'selection') => {
-      if (action === 'blink') handleToggleBlink();
-      if (action === 'diff') handleToggleDiff();
-      if (action === 'sum') handleToggleSum();
-      if (action === 'split') {
-        handleChangeLayoutView(urlState.view === 'split' ? 'hud' : 'split');
-      }
-      if (action === 'motion') {
-        handleToggleModule('motionFilters');
-      }
-      if (action === 'selection') {
-        handleChangeLayoutView('nested');
-      }
+      if (action === 'blink' || action === 'diff' || action === 'sum') setMode(urlState.mode === action ? 'normal' : action);
+      if (action === 'split') updateUrlState({ view: isSplit ? 'hud' : 'split' });
     },
-    [
-      handleChangeLayoutView,
-      handleToggleBlink,
-      handleToggleDiff,
-      handleToggleModule,
-      handleToggleSum,
-      urlState.view,
-    ],
+    [isSplit, setMode, updateUrlState, urlState.mode],
   );
 
-  const isDrawerVisible =
-    urlState.view !== 'nested' &&
-    (visibility.spectra || visibility.aiInsights || visibility.metadata || visibility.shareUrl);
+  // Qué estamos mirando ------------------------------------------------------------------------------------------
+  const { title, subtitle } = useMemo(() => {
+    const radius = Math.max(0.05, urlState.fov);
+    const near = [...(sky.objects?.objects ?? [])].filter((o) => o.distance_arcsec < 30).sort((a, b) => a.distance_arcsec - b.distance_arcsec);
+    // SIMBAD da nombres y tipos más legibles ("NGC 7714 · galaxia") que NED.
+    const nearest = near.find((o) => o.source.toLowerCase() === 'simbad') ?? near[0];
+    const typeHint = nearest ? objectTypeLabel(nearest.type, nearest.type_raw) : undefined;
+    if (sky.resolveInfo && sep(sky.resolveInfo.current, center) < radius) {
+      return { title: sky.resolveInfo.matched_name.replace(/\s+/g, ' '), subtitle: typeHint ?? selectedTarget.category };
+    }
+    if (sep({ ra: selectedTarget.raDeg, dec: selectedTarget.decDeg }, center) < radius) {
+      return { title: selectedTarget.name, subtitle: selectedTarget.category };
+    }
+    if (nearest && nearest.distance_arcsec < 30) {
+      return { title: nearest.name.replace(/\s+/g, ' '), subtitle: objectTypeLabel(nearest.type, nearest.type_raw) };
+    }
+    return { title: 'Campo sin nombre', subtitle: `${urlState.ra.toFixed(3)}°, ${urlState.dec >= 0 ? '+' : ''}${urlState.dec.toFixed(3)}°` };
+  }, [center, selectedTarget, sky.objects, sky.resolveInfo, urlState.dec, urlState.fov, urlState.ra]);
 
-  const screenW = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const shownFrame = useMemo(() => {
+    if (!frames.length) return null;
+    const i = urlState.mode === 'blink' ? (blinkFrame === 1 ? 0 : frames.length - 1) : Math.min(frames.length - 1, frameIndex);
+    return frames[i];
+  }, [blinkFrame, frameIndex, frames, urlState.mode]);
+
+  const measurePoint = sky.probeCoord ?? center;
+
+  // Rango de fechas para /api/predict: el de las imágenes disponibles en la zona.
+  const predictFrom = (sky.coverage?.first_date ?? '2025-05-01').slice(0, 10);
+  const predictTo = (sky.coverage?.last_date ?? '2026-06-01').slice(0, 10);
+
+  // Posición predicha para la fecha de la imagen visible (la más cercana en el tiempo).
+  const predictNow = useMemo(() => {
+    const pos = sky.predict?.positions;
+    if (!pos?.length || !shownFrame || l2View !== 'off' || urlState.mode === 'diff' || urlState.mode === 'sum') return null;
+    const t = Date.parse(shownFrame.date_obs);
+    let best = pos[0];
+    for (const q of pos) if (Math.abs(Date.parse(q.date) - t) < Math.abs(Date.parse(best.date) - t)) best = q;
+    return Math.abs(Date.parse(best.date) - t) < 2 * 86400000 ? best : null;
+  }, [l2View, shownFrame, sky.predict, urlState.mode]);
+
+  // Para marcar un asteroide hace falta una sola exposición alineada a la vista (no L2, resta ni suma).
+  const pickBlocker =
+    l2View !== 'off' ? 'Vuelve a la imagen «Alineada» para marcar el asteroide.'
+    : urlState.mode === 'diff' || urlState.mode === 'sum' ? 'Cambia a «Secuencia» o «Parpadeo»: se marca sobre una sola fecha.'
+    : !shownFrame || !sky.sequence ? 'Espera a que carguen las imágenes.'
+    : undefined;
+  useEffect(() => { if (pickBlocker) setPickMode(false); }, [pickBlocker]);
+
+  const handleProbe = useCallback(
+    (ra: number, dec: number) => {
+      setInspectorOpen(true);
+      if (pickMode && shownFrame && sky.sequence && /^\d+$/.test(asteroidId)) {
+        setPickMode(false);
+        setInspectorTab('motion');
+        void sky.predictAsteroidFromCurrent({
+          asteroid_id: Number(asteroidId),
+          current_observation: { mjd_utc: isoToMjd(shownFrame.date_obs), ra, dec },
+          horizon_days: horizonDays,
+          image_id: shownFrame.id,
+          view: {
+            ra: sky.sequence.center.ra,
+            dec: sky.sequence.center.dec,
+            fov: sky.sequence.fov_arcsec,
+            size: sky.sequence.size_px,
+          },
+        });
+        return;
+      }
+      void sky.probeSpectrumAt(ra, dec);
+      setInspectorTab('spectrum');
+    },
+    [asteroidId, horizonDays, pickMode, shownFrame, sky],
+  );
+  const stageLoading = sky.loadingSequence || sky.loadingStack || (l2View !== 'off' && sky.loadingL2);
+  const stageLoadingLabel = l2View !== 'off' && sky.loadingL2
+    ? 'Descargando la exposición L2 completa…'
+    : sky.loadingStack ? 'Combinando fechas…' : 'Cargando imágenes de SPHEREx…';
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#050304] text-[#f6f1ee] select-none">
-      {/* LAYER 1: BASE VISUALIZATION SKY STAGE & SPLIT FLOATING DRAWER */}
-      <main className="absolute inset-0 w-full h-full overflow-hidden">
-        <div
-          className={`relative h-full w-full transition-all duration-300 ${
-            urlState.view === 'split' && isEpochPanelMaximized
-              ? 'hidden'
-              : urlState.view === 'split'
-                ? 'block lg:pr-[636px] xl:pr-[676px]'
-                : isDrawerVisible
-                  ? 'block lg:pr-[355px]'
-                  : 'block'
-          }`}
-        >
-          <SkyCanvasHUD
-            target={selectedTarget}
+    <div className="h-screen w-screen flex flex-col bg-ink text-fg overflow-hidden">
+      <TopBar
+        targets={SPHEREX_TARGETS}
+        selectedTargetId={selectedTarget.id}
+        title={title}
+        subtitle={subtitle}
+        isResolving={isResolving}
+        layoutView={urlState.view}
+        apiStatus={sky.status}
+        inspectorOpen={!isSplit && inspectorOpen}
+        onSelectTarget={handleSelectTarget}
+        onOpenSearch={() => setSearchOpen(true)}
+        onChangeLayoutView={(view: LayoutViewMode) => updateUrlState({ view })}
+        onToggleInspector={() => (isSplit ? updateUrlState({ view: 'hud' }) : setInspectorOpen((o) => !o))}
+        onOpenHelp={() => setHelpOpen(true)}
+      />
+
+      <div className="relative flex-1 min-h-0 flex">
+        {/* Cielo */}
+        <main className={isSplit && detectorsMax ? 'hidden' : 'relative flex-1 min-w-0'} aria-label="Cielo">
+          <SkyStage
             ra={urlState.ra}
             dec={urlState.dec}
             fov={urlState.fov}
             frameIndex={frameIndex}
             blinkFrame={blinkFrame}
             mode={urlState.mode}
-            catalogOverlays={catalogOverlays}
-            isDrawerOpen={urlState.view === 'split' || (isDrawerVisible && urlState.view === 'hud')}
-            isSplitView={urlState.view === 'split'}
-            onViewportChange={handleViewportChange}
-            onToggleCatalogOverlay={handleToggleCatalogOverlay}
+            l2View={l2View}
+            catalogOverlays={overlays}
+            showLabels={showLabels}
             sequenceResult={sky.sequence}
             stackResult={sky.stack}
             gaiaOverlay={sky.gaiaOverlay}
@@ -357,208 +371,219 @@ export function SpherexExplorerShell() {
             predictResult={sky.predict}
             l2Result={sky.l2}
             l2Pixel={sky.l2Pixel}
-            cubeResult={sky.cube}
-            cubePixel={sky.cubePixel}
             asteroidResult={sky.asteroid}
-            stretch={stretch}
-            cmap={cmap}
-            scale={scale}
-            isLoadingSequence={sky.loadingSequence}
-            isLoadingStack={sky.loadingStack}
-            isLoadingL2={sky.loadingL2}
-            onChangeStretch={setStretch}
-            onChangeCmap={setCmap}
-            onChangeScale={setScale}
-            onLoadL2={sky.loadL2}
-            onInspectL2Pixel={sky.inspectL2Pixel}
-            onInspectCubePixel={sky.inspectCubePixel}
+            isLoading={stageLoading}
+            loadingLabel={stageLoadingLabel}
             probeCoord={sky.probeCoord}
-            resolvedCenter={sky.resolveInfo?.current ? { ra: sky.resolveInfo.current.ra, dec: sky.resolveInfo.current.dec } : null}
-            onProbeSpectrum={(probeRa, probeDec) => {
-              void sky.probeSpectrumAt(probeRa, probeDec);
-              showToast(`Sonda /api/spectrum en RA ${probeRa.toFixed(4)}°, Dec ${probeDec.toFixed(4)}°`);
-            }}
+            predictNow={predictNow}
+            pickMode={pickMode}
+            altText={`Imagen infrarroja de SPHEREx: ${title}`}
+            onViewportChange={handleViewport}
+            onInspectL2Pixel={sky.inspectL2Pixel}
+            onProbe={handleProbe}
+            onCursorMove={setCursor}
           />
-        </div>
 
-        {/* 6 DETECTORES / ÉPOCAS / SKY CUBE */}
-        {urlState.view === 'split' && (
-          <div
-            className={`fixed z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              isEpochPanelMaximized
-                ? 'inset-x-3 sm:inset-x-6 top-16 bottom-3'
-                : 'top-16 right-3 bottom-3 w-full sm:w-[580px] lg:w-[620px] xl:w-[660px] max-w-[calc(100vw-24px)]'
-            }`}
-          >
-            <SixDetectorEpochPanel
-              target={selectedTarget}
-              ra={urlState.ra}
-              dec={urlState.dec}
+          <div className="absolute top-3 left-3 z-20">
+            <ActivityStatus job={sky.activeJob} warnings={sky.warnings} error={sky.error} onRetry={sky.retry} />
+          </div>
+
+          {l2View !== 'off' && sky.l2Pixel && (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bx-float rounded-full px-3 py-1.5 text-xs font-mono text-fg pointer-events-none">
+              Píxel ({Math.round(sky.l2Pixel.x)}, {Math.round(sky.l2Pixel.y)}) ·{' '}
+              <b className="text-data">{(sky.l2Pixel.value ?? sky.l2Pixel.flux ?? 0).toFixed(2)} {sky.l2Pixel.unit ?? 'MJy/sr'}</b>
+            </div>
+          )}
+
+          {toast && (
+            <div role="status" className="absolute top-3 left-1/2 -translate-x-1/2 z-30 bx-float rounded-full px-4 py-1.5 text-xs text-fg animate-panel-enter pointer-events-none">
+              {toast}
+            </div>
+          )}
+
+          <div className="absolute bottom-3 inset-x-3 z-20">
+            <ViewerDock
+              l2View={l2View}
+              isLoadingL2={sky.loadingL2}
+              onChangeL2View={(v) => void handleL2(v)}
+              overlays={overlays}
+              showLabels={showLabels}
+              onToggleOverlay={(k) => setOverlays((o) => ({ ...o, [k]: !o[k] }))}
+              onToggleLabels={() => setShowLabels((v) => !v)}
+              stretch={stretch}
+              cmap={cmap}
+              scale={scale}
+              onChangeStretch={setStretch}
+              onChangeCmap={setCmap}
+              onChangeScale={setScale}
+              fov={urlState.fov}
+              cursor={cursor}
+              onZoom={(f) => handleViewport({ fov: Number(Math.max(0.05, Math.min(4, urlState.fov * f)).toFixed(3)) })}
+              onSetFov={(fov) => handleViewport({ fov })}
+              onRecenter={() =>
+                handleViewport({
+                  ra: sky.resolveInfo?.current.ra ?? selectedTarget.raDeg,
+                  dec: sky.resolveInfo?.current.dec ?? selectedTarget.decDeg,
+                  fov: selectedTarget.defaultFov,
+                })
+              }
               mode={urlState.mode}
-              framesMeta={sky.frames?.frames ?? []}
-              sequenceResult={sky.sequence}
-              contractSpectrum={sky.probeSpectrum ?? sky.spectrum}
-              isLoadingSpectrum={sky.loadingSpectrum || sky.loadingProbeSpectrum}
-              resolveInfo={sky.resolveInfo}
-              cubeResult={sky.cube}
-              loadingCube={sky.loadingCube}
-              cubeJob={sky.cubeJob}
-              error={sky.error}
-              detectorFilter={detectorFilter}
-              isMaximized={isEpochPanelMaximized}
-              onToggleMaximize={() => setIsEpochPanelMaximized((p) => !p)}
-              onChangeDetectorFilter={setDetectorFilter}
-              onLoadCube={() => {
-                void sky.loadCube();
-              }}
-              onMeasureSpectrum={() => {
-                void sky.probeSpectrumAt(urlState.ra, urlState.dec);
-                showToast(`Midiendo /api/spectrum en RA ${urlState.ra.toFixed(4)}°, Dec ${urlState.dec.toFixed(4)}°`);
-              }}
-              onAnalyzeComposition={() => {
-                const c = sky.probeCoord ?? { ra: urlState.ra, dec: urlState.dec };
-                const fresh =
-                  sky.compositionCoord &&
-                  Math.abs(sky.compositionCoord.ra - c.ra) * 3600 < 1 &&
-                  Math.abs(sky.compositionCoord.dec - c.dec) * 3600 < 1 &&
-                  (sky.composition || sky.loadingComposition);
-                if (!fresh) void sky.analyzeComposition(c.ra, c.dec);
-                setCompositionOpen(true);
-              }}
-              onChangeMode={(nextMode: ViewMode) => {
+              onChangeMode={setMode}
+              frameIndex={frameIndex}
+              blinkFrame={blinkFrame}
+              isPlaying={isPlaying}
+              speedMs={speedMs}
+              sequence={sky.sequence}
+              coverage={sky.coverage}
+              isLoadingStack={sky.loadingStack}
+              onFrameIndexChange={(i) => {
                 setIsPlaying(false);
-                updateUrlState({ mode: nextMode });
+                if (urlState.mode !== 'normal') setMode('normal');
+                setFrameIndex(i);
               }}
-              onCloseSplit={() => {
-                setIsEpochPanelMaximized(false);
-                handleChangeLayoutView('hud');
+              onTogglePlay={() => {
+                if (urlState.mode !== 'normal') setMode('normal');
+                setIsPlaying((v) => !v);
               }}
+              onChangeSpeed={setSpeedMs}
             />
           </div>
-        )}
-      </main>
+        </main>
 
-      {/* LAYER 2A: TOP TELEMETRY BAR */}
-      <div className="fixed top-0 inset-x-0 z-40 pointer-events-none">
-        <TopTelemetryBar
-          targets={SPHEREX_TARGETS}
-          selectedTarget={selectedTarget}
-          ra={urlState.ra}
-          dec={urlState.dec}
-          layoutView={urlState.view}
-          fov={urlState.fov}
-          onSelectTarget={handleSelectTarget}
-          onChangeLayoutView={handleChangeLayoutView}
-          onChangeFov={(nextFov) => {
-            handleViewportChange({ fov: nextFov });
-            showToast(
-              nextFov > 0.5
-                ? `Campo amplio FoV ${nextFov.toFixed(2)}°: Mayor transferencia de datos para rastreo rápido`
-                : `Campo de visión FoV ajustado a ${nextFov.toFixed(2)}°`,
-            );
-          }}
-          onOpenCmdK={() => setCmdKOpen(true)}
-          apiStatus={sky.status}
-          resolveInfo={sky.resolveInfo}
-          isResolving={isResolving}
-        />
+        {/* Panel derecho */}
+        {isSplit ? (
+          <div className={detectorsMax ? 'flex-1 min-w-0' : 'w-full md:w-[560px] xl:w-[620px] shrink-0 max-md:absolute max-md:inset-0 max-md:z-30'}>
+            <DetectorsPanel
+              ra={urlState.ra}
+              dec={urlState.dec}
+              framesMeta={sky.frames?.frames ?? []}
+              spectrum={sky.probeSpectrum ?? sky.spectrum}
+              loadingSpectrum={sky.loadingSpectrum || sky.loadingProbeSpectrum}
+              spectrumJob={sky.spectrumJob}
+              cube={sky.cube}
+              loadingCube={sky.loadingCube}
+              cubeJob={sky.cubeJob}
+              cubeError={!sky.loadingCube && !sky.cube ? sky.error : null}
+              detectorFilter={detectorFilter}
+              isMaximized={detectorsMax}
+              onToggleMaximize={() => setDetectorsMax((m) => !m)}
+              onClose={() => {
+                setDetectorsMax(false);
+                updateUrlState({ view: 'hud' });
+              }}
+              onChangeDetectorFilter={setDetectorFilter}
+              onLoadCube={() => void sky.loadCube()}
+              onMeasureSpectrum={() => void sky.probeSpectrumAt(urlState.ra, urlState.dec)}
+            />
+          </div>
+        ) : (
+          inspectorOpen && (
+            <div className="w-[380px] xl:w-[400px] shrink-0 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:z-30 max-lg:w-[min(400px,100%)] max-lg:shadow-2xl animate-panel-enter">
+              <Inspector
+                tab={inspectorTab}
+                onTab={setInspectorTab}
+                busy={{
+                  spectrum: sky.loadingProbeSpectrum || sky.loadingSpectrum,
+                  composition: sky.loadingComposition,
+                  motion: sky.loadingPredict || sky.loadingAsteroid,
+                }}
+              >
+                {inspectorTab === 'summary' && (
+                  <SummaryTab
+                    title={title}
+                    subtitle={subtitle}
+                    center={center}
+                    resolveInfo={sky.resolveInfo && sep(sky.resolveInfo.current, center) < Math.max(0.05, urlState.fov) ? sky.resolveInfo : null}
+                    probe={sky.probeCoord}
+                    objects={sky.objects}
+                    frames={sky.frames}
+                    coverage={sky.coverage}
+                    loadingMeta={sky.loadingSequence}
+                    onProbe={handleProbe}
+                    onClearProbe={sky.clearProbeSpectrum}
+                    onGoSpectrum={() => {
+                      if (!sky.probeSpectrum && !sky.loadingProbeSpectrum) void sky.probeSpectrumAt(measurePoint.ra, measurePoint.dec);
+                      setInspectorTab('spectrum');
+                    }}
+                    onGoComposition={() => setInspectorTab('composition')}
+                  />
+                )}
+                {inspectorTab === 'spectrum' && (
+                  <SpectrumTab
+                    spectrum={sky.probeSpectrum ?? sky.spectrum}
+                    loading={sky.probeCoord ? sky.loadingProbeSpectrum : sky.loadingSpectrum || sky.loadingProbeSpectrum}
+                    job={sky.spectrumJob}
+                    point={measurePoint}
+                    isProbe={!!sky.probeCoord}
+                    framesMeta={sky.frames?.frames ?? []}
+                    lens={urlState.lens}
+                    onChangeLens={(lens: MolecularLensId) => updateUrlState({ lens })}
+                    onMeasure={() => void sky.probeSpectrumAt(measurePoint.ra, measurePoint.dec)}
+                  />
+                )}
+                {inspectorTab === 'composition' && (
+                  <CompositionCard
+                    targetCoord={measurePoint}
+                    isProbe={!!sky.probeCoord}
+                    result={sky.composition}
+                    resultCoord={sky.compositionCoord}
+                    job={sky.compositionJob}
+                    loading={sky.loadingComposition}
+                    error={sky.compositionError}
+                    onAnalyze={(context) => void sky.analyzeComposition(measurePoint.ra, measurePoint.dec, { context })}
+                    onOpenDetail={() => setCompositionOpen(true)}
+                  />
+                )}
+                {inspectorTab === 'motion' && (
+                  <MotionTab
+                    point={measurePoint}
+                    suggestedName={title === 'Campo sin nombre' ? '' : title}
+                    dateFrom={predictFrom}
+                    dateTo={predictTo}
+                    shownFrame={shownFrame}
+                    canPick={!pickBlocker}
+                    cantPickReason={pickBlocker}
+                    predict={sky.predict}
+                    predictNow={predictNow}
+                    loadingPredict={sky.loadingPredict}
+                    predictJob={sky.predictJob}
+                    predictError={sky.predictError}
+                    onPredict={(name) =>
+                      void sky.predictMotion({ ra: measurePoint.ra, dec: measurePoint.dec, name, date_from: predictFrom, date_to: predictTo })
+                    }
+                    onClearPredict={sky.clearPredict}
+                    onCenter={(c) => handleViewport({ ra: c.ra, dec: c.dec })}
+                    asteroid={sky.asteroid}
+                    loadingAsteroid={sky.loadingAsteroid}
+                    asteroidError={sky.asteroidError}
+                    pickMode={pickMode}
+                    asteroidId={asteroidId}
+                    horizonDays={horizonDays}
+                    onAsteroidId={setAsteroidId}
+                    onHorizonDays={setHorizonDays}
+                    onTogglePick={() => setPickMode((m) => !m)}
+                    onClearAsteroid={sky.clearAsteroid}
+                  />
+                )}
+                {inspectorTab === 'data' && (
+                  <DataTab
+                    frame={l2View !== 'off' ? sky.l2?.frame ?? null : shownFrame}
+                    modeLabel={l2View !== 'off' ? 'Exposición L2 original' : MODE_LABEL[urlState.mode]}
+                    sequence={sky.sequence}
+                    stack={urlState.mode === 'diff' || urlState.mode === 'sum' ? sky.stack : null}
+                    l2Pixel={sky.l2Pixel}
+                    cubePixel={sky.cubePixel}
+                    status={sky.status}
+                    warnings={sky.warnings}
+                    shareUrl={shareUrl}
+                  />
+                )}
+              </Inspector>
+            </div>
+          )
+        )}
       </div>
 
-      {/* LAYER 2E: RIGHT LATERAL TELEMETRY DRAWER (Only in HUD mode) */}
-      {urlState.view === 'hud' && isDrawerVisible && (
-        <DraggableHUDPanel
-          id="telemetry-drawer"
-          defaultPosition={{
-            x: Math.max(20, screenW - 355),
-            y: 64,
-          }}
-          headerTitle="Telemetry Drawer"
-        >
-          <SpectralTelemetryModule
-            target={selectedTarget}
-            contractSpectrum={sky.spectrum}
-            probeCoord={sky.probeCoord}
-            probeSpectrum={sky.probeSpectrum}
-            loadingProbeSpectrum={sky.loadingProbeSpectrum}
-            spectrumJob={sky.spectrumJob}
-            framesMeta={sky.frames?.frames ?? []}
-            isLoadingSpectrum={sky.loadingSpectrum}
-            resolveInfo={sky.resolveInfo}
-            l2Pixel={sky.l2Pixel}
-            cubePixel={sky.cubePixel}
-            lens={urlState.lens}
-            mode={urlState.mode}
-            layoutView={urlState.view}
-            visibility={visibility}
-            shareUrl={shareUrl}
-            onOpenSixDetectors={() => handleChangeLayoutView('split')}
-            onClearProbe={sky.clearProbeSpectrum}
-            centerCoord={{ ra: urlState.ra, dec: urlState.dec }}
-            composition={sky.composition}
-            compositionCoord={sky.compositionCoord}
-            compositionJob={sky.compositionJob}
-            loadingComposition={sky.loadingComposition}
-            compositionError={sky.compositionError}
-            onAnalyzeComposition={(c, context) => {
-              void sky.analyzeComposition(c.ra, c.dec, { context });
-              showToast(`Analizando composición en RA ${c.ra.toFixed(4)}°, Dec ${c.dec.toFixed(4)}°`);
-            }}
-            onOpenComposition={() => setCompositionOpen(true)}
-            onMeasureCenterSpectrum={() => {
-              void sky.probeSpectrumAt(urlState.ra, urlState.dec);
-              showToast(`Midiendo /api/spectrum en RA ${urlState.ra.toFixed(4)}°, Dec ${urlState.dec.toFixed(4)}°`);
-            }}
-            onChangeLens={(lens: MolecularLensId) => updateUrlState({ lens })}
-            onToggleVisibility={handleToggleModule}
-            onExportReport={() => {}}
-          />
-        </DraggableHUDPanel>
-      )}
-
-      {/* LAYER 2G: BOTTOM TIME-TRAVEL BLINK BAR (Only in HUD mode) */}
-      {urlState.view === 'hud' && (
-        <div
-          className={`fixed bottom-3 left-3 z-30 pointer-events-none transition-all duration-300 ${
-            isDrawerVisible ? 'right-[365px]' : 'right-3'
-          }`}
-        >
-          <TimeTravelBlinkBar
-            frameIndex={frameIndex}
-            blinkFrame={blinkFrame}
-            blinkSpeedMs={blinkSpeedMs}
-            mode={urlState.mode}
-            isPlaying={isPlaying}
-            coverage={sky.coverage}
-            sequenceResult={sky.sequence}
-            onFrameIndexChange={(idx) => {
-              setIsPlaying(false);
-              if (urlState.mode !== 'normal') updateUrlState({ mode: 'normal' });
-              setFrameIndex(idx);
-            }}
-            onTogglePlay={() => {
-              if (!isPlaying && urlState.mode !== 'normal') {
-                updateUrlState({ mode: 'normal' });
-              }
-              setIsPlaying((p) => !p);
-            }}
-            onChangeBlinkSpeedMs={setBlinkSpeedMs}
-            onToggleBlink={handleToggleBlink}
-            onToggleDiff={handleToggleDiff}
-            onToggleSum={handleToggleSum}
-            onStepBlink={handleStepBlink}
-          />
-        </div>
-      )}
-
-      {/* LAYER 3A: CONTRACT JOB PROGRESS / WARNINGS & SUBTLE HUD TOAST */}
-      <ContractJobBanner job={sky.activeJob} warnings={sky.warnings} error={sky.error} onRetry={sky.retry} />
-      {toastMsg && (
-        <div className="fixed top-[68px] left-1/2 -translate-x-1/2 z-50 hud-card-elevated px-4 py-1.5 rounded-full text-xs font-mono text-[#f6f1ee] shadow-2xl animate-panel-enter pointer-events-none border border-white/15">
-          {toastMsg}
-        </div>
-      )}
-
-      {/* LAYER 3B: COMPOSICIÓN QUÍMICA (detalle) */}
       <CompositionModal
         open={compositionOpen}
         onClose={() => setCompositionOpen(false)}
@@ -566,22 +591,17 @@ export function SpherexExplorerShell() {
         job={sky.compositionJob}
         loading={sky.loadingComposition}
         error={sky.compositionError}
-        onRetry={
-          sky.compositionCoord
-            ? () => void sky.analyzeComposition(sky.compositionCoord!.ra, sky.compositionCoord!.dec)
-            : undefined
-        }
+        onRetry={sky.compositionCoord ? () => void sky.analyzeComposition(sky.compositionCoord!.ra, sky.compositionCoord!.dec) : undefined}
       />
-
-      {/* LAYER 3B: COMMAND SEARCH PALETTE (Cmd+K) */}
+      <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
       <CommandSearchModal
         targets={SPHEREX_TARGETS}
-        isOpen={cmdKOpen}
-        onClose={() => setCmdKOpen(false)}
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
         onSelectTarget={handleSelectTarget}
-        onJumpCoordinates={handleJumpCoordinates}
+        onJumpCoordinates={handleJump}
         onResolveName={handleResolveName}
-        onExecuteAction={handleExecuteCmdAction}
+        onExecuteAction={handleCmdAction}
       />
     </div>
   );
